@@ -1,6 +1,6 @@
 
 <p style="text-align: center;">
-<img src="packages/notest.io/src/assets/img/logo.png">
+<img src="https://notest.io/assets/img/logo.png">
 <br>
 <i style="color: #0097e4">NOTEST</i>
 <br>
