@@ -1,0 +1,156 @@
+@import 'node_modules/@butopen/design-system/src/index';
+
+:root {
+  --nt-primary-color: #0097e4;
+  --nt-secondary-color: #ff4d00;
+  --bo-theme-color: var(--nt-primary-color);
+}
+
+.main-color {
+  color: var(--bo-primary-color);
+}
+
+$sm: 640px;
+$md: 768px;
+$lg: 1024px;
+
+.max-centered {
+  @apply mx-auto  max-w-6xl;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.font-important {
+  font-family: 'Anton', sans-serif;
+}
+
+.font-robot {
+  font-family: 'Audiowide', sans-serif;
+}
+
+body,
+html {
+  font-family: 'Open Sans', sans-serif;
+  height: 150vh;
+  background: #f9fdff;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-ntp to-nt-200 bg-clip-text text-transparent;
+}
+
+
+html:not([data-scroll='0']) .bo-header {
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 26%);
+}
+.bo-header {
+  @apply z-50 h-auto  bg-white bg-white transition-all md:h-12;
+
+  .bo-header-container {
+    @apply flex items-center py-2 max-centered;
+  }
+}
+
+.logo {
+  @apply font-important flex items-center;
+  img {
+    @apply mr-2;
+  }
+}
+
+.hero {
+  @apply my-24 text-center ;
+  min-height: 450px;
+  h1 {
+    @apply text-4xl md:text-7xl font-bold leading-snug;
+  }
+  .sub-message {
+    @apply mx-auto text-xl md:text-3xl max-centered;
+  }
+}
+
+
+.share-twitter {
+  color: #1b9cea;
+}
+
+.share-reddit {
+  color: rgb(255, 69, 0);
+}
+
+.share-linkedin {
+  color: #0e76a8;
+}
+
+code {
+  background-color: #eaeaea;
+  font-size: 12px;
+  border-radius: 2px;
+  padding: 2px;
+}
+
+pre[class*='language-']:after,
+pre[class*='language-']:before {
+  box-shadow: 0 4px 8px #979797 !important;
+}
+
+em {
+  @apply text-blue-900;
+}
+
+strong {
+  @apply text-orange-600;
+}
+
+a {
+  @apply text-nt-400 hover:text-nt-600 hover:underline cursor-pointer;
+}
+
+.question {
+    @apply text-center italic mx-auto my-8 text-slate-400;
+}
+
+.features {
+  @apply max-centered grid grid-cols-1 md:grid-cols-3 gap-4;
+}
+
+.feature {
+  @apply inline-flex flex-col items-center p-4 text-center;
+  img {
+    @apply h-12;
+  }
+  h2 {
+    @apply text-xl font-important h-auto md:h-20;
+  }
+  p {
+    @apply mb-4 pt-0 text-lg text-gray-500 text-left;
+  }
+
+  b {
+    @apply underline decoration-2 decoration-nt-400;
+  }
+
+  button {
+    @apply mt-4;
+  }
+}
+
+footer {
+  @apply relative mt-32 overflow-hidden bg-nt-900 text-white;
+  min-height: 420px;
+  ul {
+    @apply list-none p-12 text-white;
+  }
+  li {
+    @apply mt-6;
+  }
+  a {
+    @apply text-white;
+  }
+
+  .copyright {
+    @apply absolute bottom-4 w-full text-center;
+  }
+}

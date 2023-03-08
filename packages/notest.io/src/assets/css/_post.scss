@@ -1,0 +1,56 @@
+a.post-card {
+  @apply shadow flex hover:no-underline hover:shadow-xl bg-white m-4 flex-col md:flex-row;
+  img {
+    @apply h-28
+  }
+
+  > div {
+    @apply pl-2 flex-1;
+    h3 {
+      @apply m-0 mt-2
+    }
+
+    p {
+      @apply text-xs m-0 text-gray-500
+    }
+  }
+}
+
+.back-to-link {
+  @apply my-8 block text-gray-400 text-sm opacity-70 hover:opacity-100;
+  img {
+    @apply inline-block ml-1
+  }
+}
+
+.post-content {
+  @apply bg-gradient-to-br from-gray-50 to-white max-w-screen-lg p-8 mx-auto bg-white shadow-lg rounded-md;
+  img:first-child {
+    @apply shadow-xl
+  }
+
+  ul.tags {
+    @apply inline-flex list-none p-0 m-0 text-xs text-gray-400 flex-wrap;
+    li {
+      @apply mr-4;
+    }
+  }
+
+  
+
+}
+
+.blog-home {
+  img:first-child {
+    @apply shadow-none
+  }
+  
+}
+
+h2 {
+  @apply mt-12
+}
+
+a {
+  @apply text-blue-400 hover:text-blue-500;
+}
