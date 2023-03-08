@@ -1,0 +1,7 @@
+.event-title {
+  @apply p-4 border-t-2 border-nt-500 hover:bg-nt-100 cursor-pointer flex items-center;
+}
+
+.title {
+  @apply text-nt-400 m-4 font-bold text-xl;
+}

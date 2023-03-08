@@ -1,0 +1,58 @@
+<div class="bo-section shadow-2xl">
+  <div class="my-2">
+    <nt-logo>Login</nt-logo>
+  </div>
+
+  <label>E-mail</label>
+  <input type="email" name="email" [(ngModel)]="email" (keyup.enter)="doLogin()" />
+
+  <div (capsLock)="capsOn = $event">
+    <label class="mt-4">Password</label>
+    <input type="password" name="password" [(ngModel)]="password" (keyup.enter)="doLogin()" />
+  </div>
+  <div class="mt-2 text-sm text-yellow-500" *ngIf="capsOn">Caps Lock enabled</div>
+
+  <div class="mt-2 text-right text-xs">
+    <a (click)="showForgotPasswordPopup = true">Forgot password?</a>
+  </div>
+
+  <div class="flex justify-between">
+  <div class="mt-6">
+    <button class="bo-button" (click)="redirectToSignUp()">SIGN-UP</button>
+  </div>
+
+  <div class="mt-6">
+    <button class="bo-button" (click)="doLogin()">LOGIN</button>
+  </div>
+  </div>
+</div>
+
+<nt-popup *ngIf="showForgotPasswordPopup" (close)="showForgotPasswordPopup = false">
+  <div class="p-4">
+    <h2>Reset password</h2>
+    <label class="text-gray-400">Please insert your email:</label>
+
+    <input type="email" [(ngModel)]="email" class="w-full" />
+
+    <div class="mt-4 flex justify-end">
+      <button (click)="onForgotPassword()" class="bo-button" type="button">
+        Reset Password
+      </button>
+    </div>
+  </div>
+</nt-popup>
+
+<nt-popup *ngIf="showResetPasswordPopup" (close)="showResetPasswordPopup = false">
+  <div class="p-4">
+    <h2>Change la password</h2>
+    <label class="text-gray-400">Please insert the new password here:</label>
+
+    <input type="text" [(ngModel)]="password" class="w-full" />
+
+    <div class="mt-4 flex justify-end">
+      <button (click)="onResetPassword()" class="bo-button" type="button">
+        Change Password
+      </button>
+    </div>
+  </div>
+</nt-popup>

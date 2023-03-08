@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "lib": [
+      "webworker",
+      "es6",
+      "dom",
+      "es2015"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
+

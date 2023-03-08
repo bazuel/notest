@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ]
+  },
+  "include": [
+    "packages/notest-cluster-consumer/notest-cluster-runner/src"
+  ],
+  "exclude": [
+    "dist", "node_modules"
+  ]
+}

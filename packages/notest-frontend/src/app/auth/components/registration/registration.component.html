@@ -1,0 +1,25 @@
+<div class="bo-section shadow-2xl">
+  <div class="my-2">
+    <nt-logo>Registration</nt-logo>
+  </div>
+
+  <label class="mt-4">Name</label>
+  <input type="text" name="name" [(ngModel)]="user.name" />
+
+  <label class="mt-4">Surname</label>
+  <input type="text" name="surname" [(ngModel)]="user.surname" />
+
+  <label>E-mail</label>
+  <input type="email" name="email" [(ngModel)]="user.email" />
+
+  <label>Telephone</label>
+  <input type="tel" name="tel" [(ngModel)]="user.phone" />
+
+  <label>Password</label>
+  <input type="password" name="password" [(ngModel)]="user.password" />
+
+  <div class="mt-6 text-right">
+    <button class="bo-button" (click)="doSignIn()">SIGN-IN</button>
+  </div>
+
+</div>

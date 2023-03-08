@@ -1,0 +1,31 @@
+{
+  "name": "notest-common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.esm.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "types": "tsc --emitDeclarationOnly --outDir dist",
+    "types:watch": "tsc --preserveWatchOutput --watch --emitDeclarationOnly --outDir dist",
+    "esbuild": "node esbuild.js ",
+    "esbuild:watch": "node esbuild.js -w",
+    "build:watch": "npm-run-all -p -l -n  esbuild:watch types:watch",
+    "build": "npm-run-all esbuild types",
+    "start": "npm-run-all -p -l -n types:watch build:watch",
+    "test": "jest --runInBand --forceExit",
+    "upgrade": "npx npm-check-updates -u && pnpm audit fix && pnpm i"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "esbuild": "^0.15.16",
+    "npm-run-all": "^4.1.5",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "fflate": "^0.7.4"
+  }
+}

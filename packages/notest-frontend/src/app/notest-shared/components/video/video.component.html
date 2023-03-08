@@ -1,0 +1,7 @@
+<div class="flex items-center justify-center overflow-hidden shadow-lg h-full w-full">
+  <video #video class="w-full h-full" controls [class.hidden]="!loaded">
+    <source *ngIf="srcBuffered" [src]="srcBuffered  | safeUrl" type="video/webm">
+    <source *ngIf="!srcBuffered && src" [src]="src  | safeUrl" type="video/webm">
+  </video>
+  <div *ngIf="!loaded" class="bo-loading"></div>
+</div>

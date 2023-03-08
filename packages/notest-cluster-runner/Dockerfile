@@ -1,0 +1,65 @@
+FROM notest-cluster-runner/base as build-step
+
+# Application parameters and variables
+#ENV APP_DIR=/usr/src/app
+#ENV WORKSPACE_DIR=$APP_DIR/workspace
+
+RUN mkdir -p $APP_DIR $WORKSPACE_DIR
+
+RUN npm i -g pnpm
+
+RUN mkdir -p /app/packages/notest-common
+WORKDIR /app/packages/notest-common
+COPY ./notest-common/package.json .
+COPY ./notest-common/pnpm-lock.yaml .
+RUN pnpm i
+
+RUN mkdir -p /app/packages/notest-backend-shared
+WORKDIR /app/packages/notest-backend-shared
+COPY ./notest-backend-shared/package.json .
+COPY ./notest-backend-shared/pnpm-lock.yaml .
+RUN pnpm i
+
+RUN mkdir -p /app/packages/notest-cluster-runner
+WORKDIR /app/packages/notest-cluster-runner
+COPY ./notest-cluster-runner/package.json .
+COPY ./notest-cluster-runner/pnpm-lock.yaml .
+RUN pnpm i
+
+WORKDIR /app/packages/notest-common
+COPY ./notest-common/. .
+RUN pnpm build
+
+WORKDIR /app/packages/notest-backend-shared
+COPY ./notest-backend-shared/. .
+RUN pnpm build
+
+WORKDIR /app/packages/notest-cluster-runner
+COPY ./notest-cluster-runner/. .
+RUN pnpm build:prod
+
+RUN chown -R bcuser:bcuser /app/packages
+
+RUN mkdir /app/packages/notest-cluster-runner/scripts
+WORKDIR /app/packages/notest-cluster-runner
+COPY ./notest-cluster-runner/scripts/. ./notest-cluster-runner/scripts/.
+# Run everything after as non-privileged user.
+USER bcuser
+
+FROM notest-cluster-runner/base
+
+COPY --from=build-step /app/packages/notest-backend-shared/dist/. /app/packages/notest-backend-shared/dist/.
+COPY --from=build-step /app/packages/notest-cluster-runner/scripts/. /app/packages/notest-cluster-runner/scripts/.
+COPY --from=build-step /app/packages/notest-common/dist/. /app/packages/notest-common/dist/.
+COPY --from=build-step /app/packages/notest-cluster-runner/dist/. /app/packages/notest-cluster-runner/dist/.
+
+RUN chown -R bcuser:bcuser /app/packages
+
+# Run everything after as non-privileged user.
+USER bcuser
+
+WORKDIR /app/packages/notest-cluster-runner
+RUN npx playwright install chromium@1.30.0
+CMD ["node", "dist/index.js"]
+
+

@@ -1,0 +1,17 @@
+
+<div class="h-screen w-screen overflow-auto">
+  <div class="flex flex-row items-center p-4">
+    <h1 class="font-bold ml-2">{{session.info.title}}</h1>
+    <button class="ml-10 h-1/3" *ngIf="ready" title="Go to session Preview Mode" (click)="goTo()">Session Preview</button>
+  </div>
+  <nt-player class="w-2/3 m-5" *ngIf="ready" [session]="eventList"></nt-player>
+  <button class="m-4 bo-button" *ngIf="ready" (click)="getSessionTest()">Generate script</button>
+  <nt-codemirror-editor
+    *ngIf="script"
+    [script]="script"
+    class="editor"
+    label="Test e2e">
+  </nt-codemirror-editor>
+</div>
+
+<nt-event-list class="sidebar-right" *ngIf="ready" [session]="eventList"></nt-event-list>

@@ -1,0 +1,30 @@
+@import 'node_modules/@butopen/design-system/src/index';
+//@import "fonts";
+
+body {
+  @apply bg-gray-50;
+  margin: 0;
+  width: 350px;
+}
+
+:root {
+  --nt-primary-color: #0097e4;
+  --nt-secondary-color: #ff4d00;
+  --bo-theme-color: var(--nt-primary-color);
+}
+
+.main-color {
+  color: var(--bo-primary-color);
+}
+
+.bb-glow {
+  text-shadow: 0 0 20px var(--nt-secondary-color);
+}
+
+.font-important {
+  font-family: 'Anton', sans-serif;
+}
+
+.font-normal {
+  font-family: 'Open Sans', sans-serif;
+}

@@ -1,0 +1,8 @@
+<div *ngIf="notifications.length" class="bo-notifications">
+  <div *ngFor="let n of notifications; let i = index"
+       class="bo-notification-close bo-box-{{n.type}}"
+       (click)="close(i)">
+      <span class="title">{{ n.title }}</span>
+      <p [innerHTML]="n.message" class="message"></p>
+  </div>
+</div>

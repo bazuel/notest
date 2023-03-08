@@ -1,0 +1,7 @@
+.copied-popup {
+  @apply rounded-md absolute bg-nt-200 top-8 right-2 text-white p-1;
+}
+
+.title{
+  @apply sticky top-0 text-sm text-gray-500 bg-nt-100 py-1 px-2 z-10 w-full flex items-center;
+}

@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'node_modules/@butopen/design-system/src/index';
+
+:root {
+  --nt-primary-color: #0097e4;
+  --nt-secondary-color: #ff4d00;
+  --bo-theme-color: var(--nt-primary-color);
+}
+
+.scrollbar-sm {
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #dedede;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a6a6a6;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 7px;
+    box-shadow: inset 7px 10px 12px #f0f0f0;
+  }
+}
+
+.scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body {
+  @extend .use-bo-design-system;
+  font-family: 'Open Sans', sans-serif;
+}
+
+label {
+  font-family: 'Roboto Condensed', sans-serif;
+  @apply mt-8;
+}
+
+.bo-input {
+  @apply w-64 rounded-md bg-gray-50 hover:shadow-sm;
+}
+
+.bo-button {
+  @apply bg-gradient-to-br from-nt-secondary-light to-nt-secondary drop-shadow-md shadow-nt-400 font-extrabold text-xs p-1.5;
+
+  &[disabled] {
+    @apply opacity-30;
+  }
+
+  &.outline {
+    @apply border-0 border-white bg-white p-1 text-xs outline-0;
+  }
+
+  &.sm {
+    @apply px-1;
+  }
+}
+
+.bo-section {
+  @apply rounded bg-white p-8;
+}
+
+.bo-button-icon {
+  @apply bg-gray-100 shadow-md shadow-gray-400 rounded-full p-3 m-2 cursor-pointer;
+  @apply flex items-center justify-center;
+  @apply transition-all duration-500 ease-in-out;
+  @apply hover:scale-95 hover:shadow-lg hover:shadow-gray-400
+}
+

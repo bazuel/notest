@@ -1,0 +1,45 @@
+{
+  "name": "notest-backend-shared",
+  "version": "1.0.0",
+  "description": "NoTest suite executor",
+  "main": "dist/index.js",
+  "module": "./dist/index.esm.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "types": "tsc --emitDeclarationOnly --outDir dist",
+    "types:watch": "tsc --preserveWatchOutput --watch --emitDeclarationOnly --outDir dist",
+    "esbuild": "node esbuild.js ",
+    "esbuild:watch": "node esbuild.js -w",
+    "esbuild:prod": "node esbuild.js --prod",
+    "build:watch": "npm-run-all -p -l -n  esbuild:watch types:watch",
+    "build": "npm-run-all esbuild types",
+    "build:prod": "npm-run-all esbuild:prod",
+    "start": "npm-run-all -p -l -n types:watch build:watch",
+    "test": "jest --runInBand --forceExit",
+    "upgrade": "npx npm-check-updates -u && pnpm audit fix && pnpm i"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@notest/common": "link:..\\notest-common",
+    "pixelmatch": "^5.3.0",
+    "playwright": "^1.30.0",
+    "pngjs": "^6.0.0",
+    "postgres": "^3.3.3",
+    "aws-sdk": "^2.1304.0",
+    "dayjs": "^1.11.7",
+    "ts-morph": "^17.0.1",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^18.11.18",
+    "@types/pixelmatch": "^5.2.4",
+    "@types/pngjs": "^6.0.1",
+    "esbuild": "^0.14.54",
+    "jest": "^27.5.1",
+    "npm-run-all": "^4.1.5",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.9.4"
+  }
+}

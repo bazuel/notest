@@ -1,0 +1,50 @@
+<div class="select text-black" [class.disabled]="disabled" (clickOutside)="show = false">
+  <input
+    [ngModelOptions]="{ standalone: true }"
+    [className]="inputClasses"
+    type="text"
+    [(ngModel)]="query"
+    [class.disabled]="!itemsToShow"
+    [required]="required"
+    #queryInput
+    (ngModelChange)="onQueryChange($event)"
+    [placeholder]="placeholder"
+    autocomplete="new-password"
+    (click)="show = true; setPopupPosition()"
+    (keydown.backspace)="$event.stopPropagation()"
+    (keydown.arrowDown)="next()"
+    (keydown.arrowUp)="prev()"
+    (keydown.enter)="
+      enterOnSelected();
+      $event.stopPropagation();
+      $event.preventDefault();
+      $event.stopImmediatePropagation()
+    "
+    (blur)="checkifEmptyAndEmit(); blur.emit()"
+    (focus)="queryInput.select(); setPopupPosition()" />
+
+  <div [hidden]="!show" class="autocomplete-popup" #popup>
+    <div
+      *ngFor="let i of itemsToShow; let ix = index"
+      class="hover:bg-gray-100 {{ menuClasses }}"
+      [class.active]="currentIndex === ix"
+      (mousedown)="
+        $event.preventDefault();
+        $event.stopImmediatePropagation();
+        $event.stopPropagation();
+        onItemClick(i)
+      "
+      [attr.title]="tooltipProperty ? i[tooltipProperty] : null">
+      <ng-container
+        *ngIf="component"
+        smComponentInjector
+        [data]="i"
+        [query]="query || ''"
+        [component]="component"></ng-container>
+      <div
+        *ngIf="!component"
+        class="autocomplete-item h-[{{ itemsHeight }}px] truncate"
+        [innerHtml]="setText(i)"></div>
+    </div>
+  </div>
+</div>

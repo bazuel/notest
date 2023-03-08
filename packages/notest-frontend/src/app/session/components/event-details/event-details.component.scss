@@ -1,0 +1,15 @@
+
+@keyframes down {
+  from {
+    height: 0;
+  }
+  to {
+    @apply h-72;
+  }
+}
+
+.details {
+  @apply h-72 overflow-auto;
+  animation-name: down;
+  animation-duration: 0.5s;
+}

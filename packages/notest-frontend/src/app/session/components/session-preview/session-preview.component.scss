@@ -1,0 +1,17 @@
+
+@keyframes open {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100;
+  }
+}
+
+.smooth-open {
+  animation: open 250ms ease-in-out;
+}
+
+.login-ref-delete {
+  @apply cursor-pointer text-nt-500 -top-2.5 -right-2.5 absolute;
+}

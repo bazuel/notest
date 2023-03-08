@@ -1,0 +1,24 @@
+:host {
+  @apply inline-block;
+  &.inline-edit {
+    input {
+      @apply border-transparent hover:border-gray-300;
+    }
+  }
+}
+
+.select {
+  @apply relative;
+}
+.autocomplete-item {
+  @apply h-10 mx-2 flex items-center cursor-pointer;
+  &.active {
+    @apply bg-gray-100;
+  }
+}
+
+.autocomplete-popup {
+  @apply fixed bg-white text-left z-50 overflow-y-auto border border-gray-200 rounded-md shadow-lg;
+  top: 40px;
+  max-height: 300px;
+}

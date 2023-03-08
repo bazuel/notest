@@ -1,0 +1,31 @@
+FROM node:19
+
+RUN  apt-get update \
+     # See https://crbug.com/795759
+     && apt-get install -yq libgconf-2-4 \
+     # Install latest chrome dev package, which installs the necessary libs to
+     # make the bundled version of Chromium that Puppeteer installs work.
+     && apt-get install -y wget --no-install-recommends \
+     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+     && apt-get update \
+     && apt-get install -y google-chrome-stable --no-install-recommends \
+     && rm -rf /var/lib/apt/lists/*
+
+
+
+RUN mkdir /app
+WORKDIR /app
+
+RUN npm i -g pnpm
+
+COPY ./notest-screenshot-service/package.json .
+#ADD package.json .
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+RUN pnpm i
+COPY ./notest-screenshot-service/index.js .
+#ADD index.js .
+
+
+EXPOSE 8054
+CMD ["node", "index.js"]

@@ -1,0 +1,70 @@
+{
+  "name": "NoTest",
+  "description": "Record sessions to generate end-to-end tests",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "cookies",
+    "commands",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "chrome/background.js"
+  },
+  "commands": {
+    "toggle-recording": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Q",
+        "windows": "Ctrl+Shift+Q",
+        "mac": "Command+Shift+Q"
+      },
+      "description": "Toggle session registration"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/assets/icon-16.png",
+      "32": "/assets/icon-32.png",
+      "64": "/assets/icon-64.png",
+      "128": "/assets/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "/assets/icon-16.png",
+    "32": "/assets/icon-32.png",
+    "64": "/assets/icon-64.png",
+    "128": "/assets/icon-128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "page/monitor.js",
+        "page/widget.js",
+        "page/widget.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "chrome/monitor-embedder.js",
+        "chrome/channel-handler.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

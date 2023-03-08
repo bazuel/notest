@@ -1,0 +1,11 @@
+<div class="title">Events list</div>
+<div
+  class="text-nt-500"
+  *ngFor="let event of session; let i = index"
+  (click)="selected == i ? selected = undefined : selected = i">
+  <div class="event-title">
+    <nt-icon class="mr-2" [name]="event.type!"></nt-icon>
+    <i>{{eventLabelsMap[event.name]}}</i>
+  </div>
+  <nt-event-details *ngIf="selected == i" [event]="event"></nt-event-details>
+</div>

@@ -1,0 +1,12 @@
+:host {
+  @apply block;
+}
+.screen-container {
+  @apply flex justify-center border border-gray-200 bg-gray-100 overflow-hidden;
+}
+
+@media screen and (min-width: 650px) {
+  .screen-container {
+    max-height: calc(100vh - 267px);
+  }
+}

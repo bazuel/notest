@@ -1,0 +1,28 @@
+:host {
+  display: inline-block;
+
+  &.lg {
+    svg {
+      width: 28px !important;
+      height: 28px !important;
+    }
+  }
+
+  &.sm {
+    svg {
+      width: 14px !important;
+      height: 14px !important;
+    }
+  }
+
+  &.xs {
+    svg {
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+
+  &.action {
+    @apply opacity-70 hover:opacity-100 cursor-pointer p-0.5;
+  }
+}

@@ -1,0 +1,27 @@
+.notifications {
+  @apply fixed top-0 right-0 p-8 z-50;
+}
+
+.notification {
+  @apply p-4 mb-4 shadow-md flex items-center rounded bg-white;
+  width: 280px;
+  min-height: 60px;
+
+  fido-icon {
+    @apply w-12 h-12 p-4;
+  }
+
+  fido-icon:not(:last-child),
+  .title,
+  .message {
+    @apply pointer-events-none;
+  }
+
+  .title {
+    @apply font-bold text-gray-800 truncate;
+  }
+
+  .message {
+    @apply text-gray-500  leading-4;
+  }
+}
