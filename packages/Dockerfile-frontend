@@ -1,0 +1,29 @@
+FROM node:18.12.1-alpine3.16
+
+RUN apk update && apk upgrade
+
+RUN npm i -g pnpm && npm i -g wrangler
+
+RUN mkdir -p /app/packages/notest-common
+WORKDIR /app/packages/notest-common
+COPY ./notest-common/package.json .
+COPY ./notest-common/pnpm-lock.yaml .
+RUN pnpm i
+
+WORKDIR /app/packages/notest-frontend
+COPY ./packages/notest-frontend/package.json .
+COPY ./packages/notest-frontend/pnpm-lock.yaml .
+
+RUN pnpm install
+RUN pnpm i ../notest-frontend
+
+COPY ./packages/notest-frontend/. .
+
+RUN pnpm run build
+
+# COPY /dist /usr/share/nginx/html
+RUN CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN wrangler page publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
+
+
+
+
