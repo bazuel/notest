@@ -9,7 +9,7 @@ steps:
     context: packages
     dockerfile: packages/Dockerfile-frontend
     tags:
-      - latest
+    - latest
     build_args:
        from_secret: cloudflare_params
 
