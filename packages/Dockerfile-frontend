@@ -6,25 +6,25 @@ RUN npm i -g pnpm && npm i -g wrangler
 
 RUN mkdir -p /app/packages/notest-common
 WORKDIR /app/packages/notest-common
-COPY ./packages/notest-common/package.json .
-COPY ./packages/notest-common/pnpm-lock.yaml .
+COPY ./notest-common/package.json .
+COPY ./notest-common/pnpm-lock.yaml .
 RUN pnpm i
 
-COPY ./packages/notest-common/. .
+COPY ./notest-common/. .
 
 RUN pnpm build
 
 RUN mkdir -p /app/packages/notest-frontend
 WORKDIR /app/packages/notest-frontend
-COPY ./packages/notest-frontend/package.json .
-COPY ./packages/notest-frontend/pnpm-lock.yaml .
+COPY ./notest-frontend/package.json .
+COPY ./notest-frontend/pnpm-lock.yaml .
 
 RUN pnpm install
 
-COPY ./packages/notest-frontend/. .
+COPY ./notest-frontend/. .
 
 RUN pnpm run build
-
+RUN echo $CLOUDFLARE_API_TOKEN
 # COPY /dist /usr/share/nginx/html
 RUN CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN wrangler page publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
 
