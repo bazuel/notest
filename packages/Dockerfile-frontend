@@ -27,7 +27,7 @@ RUN echo ciao
 RUN echo $CLOUDFLARE_API_TOKEN
 RUN pnpm run build
 # COPY /dist /usr/share/nginx/html
-RUN wrangler CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
+RUN wrangler pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
 
 
 
