@@ -8,9 +8,12 @@ steps:
   settings:
     context: packages
     dockerfile: packages/Dockerfile-frontend
-  environment:
-    CLOUDFLARE_API_TOKEN:
-      from_secret: cloudflare_secret
+    build-args:
+      CLOUDFLARE_API_TOKEN:
+        from_secret: cloudflare_secret
+#  environment:
+#    CLOUDFLARE_API_TOKEN:
+#      from_secret: cloudflare_secret
 
 
 #- name: backend-build
