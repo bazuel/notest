@@ -8,6 +8,8 @@ steps:
   settings:
     context: packages
     dockerfile: packages/Dockerfile-frontend
+    tags:
+      - latest
     build_args:
        from_secret: cloudflare_params
 
