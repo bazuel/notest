@@ -5,13 +5,11 @@ name: notest-build
 steps:
 - name: frontend-build
   image: plugins/docker
-  environment:
-    BUILD_ARGS:
-      from_secret: build_args
   settings:
     context: packages
     dockerfile: packages/Dockerfile-frontend
-    build_args: $BUILD_ARGS
+    build_args:
+      from_secret: build_args
 #  environment:
 #    CLOUDFLARE_API_TOKEN:
 #      from_secret: cloudflare_secret
