@@ -5,19 +5,19 @@ RUN apk update && apk upgrade
 RUN npm i -g pnpm && npm i -g wrangler
 
 RUN mkdir -p /app/packages/notest-common
-WORKDIR /app/packages/notest-common
+WORKDIR /app/packages
 COPY ./notest-common/package.json .
 COPY ./notest-common/pnpm-lock.yaml .
 RUN pnpm i
 
-WORKDIR /app/packages/notest-frontend
-COPY ./packages/notest-frontend/package.json .
-COPY ./packages/notest-frontend/pnpm-lock.yaml .
+WORKDIR /app/packages
+COPY ./notest-frontend/package.json .
+COPY ./notest-frontend/pnpm-lock.yaml .
 
 RUN pnpm install
 RUN pnpm i ../notest-frontend
 
-COPY ./packages/notest-frontend/. .
+COPY ./notest-frontend/. .
 
 RUN pnpm run build
 
