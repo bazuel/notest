@@ -26,7 +26,7 @@ COPY ./notest-frontend/. .
 RUN pnpm run build
 RUN echo $CLOUDFLARE_API_TOKEN
 # COPY /dist /usr/share/nginx/html
-RUN CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN wrangler page publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
+RUN CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN wrangler pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
 
 
 
