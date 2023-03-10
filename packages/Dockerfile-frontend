@@ -22,11 +22,12 @@ COPY ./notest-frontend/pnpm-lock.yaml .
 RUN pnpm install
 
 COPY ./notest-frontend/. .
-
-RUN pnpm run build
+ENV CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN
+RUN echo ciao
 RUN echo $CLOUDFLARE_API_TOKEN
+RUN pnpm run build
 # COPY /dist /usr/share/nginx/html
-RUN CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN wrangler pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
+RUN wrangler pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
 
 
 
