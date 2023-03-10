@@ -9,8 +9,8 @@ steps:
     context: packages
     dockerfile: packages/Dockerfile-frontend
     build_args:
-      - from_secret: cloudflare_token
-      - from_secret: cloud_id
+       from_secret: cloudflare_token
+
 #  environment:
 #    CLOUDFLARE_API_TOKEN:
 #      from_secret: cloudflare_secret
