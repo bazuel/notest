@@ -29,7 +29,7 @@ RUN echo $CLOUDFLARE_ACCOUNT_ID
 ENV CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN
 ENV CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ACCOUNT_ID
 
-RUN pnpm run build
+RUN pnpm run build:prod
 # COPY /dist /usr/share/nginx/html
 RUN wrangler pages publish /app/packages/notest-frontend/dist/notest-frontend --project-name=notest-frontend
 

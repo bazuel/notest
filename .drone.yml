@@ -11,10 +11,6 @@ steps:
     build_args:
        from_secret: cloudflare_params
 
-#  environment:
-#    CLOUDFLARE_API_TOKEN:
-#      from_secret: cloudflare_secret
-
 
 #- name: backend-build
 #  image: plugins/docker
