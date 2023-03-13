@@ -146,28 +146,14 @@
   {/if}
   {#if $appStore.sidebarState === 'end'}
     <div class="nt-session-ended-container">
-      <label class="nt-label">Title</label>
-      <input class="nt-input" placeholder="Session title" bind:value={sessionInfo.title}/>
+      <label class="nt-label">Title ⃰</label>
+      <input class="nt-input" autofocus placeholder="Session title" bind:value={sessionInfo.title}/>
       {#if !validSessionTitle}
         <p class="nt-title-not-inserted-container">*Insert TITLE before saving</p>
       {/if}
       <label class="nt-label">Description</label>
       <textarea class="nt-textarea" placeholder="Session description"
                 bind:value={sessionInfo.description}></textarea>
-      {#if !$appStore.sessionSaved}
-        <div class="nt-user-login-session-container">
-          <button class="nt-button nt-user-login-session-button"
-                  on:click={() => showLoginSessions = !showLoginSessions}>
-            Select User Login Session
-          </button>
-          {#if showLoginSessions}
-            <div class="nt-login-session-panel">
-              <SessionPanel sessions="{loginSessions}" title="Login Sessions"
-                            on:session-selected={(e) => setLoginReference(e.detail.reference)}></SessionPanel>
-            </div>
-          {/if}
-        </div>
-      {/if}
       <div>
         <label class="nt-label">Test assertions (Optional)</label>
         <div class="nt-test-assertion-container">
@@ -189,29 +175,30 @@
       </div>
       <div class="nt-session-save-delete-container">
         {#if !$appStore.sessionSaved}
-          <button on:click={onClickSaveButton} class="nt-button nt-save-session-button">
-            Save session
+          <button on:click={onClickSaveButton} title="Save this session" class="nt-button nt-save-session-button">
+            <Icon name="save" color="white"></Icon>
           </button>
-          <button class="nt-button nt-cancel-session-button" on:mouseup={cancelSessionRecorded}>
-            Cancel session
+          <button class="nt-button nt-cancel-session-button" title="Discard this session" on:mouseup={cancelSessionRecorded}>
+            <Icon name="discard" color="white"></Icon>
           </button>
         {:else}
           <button class="nt-button nt-saved-button disabled">Saved</button>
-          <button class="nt-button nt-show-registered-session-button"
-                  on:click={()=>redirect(recordingService.reference)}>Show your
-            session
-          </button>
         {/if}
       </div>
       {#if $appStore.sessionSaved}
         <div class="nt-copy-button-container">
           <input class="nt-input" value="{link(recordingService.reference)}"/>
-          <button class="nt-button nt-copy-button" on:click={copyLinkReference}>Copy</button>
+          <button class="nt-button nt-copy-button" title="Copy session link" on:click={copyLinkReference}>
+            <Icon name="copy" color="white"></Icon>
+          </button>
+          <button class="nt-button nt-redirect-container" title="Open your session" on:click={()=>redirect(recordingService.reference)}>
+            <Icon color="white" name="redirect"></Icon>
+          </button>
         </div>
         <div>
-          <button class="nt-button nt-home-button"
-                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}> Home
-          </button>
+          <a class="nt-home-button"
+                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}> Go Back Home ↩
+          </a>
         </div>
       {/if}
     </div>
@@ -252,6 +239,10 @@
 
   .nt-dashboard-button {
     @apply w-2/3;
+  }
+
+  .nt-redirect-container {
+    @apply flex items-center ml-2 cursor-pointer;
   }
 
   .nt-session-ended-container {
@@ -299,15 +290,15 @@
   }
 
   .nt-save-session-button {
-    @apply my-5;
+    @apply my-5 w-10 h-10;
   }
 
   .nt-cancel-session-button {
-    @apply bg-bos ml-2;
+    @apply bg-bos ml-2 w-10 h-10;
   }
 
   .nt-saved-button {
-    @apply my-5 outline;
+    @apply my-5 border-0;
   }
 
   .nt-show-registered-session-button {

@@ -160,7 +160,7 @@
   }
 
   .sidebar-button {
-    @apply -mr-5 hover:mr-0 duration-200 cursor-pointer w-8 h-8;
+    @apply -mr-6 hover:mr-0 duration-200 cursor-pointer w-6 h-6;
   }
 
   .--nt-widget {
