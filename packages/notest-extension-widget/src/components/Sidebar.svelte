@@ -103,7 +103,13 @@
 
   function redirect(reference) {
     const token = tokenService.token
-    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, {token, reference})
+    let params= {}
+    if(token){
+      params = {token, reference}
+    } else {
+      params = {reference}
+    }
+    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params)
   }
 
   function setLoginReference(reference) {
