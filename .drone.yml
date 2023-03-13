@@ -11,9 +11,9 @@ steps:
 #    repo: docker.bazuel.com/notest-frontend
 ##    registry: docker.bazuel.com
 ##    username:
-##      from_secret: registry_username
+#       from_secret: registry_username
 ##    password:
-##      from_secret: registry_password
+#       from_secret: registry_password
 #    tags:
 #      - latest
 #    build_args:
