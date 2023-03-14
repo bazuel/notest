@@ -132,7 +132,7 @@
             </div>
         {/if}
         <div on:mouseup={() => openSidebar = !openSidebar}
-             class="bo-icon sidebar-button">
+             class="sidebar-button">
             <Icon color=gray name="arrowLeft"/>
         </div>
     {/if}
@@ -148,7 +148,7 @@
   @import '/app.scss';
 
   .start-button {
-    @apply cursor-pointer absolute right-11 top-1 w-6 h-6;
+    @apply cursor-pointer absolute bottom-[-7px] right-11 w-5 h-5;
   }
 
   .stop-button {
@@ -160,7 +160,10 @@
   }
 
   .sidebar-button {
-    @apply -mr-6 hover:mr-0 duration-200 cursor-pointer w-6 h-6;
+    @apply -mr-8 pl-0.5 hover:mr-0 hover:pl-2 duration-200 cursor-pointer w-14 h-12;
+    @apply transition-all duration-300 ease-in-out;
+    @apply bg-gray-100 shadow-md shadow-gray-400 hover:shadow-md rounded-l-full;
+    @apply flex items-center;
   }
 
   .--nt-widget {

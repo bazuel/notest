@@ -121,6 +121,8 @@
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`)
   }
 
+
+
 </script>
 
 <div class="sidebar-right">
@@ -182,7 +184,9 @@
             <Icon name="discard" color="white"></Icon>
           </button>
         {:else}
-          <button class="nt-button nt-saved-button disabled">Saved</button>
+          <div class="nt-session-saved-dialog">
+            Session Saved
+          </div>
         {/if}
       </div>
       {#if $appStore.sessionSaved}
@@ -195,9 +199,9 @@
             <Icon color="white" name="redirect"></Icon>
           </button>
         </div>
-        <div>
+        <div class="nt-home-button-container">
           <a class="nt-home-button"
-                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}> Go Back Home ↩
+                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
           </a>
         </div>
       {/if}
@@ -315,5 +319,13 @@
 
   .nt-home-button {
     @apply mt-2 items-center justify-center;
+  }
+
+  .nt-session-saved-dialog {
+    @apply text-bop mt-2 mb-2;
+  }
+
+  .nt-home-button-container {
+    @apply mt-5;
   }
 </style>
