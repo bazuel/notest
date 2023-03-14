@@ -17,7 +17,7 @@ There are lots of tools to write tests automatically.
 
 NOTEST has a different approach.
 
-Our idea is simple: someone we'll use your webapp. 
+Our idea is simple: someone will use your webapp. 
 **When it happens, NOTEST creates a test and saves it for the future.**
 
 Without coding, you can be sure that your web app keeps working as expected, 
