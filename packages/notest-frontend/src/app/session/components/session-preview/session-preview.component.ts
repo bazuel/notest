@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import { NTAssertion, NTMedia, NTSession } from '@notest/common';
+import { NTAssertion, NTMedia, NTSession} from '@notest/common';
 import { TokenService } from '../../../shared/services/token.service';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
@@ -110,6 +110,20 @@ export class SessionPreviewComponent {
     this.screenshotOnHover = undefined;
   }
 
+  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
+    if (loginSession) {
+      this.session.info.loginReference = loginSession.reference;
+      if(this.isLoginSession) {
+        await this.setIsLoginSessionState(false);
+      }
+    }
+    else {
+      this.session.info.loginReference = undefined;
+    }
+    this.loginSessionSelected = loginSession;
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+
   showVideo(reference: string) {
     this.videoReference = undefined;
     setTimeout(() => {
@@ -138,16 +152,12 @@ export class SessionPreviewComponent {
     }, 100);
   }
 
-  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
-    if (loginSession) this.session.info.loginReference = loginSession.reference;
-    else this.session.info.loginReference = undefined;
-    this.loginSessionSelected = loginSession;
-    await this.sessionService.updateSessionInfo(this.session);
-  }
-
   async setIsLoginSessionState(isLogin: boolean) {
     this.isLoginSession = isLogin;
     this.session.info.isLogin = isLogin;
+    if(isLogin && this.loginSessionSelected){
+      await this.setLoginReference(undefined);
+    }
     await this.sessionService.updateSessionInfo(this.session);
   }
 
@@ -155,4 +165,5 @@ export class SessionPreviewComponent {
     const debuggerLink = this.router.url.replace('preview', 'debugger');
     this.router.navigateByUrl(debuggerLink);
   }
+
 }
