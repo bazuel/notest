@@ -15,6 +15,7 @@ export class SessionPreviewComponent {
   @ViewChild('video') video?: VideoComponent;
   session!: NTSession;
   reference!: string;
+
   loginSessions: { title: string; reference: string }[] = [];
   loginSessionSelected?: { title: string; reference: string };
   sessionRunHistory!: {
@@ -29,6 +30,8 @@ export class SessionPreviewComponent {
   loading = false;
   fullLoading = false;
   userLogged = false;
+  isLoginSession = false;
+  showSessionSettings = false;
 
   constructor(
     private sessionService: SessionService,
@@ -41,6 +44,7 @@ export class SessionPreviewComponent {
     this.userLogged = this.tokenService.logged;
     this.reference = this.urlParamsService.get('reference')!;
     this.session = await this.sessionService.getSessionByReference(this.reference);
+    this.isLoginSession = this.session.info.isLogin!;
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.session.reference);
@@ -138,7 +142,13 @@ export class SessionPreviewComponent {
     if (loginSession) this.session.info.loginReference = loginSession.reference;
     else this.session.info.loginReference = undefined;
     this.loginSessionSelected = loginSession;
-    await this.sessionService.updateSession(this.session);
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+
+  async setIsLoginSessionState(isLogin: boolean) {
+    this.isLoginSession = isLogin;
+    this.session.info.isLogin = isLogin;
+    await this.sessionService.updateSessionInfo(this.session);
   }
 
   goTo() {

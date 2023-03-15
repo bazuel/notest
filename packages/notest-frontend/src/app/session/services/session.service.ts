@@ -53,8 +53,8 @@ export class SessionService {
     return this.http.gest(`/session/run`, { reference });
   }
 
-  updateSession(session: NTSession) {
-    return this.http.post('/session/set-login-reference', session);
+  updateSessionInfo(session: NTSession) {
+    return this.http.post('/session/update-session-info', session);
   }
 
   async loadNewSession(reference: string, currentSessions: number) {

@@ -32,20 +32,21 @@ export class SessionController {
     private producerService: ProducerService,
     private assertionService: AssertionService,
     private mediaService: MediaService
-  ) {
-  }
+  ) {}
 
   @Post('shot')
   async takeScreenshot(
     @Body() body: { reference: string; fullDom: BLSessionEvent },
-    @Res({passthrough: true}) res
+    @Res({ passthrough: true }) res
   ) {
-    const {reference, fullDom} = body;
+    const { reference, fullDom } = body;
     console.log('takeScreenshot', fullDom);
     this.fullDoms[reference] = fullDom;
     const frontendBase = process.env.APP_URL || 'http://localhost:4200';
     const frontendUrl = frontendBase + `/session/session-camera?id=${reference}`;
-    const shotUrl = process.env.SCREENSHOT_URL + `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
+    const shotUrl =
+      process.env.SCREENSHOT_URL +
+      `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
     console.log(shotUrl);
     const imageResponse = await fetch(shotUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
@@ -79,16 +80,16 @@ export class SessionController {
       url,
       reference,
       userid,
-      info: sessionInfo,
+      info: sessionInfo
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
     await this.producerService.produceMessage(decodeURIComponent(reference));
-    res.send({ok: true, reference});
+    res.send({ ok: true, reference });
   }
 
-  @Post('set-login-reference')
+  @Post('update-session-info')
   async setLoginReference(@Body() session: NTSession) {
-    await this.sessionService.update(session)
+    await this.sessionService.update(session);
   }
 
   @Get('download')
@@ -104,7 +105,7 @@ export class SessionController {
 
   @Get('find-by-url')
   async findByUrl(@Query() query) {
-    const {url, ...filters} = query;
+    const { url, ...filters } = query;
     if (!url) throw new Error('No url provided');
     const references = await this.sessionService
       .findByUrl(url)
@@ -113,7 +114,7 @@ export class SessionController {
       references.map((ref) => {
         return {
           reference: ref,
-          session: this.downloadFiltered({reference: ref, ...filters})
+          session: this.downloadFiltered({ reference: ref, ...filters })
         };
       })
     );
@@ -122,7 +123,7 @@ export class SessionController {
 
   @Get('download-filtered')
   async downloadFiltered(@Query() query) {
-    const {reference, ...filters} = query;
+    const { reference, ...filters } = query;
     let eventList: BLEvent[] = await this.sessionService.read(reference);
     eventList = eventList.filter((event) => {
       for (const key in filters) {
@@ -137,7 +138,7 @@ export class SessionController {
   @Get('find-by-userid')
   async findById(@UserId() userid: string) {
     const sessions = await this.sessionService.findByField('userid', userid);
-    return {sessions};
+    return { sessions };
   }
 
   //@UseGuards(HasToken)
@@ -173,5 +174,4 @@ export class SessionController {
     const sessions = await this.sessionService.findByDomain(domain, userid);
     return sessions.filter((s) => s.info.isLogin);
   }
-
 }

@@ -18,15 +18,10 @@
       <div *ngIf="!loading" class="bo-button-icon w-10 h-10" title="Rerun session" (click)="rerunSession()">
         <nt-icon name="rerun"></nt-icon>
       </div>
-      <div *ngIf="!loginSessionSelected" class="ml-2">
-        <sm-autocomplete *ngIf="!loading" [items]="loginSessions" [property]="'title'"
-                         (itemSelected)="setLoginReference($event)" placeholder="Select Login Session"></sm-autocomplete>
+      <div *ngIf="!loading" class="bo-button-icon w-10 h-10" title="Session settings"
+           (click)="showSessionSettings = !showSessionSettings">
+        <nt-icon name="settings"></nt-icon>
       </div>
-      <div class="relative shadow-md rounded-md p-1.5 ml-2" *ngIf="loginSessionSelected">
-        {{loginSessionSelected.title}}
-        <div class="login-ref-delete" (click)="setLoginReference(undefined)">×</div>
-      </div>
-
       <div *ngIf="loading" class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
       <div *ngIf="loading" class="text-nt-300 ml-4 text-bold text-lg">Your session is running... 😉</div>
     </div>
@@ -89,4 +84,19 @@
     </div>
   </div>
 </div>
+
+<nt-popup class="p-2" *ngIf="showSessionSettings">
+  <label>Settings</label>
+  <label>Select login Session</label>
+  <div *ngIf="!loginSessionSelected">
+    <sm-autocomplete *ngIf="!loading" [items]="loginSessions" [property]="'title'"
+                     (itemSelected)="setLoginReference($event)"
+                     placeholder="Select Login Session"></sm-autocomplete>
+  </div>
+  <div class="relative shadow-md rounded-md p-1.5 w-fit" *ngIf="loginSessionSelected">
+    {{loginSessionSelected.title}}
+    <div class="login-ref-delete" (click)="setLoginReference(undefined)">×</div>
+  </div>
+  <label>Tags</label>
+</nt-popup>
 
