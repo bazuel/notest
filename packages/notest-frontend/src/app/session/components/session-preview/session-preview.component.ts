@@ -1,10 +1,10 @@
-import {Component, ViewChild} from '@angular/core';
-import {SessionService} from '../../services/session.service';
-import {UrlParamsService} from '../../../shared/services/url-params.service';
-import {NTAssertion, NTMedia, NTSession} from '@notest/common';
-import {TokenService} from "../../../shared/services/token.service";
-import {VideoComponent} from '../../../notest-shared/components/video/video.component';
-import {Router} from "@angular/router";
+import { Component, ViewChild } from '@angular/core';
+import { SessionService } from '../../services/session.service';
+import { UrlParamsService } from '../../../shared/services/url-params.service';
+import { NTAssertion, NTMedia, NTSession } from '@notest/common';
+import { TokenService } from '../../../shared/services/token.service';
+import { VideoComponent } from '../../../notest-shared/components/video/video.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'nt-session-preview',
@@ -15,8 +15,8 @@ export class SessionPreviewComponent {
   @ViewChild('video') video?: VideoComponent;
   session!: NTSession;
   reference!: string;
-  loginSessions: { title: string, reference: string }[] = [];
-  loginSessionSelected?: { title: string, reference: string }
+  loginSessions: { title: string; reference: string }[] = [];
+  loginSessionSelected?: { title: string; reference: string };
   sessionRunHistory!: {
     session: NTSession;
     screenshot: NTMedia[];
@@ -30,8 +30,12 @@ export class SessionPreviewComponent {
   fullLoading = false;
   userLogged = false;
 
-  constructor(private sessionService: SessionService, private urlParamsService: UrlParamsService, private tokenService: TokenService, private router: Router) {
-  }
+  constructor(
+    private sessionService: SessionService,
+    private urlParamsService: UrlParamsService,
+    private tokenService: TokenService,
+    private router: Router
+  ) {}
 
   async ngOnInit() {
     this.userLogged = this.tokenService.logged;
@@ -70,11 +74,15 @@ export class SessionPreviewComponent {
   }
 
   async getLoginSessionItem() {
-    const loginSessions = await this.sessionService.getLoginSessions(new URL(this.session.url).hostname);
+    const loginSessions = await this.sessionService.getLoginSessions(
+      new URL(this.session.url).hostname
+    );
     this.loginSessions = loginSessions.map((session) => {
-      return {title: session.info.title, reference: session.reference}
-    })
-    this.loginSessionSelected = await this.loginSessions.find(loginSession => (loginSession.reference == this.session.info.loginReference));
+      return { title: session.info.title, reference: session.reference };
+    });
+    this.loginSessionSelected = await this.loginSessions.find(
+      (loginSession) => loginSession.reference == this.session.info.loginReference
+    );
   }
 
   async rerunSession() {
@@ -126,17 +134,15 @@ export class SessionPreviewComponent {
     }, 100);
   }
 
-  async setLoginReference(loginSession?: typeof this.loginSessions[number]) {
-    if (loginSession)
-      this.session.info.loginReference = loginSession.reference;
-    else
-      this.session.info.loginReference = undefined;
+  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
+    if (loginSession) this.session.info.loginReference = loginSession.reference;
+    else this.session.info.loginReference = undefined;
     this.loginSessionSelected = loginSession;
     await this.sessionService.updateSession(this.session);
   }
 
   goTo() {
-    const debuggerLink =this.router.url.replace('preview','debugger');
+    const debuggerLink = this.router.url.replace('preview', 'debugger');
     this.router.navigateByUrl(debuggerLink);
   }
 }

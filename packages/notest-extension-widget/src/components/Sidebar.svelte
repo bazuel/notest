@@ -9,87 +9,47 @@
   import {tokenService} from "../shared/services/token.service.js";
   import SessionPanel from "./SessionPanel.svelte";
   import {http} from "../shared/services/http.service";
-  import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
+  import {appStore, updateLoginSession, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
   import {router} from "../shared/services/router.service";
+  import {initSessionStore, removeSessionImage, sessionStore} from "../stores/session.store";
 
   export const dispatcher = createEventDispatcher();
-  export let sessionInfo:
-    {
-      title: string,
-      description: string,
-      targetList: DOMRect[],
-      imgUrls: string[],
-      images: { timestamp: Date, data: Blob, name: string }[],
-      isLogin: boolean,
-      loginReference?: string
-    } = {
-    title: "",
-    imgUrls: [],
-    description: "",
-    targetList: [],
-    images: [],
-    isLogin: false,
-  }
 
-  let showLoginSessions = false;
   let validSessionTitle = true;
   let userSessions = []
-  let loginSessions = []
 
   onMount(async () => {
-    if ($appStore.logged && $appStore.sidebarState === 'start') {
-      http.get('/session/find-by-userid')
-        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
-    }
-    if ($appStore.sidebarState === 'end') {
-      http.get(`/session/login-sessions?domain=${window.location.hostname}`)
-        .then((res: NTSession[]) => {
-          loginSessions = res
-          console.log(loginSessions)
-        })
-
-      // http.get(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`).then((res:StreamableFile) =>{
-      //   const reader = new FileReader();
-      //   reader.readAsDataURL(res);
-      //   reader.onloadend = () => {
-      //     sessionInfo.imgUrls.push(reader.result as string)
-      //   }
-      // })
-    }
+    if ($appStore.logged) loadUserSessions()
   })
 
   const onClickStartButton = () => {
     dispatcher('start-recording');
   };
   const onClickSaveButton = async () => {
-    if (sessionInfo.title) {
+    if ($sessionStore.title) {
       validSessionTitle = true;
-      dispatcher('save-session', sessionInfo);
+      recordingService.save({
+        title: $sessionStore.title,
+        description: $sessionStore.description,
+        targetList: $sessionStore.targetList,
+        isLogin: $appStore.isLoginSession,
+        reference: recordingService.reference,
+      })
       updateSessionSaved(await recordingService.referenceAvailable())
+      updateLoginSession(false);
+      loadUserSessions();
       //uploadScreenshot(sessionInfo.images[0], recordingService.reference)
     } else {
       validSessionTitle = false;
     }
   }
-  const copyLinkReference = () => {
-    copyToClipboard(link(recordingService.reference))
-  };
+  const copyLinkReference = () => copyToClipboard(link(recordingService.reference))
 
   const link = (ref) => `${import.meta.env.VITE_APP_URL}/session/session-preview?reference=${ref}`
 
-  function filterImg(url) {
-    sessionInfo.imgUrls = sessionInfo.imgUrls.filter(img => img !== url)
-  }
-
   function cancelSessionRecorded() {
-    sessionInfo = {
-      title: "",
-      imgUrls: [],
-      description: "",
-      targetList: [],
-      images: [],
-      isLogin: false
-    }
+    initSessionStore()
+    updateLoginSession(false)
     updateSidebarState('start');
   }
 
@@ -104,22 +64,13 @@
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params)
   }
 
-  function setLoginReference(reference) {
-    sessionInfo.loginReference = reference
-    showLoginSessions = false
-  }
-
   function redirectToDashboard() {
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`)
   }
 
-  let loadLoginSessions = () => {
-    if ($appStore.logged && $appStore.sidebarState === 'start') {
-      http.get('/session/find-by-userid')
-        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
-    }
+  let loadUserSessions = () => {
+    http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
   }
-
 
 </script>
 
@@ -142,24 +93,24 @@
         </button>
       </div>
     {/if}
-    <LoginRegistration on:login={loadLoginSessions}></LoginRegistration>
+    <LoginRegistration on:login={loadUserSessions}></LoginRegistration>
   {/if}
   {#if $appStore.sidebarState === 'end'}
     <div class="nt-session-ended-container">
       <label class="nt-label">Title ⃰</label>
-      <input class="nt-input" autofocus placeholder="Session title" bind:value={sessionInfo.title}/>
+      <input class="nt-input" autofocus placeholder="Session title" bind:value={$sessionStore.title}/>
       {#if !validSessionTitle}
         <p class="nt-title-not-inserted-container">*Insert TITLE before saving</p>
       {/if}
       <label class="nt-label">Description</label>
       <textarea class="nt-textarea" placeholder="Session description"
-                bind:value={sessionInfo.description}></textarea>
+                bind:value={$sessionStore.description}></textarea>
       <div>
         <label class="nt-label">Test assertions (Optional)</label>
         <div class="nt-test-assertion-container">
-          {#each sessionInfo.imgUrls as url }
+          {#each $sessionStore.images as url }
             <div class="nt-img-assertion-container"
-                 on:mouseup={() => filterImg(url)}>
+                 on:mouseup={() => removeSessionImage(url)}>
               <div class="nt-cancel-assertion">✖</div>
               <img class="nt-img-url-assertion" src={url} alt=""/>
             </div>

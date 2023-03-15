@@ -4,34 +4,19 @@
     import Highlighter from "./shared/components/Highlighter.svelte";
     import {recordingService} from "./services/recording.service";
     import {beforeUpdate, onMount} from "svelte";
-    import {appStore, updateLoginSession, updateSessionSaved, updateSidebarState} from "./stores/settings.store";
+    import {appStore, updateSessionSaved, updateSidebarState} from "./stores/settings.store";
     import ElementsSelector from './shared/components/elements-selector.svelte';
     import {capture} from "./shared/services/screenshot.service";
     import {http} from "./shared/services/http.service";
+    import {updateSessionImages, updateSessionTargetList} from "./stores/session.store";
 
     let openSidebar = false;
     let recording;
-    let sessionInfo: {
-        title: string,
-        description: string,
-        targetList: DOMRect[],
-        imgUrls: string[],
-        images: { timestamp: Date, data: Blob, name: string }[],
-        isLogin: boolean
-    } = {
-        title: "",
-        description: "",
-        targetList: [],
-        imgUrls: [],
-        images: [],
-        isLogin: false
-    };
     let enableElementsSelector = false;
     let enableHighlighter = false
 
     onMount(() => {
         recording = recordingService.recording
-        sessionInfo.isLogin = $appStore.isLoginSession
         updateSidebarState('start');
         addEventListener('message', (m) => {
             if (m.data.type === 'start-recording-from-extension')
@@ -54,10 +39,8 @@
     let stopRecording = async () => {
         recording = false
         recordingService.stop()
-        http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`).then((url) => {
-            sessionInfo.imgUrls.push(url);
-            sessionInfo = JSON.parse(JSON.stringify(sessionInfo));
-        })
+        http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
+                .then((blobUrl) => updateSessionImages(blobUrl))
         updateSidebarState('end');
         openSidebar = true;
     };
@@ -66,11 +49,8 @@
         openSidebar = false
     }
     let stopHighlighter = async (e) => {
-        sessionInfo.targetList.push(e.detail.getBoundingClientRect())
-        capture(e.detail, e.detail.getBoundingClientRect()).then(data => {
-            sessionInfo.imgUrls.push(data.url);
-            sessionInfo = JSON.parse(JSON.stringify(sessionInfo));
-        })
+        updateSessionTargetList(e.detail.getBoundingClientRect())
+        capture(e.detail, e.detail.getBoundingClientRect()).then(data => updateSessionImages(data.url))
         enableHighlighter = false
         openSidebar = true
         updateSidebarState('end');
@@ -82,37 +62,33 @@
     let stopElementsSelector = async (e) => {
         const elements: HTMLElement[] = e.detail.targetList
         const rects = elements.map(el => el.getBoundingClientRect())
-        capture(elements, e.detail.rect).then(data => {
-            sessionInfo.imgUrls.push(data.url);
-            sessionInfo = JSON.parse(JSON.stringify(sessionInfo));
-        })
-        sessionInfo.targetList = [...sessionInfo.targetList, ...rects]
+        capture(elements, e.detail.rect).then(data => updateSessionImages(data.url))
+        updateSessionTargetList(rects)
         enableElementsSelector = false
         openSidebar = true
         updateSidebarState('end');
     }
-    let saveSession = (info) => {
-        sessionInfo = info
-        recordingService.save({
-            title: info.title,
-            description: info.description,
-            targetList: info.targetList,
-            isLogin: info.isLogin,
-            reference: recordingService.reference,
-            loginReference: info.loginReference,
-        })
-        sessionInfo.isLogin = false;
-        updateLoginSession(false);
-    }
+
+    // let oldSaveSession = (info) => {
+    //     sessionInfo = info
+    //     recordingService.save({
+    //         title: info.title,
+    //         description: info.description,
+    //         targetList: info.targetList,
+    //         isLogin: info.isLogin,
+    //         reference: recordingService.reference,
+    //         loginReference: info.loginReference,
+    //     })
+    //     sessionInfo.isLogin = false;
+    //     updateLoginSession(false);
+    // }
 </script>
 
 
 <div class="--nt-extension fixed --nt-widget flex flex-row">
     {#if openSidebar}
         <Sidebar
-                sessionInfo={sessionInfo}
                 state={$appStore.sidebarState}
-                on:save-session={(e) => saveSession(e.detail)}
                 on:start-recording={startRecording}
                 on:close-sidebar={() => openSidebar = false}
                 on:highlighter={startHighlighter}

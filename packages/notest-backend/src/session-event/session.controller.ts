@@ -1,13 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { AssertionService, MediaService, SessionService } from '@notest/backend-shared';
-import {
-  BLEvent,
-  BLSessionEvent,
-  eventReference,
-  NTSession,
-  streamToBuffer,
-  unzipJson
-} from '@notest/common';
+import { BLEvent, BLSessionEvent, NTSession, streamToBuffer, unzipJson } from '@notest/common';
 import { EventService } from './event.service';
 import { UserId, UserIdIfHasToken } from '../shared/token.decorator';
 import { ProducerService } from '../notest-shared/services/producer.service';
@@ -39,19 +32,20 @@ export class SessionController {
     private producerService: ProducerService,
     private assertionService: AssertionService,
     private mediaService: MediaService
-  ) {}
+  ) {
+  }
 
   @Post('shot')
   async takeScreenshot(
     @Body() body: { reference: string; fullDom: BLSessionEvent },
-    @Res({ passthrough: true }) res
+    @Res({passthrough: true}) res
   ) {
-    const { reference, fullDom } = body;
+    const {reference, fullDom} = body;
     console.log('takeScreenshot', fullDom);
     this.fullDoms[reference] = fullDom;
     const frontendBase = process.env.APP_URL || 'http://localhost:4200';
     const frontendUrl = frontendBase + `/session/session-camera?id=${reference}`;
-    const shotUrl = process.env.SCREENSHOT_URL +`/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
+    const shotUrl = process.env.SCREENSHOT_URL + `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
     console.log(shotUrl);
     const imageResponse = await fetch(shotUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
@@ -78,7 +72,7 @@ export class SessionController {
     const data: MultipartFile = await req.file();
     const zipBuffer = await streamToBuffer(data.file);
     const events: BLSessionEvent[] = await unzipJson(zipBuffer);
-    const {reference, ...sessionInfo} = JSON.parse(data.fields['session_info'].value);
+    const { reference, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
     const url = events[0].url;
     await this.eventService.save(events, reference);
     const session: NTSession = {
@@ -89,11 +83,11 @@ export class SessionController {
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
     await this.producerService.produceMessage(decodeURIComponent(reference));
-    res.send({ ok: true, reference });
+    res.send({ok: true, reference});
   }
 
   @Post('set-login-reference')
-  async setLoginReference(@Body() session: NTSession){
+  async setLoginReference(@Body() session: NTSession) {
     await this.sessionService.update(session)
   }
 
@@ -110,7 +104,7 @@ export class SessionController {
 
   @Get('find-by-url')
   async findByUrl(@Query() query) {
-    const { url, ...filters } = query;
+    const {url, ...filters} = query;
     if (!url) throw new Error('No url provided');
     const references = await this.sessionService
       .findByUrl(url)
@@ -119,7 +113,7 @@ export class SessionController {
       references.map((ref) => {
         return {
           reference: ref,
-          session: this.downloadFiltered({ reference: ref, ...filters })
+          session: this.downloadFiltered({reference: ref, ...filters})
         };
       })
     );
@@ -128,7 +122,7 @@ export class SessionController {
 
   @Get('download-filtered')
   async downloadFiltered(@Query() query) {
-    const { reference, ...filters } = query;
+    const {reference, ...filters} = query;
     let eventList: BLEvent[] = await this.sessionService.read(reference);
     eventList = eventList.filter((event) => {
       for (const key in filters) {
@@ -143,7 +137,7 @@ export class SessionController {
   @Get('find-by-userid')
   async findById(@UserId() userid: string) {
     const sessions = await this.sessionService.findByField('userid', userid);
-    return { sessions };
+    return {sessions};
   }
 
   //@UseGuards(HasToken)

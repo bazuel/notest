@@ -28,6 +28,7 @@ class RecordingService {
     description: string;
     targetList: any[];
     isLogin: boolean;
+    reference: string;
   }) {
     postMessage({ type: "save-session", data: sessionInfo }, "*");
   }
