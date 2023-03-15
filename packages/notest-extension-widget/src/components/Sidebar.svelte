@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {beforeUpdate, createEventDispatcher, onMount} from "svelte";
+  import {createEventDispatcher, onMount} from "svelte";
   import Icon from '../shared/components/Icon.svelte';
   import Logo from '../shared/components/Logo.svelte';
   import StartTest from "./StartTest.svelte";
@@ -9,7 +9,6 @@
   import {tokenService} from "../shared/services/token.service.js";
   import SessionPanel from "./SessionPanel.svelte";
   import {http} from "../shared/services/http.service";
-  import {uploadScreenshot} from "../shared/services/screenshot.service";
   import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
   import {router} from "../shared/services/router.service";
 
@@ -37,8 +36,8 @@
   let userSessions = []
   let loginSessions = []
 
-  onMount(() => {
-    if (tokenService.logged && $appStore.sidebarState === 'start') {
+  onMount(async () => {
+    if ($appStore.logged && $appStore.sidebarState === 'start') {
       http.get('/session/find-by-userid')
         .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
     }
@@ -56,13 +55,6 @@
       //     sessionInfo.imgUrls.push(reader.result as string)
       //   }
       // })
-    }
-  })
-
-  beforeUpdate(() => {
-    if (tokenService.logged && $appStore.sidebarState === 'start') {
-      http.get('/session/find-by-userid')
-        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
     }
   })
 
@@ -101,10 +93,10 @@
     updateSidebarState('start');
   }
 
-  function redirect(reference) {
-    const token = tokenService.token
-    let params= {}
-    if(token){
+  async function redirect(reference) {
+    const token = await tokenService.getToken()
+    let params;
+    if (token) {
       params = {token, reference}
     } else {
       params = {reference}
@@ -121,6 +113,12 @@
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`)
   }
 
+  let loadLoginSessions = () => {
+    if ($appStore.logged && $appStore.sidebarState === 'start') {
+      http.get('/session/find-by-userid')
+        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
+    }
+  }
 
 
 </script>
@@ -144,7 +142,7 @@
         </button>
       </div>
     {/if}
-    <LoginRegistration></LoginRegistration>
+    <LoginRegistration on:login={loadLoginSessions}></LoginRegistration>
   {/if}
   {#if $appStore.sidebarState === 'end'}
     <div class="nt-session-ended-container">
@@ -180,7 +178,8 @@
           <button on:click={onClickSaveButton} title="Save this session" class="nt-button nt-save-session-button">
             <Icon name="save" color="white"></Icon>
           </button>
-          <button class="nt-button nt-cancel-session-button" title="Discard this session" on:mouseup={cancelSessionRecorded}>
+          <button class="nt-button nt-cancel-session-button" title="Discard this session"
+                  on:mouseup={cancelSessionRecorded}>
             <Icon name="discard" color="white"></Icon>
           </button>
         {:else}
@@ -195,13 +194,14 @@
           <button class="nt-button nt-copy-button" title="Copy session link" on:click={copyLinkReference}>
             <Icon name="copy" color="white"></Icon>
           </button>
-          <button class="nt-button nt-redirect-container" title="Open your session" on:click={()=>redirect(recordingService.reference)}>
+          <button class="nt-button nt-redirect-container" title="Open your session"
+                  on:click={()=>redirect(recordingService.reference)}>
             <Icon color="white" name="redirect"></Icon>
           </button>
         </div>
         <div class="nt-home-button-container">
           <a class="nt-home-button"
-                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
+             on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
           </a>
         </div>
       {/if}

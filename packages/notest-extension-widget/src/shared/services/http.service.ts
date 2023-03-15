@@ -1,7 +1,7 @@
 import { tokenService } from "./token.service";
 
 class HttpService {
-  constructor(private baseUrl: string, private tokenKey = "NOTEST_TOKEN") {}
+  constructor(private baseUrl: string) {}
 
   get<T>(
     url: string,
@@ -40,11 +40,9 @@ class HttpService {
         options.headers["Content-Type"] = "application/json";
       }
     }
-
-    if (loginRequired && localStorage.getItem(this.tokenKey)) {
-      options.headers["Authorization"] = `Bearer ${localStorage.getItem(
-        this.tokenKey
-      )}`;
+    let token = await tokenService.getToken();
+    if (loginRequired && token) {
+      options.headers["Authorization"] = `Bearer ${token}`;
     }
 
     let promise: Promise<any> = new Promise((res, rej) => {
@@ -91,7 +89,7 @@ class HttpService {
     return await fetch(fullPath, {
       method: "GET",
       headers: new Headers({
-        Authorization: "Bearer " + tokenService.token,
+        Authorization: "Bearer " + await tokenService.getToken(),
       }),
     })
       .then((response) => {

@@ -160,7 +160,7 @@
   }
 
   .sidebar-button {
-    @apply -mr-8 pl-0.5 hover:mr-0 hover:pl-2 duration-200 cursor-pointer w-14 h-12;
+    @apply -mr-8 hover:mr-0 pl-0.5 hover:pl-3 duration-200 cursor-pointer w-14 h-12;
     @apply transition-all duration-300 ease-in-out;
     @apply bg-gray-100 shadow-md shadow-gray-400 hover:shadow-md rounded-l-full;
     @apply flex items-center;

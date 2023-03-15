@@ -62,7 +62,8 @@
       ],
       "js": [
         "chrome/monitor-embedder.js",
-        "chrome/channel-handler.js"
+        "chrome/channel-handler.js",
+        "chrome/storage.js"
       ],
       "run_at": "document_start"
     }

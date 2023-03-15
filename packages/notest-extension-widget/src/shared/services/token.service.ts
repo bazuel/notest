@@ -5,8 +5,6 @@ export class TokenService {
   static TOKEN = "NOTEST_TOKEN";
   static TOKEN_TEMP = "NOTEST_TOKEN_TEMP";
 
-  constructor() {}
-
   get temporaryToken() {
     return localStorage.getItem(TokenService.TOKEN_TEMP);
   }
@@ -18,15 +16,21 @@ export class TokenService {
     );
   }
 
-  get token() {
-    return (
-      sessionStorage.getItem(TokenService.TOKEN) ||
-      localStorage.getItem(TokenService.TOKEN)
-    );
+  async getToken() {
+    return new Promise<string>(r => {
+      const callBackListener = (ev: MessageEvent) => {
+        if (ev.data.type == "get-storage-response" && ev.data.key == TokenService.TOKEN) {
+          r(ev.data.value)
+          removeEventListener('message', callBackListener)
+        }
+      }
+      addEventListener("message", callBackListener)
+      postMessage({type: "get-storage", key: TokenService.TOKEN}, "*")
+    })
   }
 
-  set token(token: string) {
-    localStorage.setItem(TokenService.TOKEN, token);
+  set token(value: string) {
+    postMessage({type: "set-storage", key: TokenService.TOKEN, value}, "*")
   }
 
   setTemporaryToken(token: string) {
@@ -37,7 +41,7 @@ export class TokenService {
     sessionStorage.setItem(TokenService.TOKEN, token);
   }
 
-  restoreTemporaryToken() {
+  restoreTemporaryToken(input) {
     if (!localStorage.getItem(TokenService.TOKEN_TEMP))
       throw new Error("Token not available");
     this.token = localStorage.getItem(TokenService.TOKEN_TEMP);
@@ -45,13 +49,13 @@ export class TokenService {
     sessionStorage.removeItem(TokenService.TOKEN);
   }
 
-  hasRole(roleName: string) {
-    const roles = this.roles();
+  async hasRole(roleName: string) {
+    const roles = await this.roles();
     return roles.indexOf(roleName) >= 0;
   }
 
-  roles(): string[] {
-    const tdata = this.tokenData();
+  async roles(): Promise<string[]> {
+    const tdata = await this.tokenData();
     const roles = tdata && tdata.roles ? tdata.roles : [];
     return roles;
   }
@@ -60,27 +64,25 @@ export class TokenService {
     return !!this.impersonatedBy();
   }
 
-  impersonatedBy() {
+  async impersonatedBy() {
     let impersonating = "";
     if (localStorage.getItem(TokenService.TOKEN_TEMP))
-      impersonating = this.tokenData(
+      impersonating = (await this.tokenData(
         localStorage.getItem(TokenService.TOKEN_TEMP)!
-      )?.sub;
+      ))?.sub;
     return impersonating;
   }
 
   logout() {
-    localStorage.removeItem(TokenService.TOKEN);
-    localStorage.removeItem(TokenService.TOKEN_TEMP);
-    sessionStorage.removeItem(TokenService.TOKEN);
+    this.token = '';
   }
 
-  username(): string | undefined {
-    return this.tokenData()?.sub;
+  async username(): Promise<string | undefined> {
+    return (await this.tokenData())?.sub;
   }
 
-  isExpired(): boolean {
-    const token = this.tokenData();
+  async isExpired(): Promise<boolean> {
+    const token = await this.tokenData();
     if (token) {
       const tokenExp = dayjs(token.exp * 1000);
       return dayjs().isAfter(tokenExp);
@@ -88,14 +90,14 @@ export class TokenService {
     return true;
   }
 
-  tokenData(token?: string): any {
-    const t = token ?? this.token;
+  async tokenData(token?: string) {
+    const t = token ?? await this.getToken();
     const tdata = t ? JSON.parse(atob(t!.split(".")[1])) : null;
     return tdata;
   }
 
-  get logged() {
-    return !this.isExpired();
+  async logged() {
+    return !(await this.isExpired());
   }
 }
 
