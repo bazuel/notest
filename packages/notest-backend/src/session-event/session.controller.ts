@@ -57,7 +57,9 @@ export class SessionController {
         fired: new Date()
       }
     ];
-    this.mediaService.saveScreenshot(screenshot, reference);
+    this.mediaService.saveScreenshot(screenshot, reference).then(() => {
+      res.send({ ok: true });
+    });
   }
 
   @Get('shot')

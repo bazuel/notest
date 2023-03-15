@@ -21,10 +21,10 @@
         if (res.token) {
             updateLogged(true)
             tokenService.token = res.token
-            dispatcher('login')
             logged = true
             logging = false;
             failLogin = false;
+            dispatcher('login')
             window.postMessage({type: 'login', token: res.token}, '*');
         } else {
             user.password = '';

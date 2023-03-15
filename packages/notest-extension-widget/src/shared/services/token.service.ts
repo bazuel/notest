@@ -1,5 +1,6 @@
 import "dayjs/locale/it";
 import dayjs from "dayjs";
+import { messageService } from "../../services/message.service";
 
 export class TokenService {
   static TOKEN = "NOTEST_TOKEN";
@@ -17,20 +18,19 @@ export class TokenService {
   }
 
   async getToken() {
-    return new Promise<string>(r => {
-      const callBackListener = (ev: MessageEvent) => {
-        if (ev.data.type == "get-storage-response" && ev.data.key == TokenService.TOKEN) {
-          r(ev.data.value)
-          removeEventListener('message', callBackListener)
-        }
-      }
-      addEventListener("message", callBackListener)
-      postMessage({type: "get-storage", key: TokenService.TOKEN}, "*")
-    })
+    const response = await messageService.sendMessage<{ value: string }>(
+      "get-storage",
+      { key: TokenService.TOKEN },
+      true
+    );
+    return response.value;
   }
 
   set token(value: string) {
-    postMessage({type: "set-storage", key: TokenService.TOKEN, value}, "*")
+    messageService.sendMessage("set-storage", {
+      key: TokenService.TOKEN,
+      value,
+    });
   }
 
   setTemporaryToken(token: string) {
@@ -67,14 +67,14 @@ export class TokenService {
   async impersonatedBy() {
     let impersonating = "";
     if (localStorage.getItem(TokenService.TOKEN_TEMP))
-      impersonating = (await this.tokenData(
-        localStorage.getItem(TokenService.TOKEN_TEMP)!
-      ))?.sub;
+      impersonating = (
+        await this.tokenData(localStorage.getItem(TokenService.TOKEN_TEMP)!)
+      )?.sub;
     return impersonating;
   }
 
   logout() {
-    this.token = '';
+    this.token = "";
   }
 
   async username(): Promise<string | undefined> {
@@ -91,7 +91,7 @@ export class TokenService {
   }
 
   async tokenData(token?: string) {
-    const t = token ?? await this.getToken();
+    const t = token ?? (await this.getToken());
     const tdata = t ? JSON.parse(atob(t!.split(".")[1])) : null;
     return tdata;
   }

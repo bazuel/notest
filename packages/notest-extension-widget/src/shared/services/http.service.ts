@@ -41,6 +41,7 @@ class HttpService {
       }
     }
     let token = await tokenService.getToken();
+    console.log("token request", token);
     if (loginRequired && token) {
       options.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -89,7 +90,7 @@ class HttpService {
     return await fetch(fullPath, {
       method: "GET",
       headers: new Headers({
-        Authorization: "Bearer " + await tokenService.getToken(),
+        Authorization: "Bearer " + (await tokenService.getToken()),
       }),
     })
       .then((response) => {

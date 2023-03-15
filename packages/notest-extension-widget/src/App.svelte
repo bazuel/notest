@@ -9,6 +9,7 @@
     import {capture} from "./shared/services/screenshot.service";
     import {http} from "./shared/services/http.service";
     import {updateSessionImages, updateSessionTargetList} from "./stores/session.store";
+    import {messageService} from "./services/message.service";
 
     let openSidebar = false;
     let recording;
@@ -19,15 +20,22 @@
         recording = recordingService.recording
         updateSidebarState('start');
         addEventListener('message', (m) => {
-            if (m.data.type === 'start-recording-from-extension')
+            if (m.data.type === 'start-recording-from-extension') {
                 startRecording();
+            }
         });
+        console.log('onMount')
+        messageService.waitForMessage('screenshot-saved').then(() => {
+            http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
+                    .then((blobUrl) => updateSessionImages(blobUrl))
+        })
     })
     beforeUpdate(() => {
         recording = recordingService.recording;
     })
 
     let startRecording = () => {
+        console.log('startRecording')
         openSidebar = false;
         updateSessionSaved(false);
         recordingService.start();
@@ -39,8 +47,6 @@
     let stopRecording = async () => {
         recording = false
         recordingService.stop()
-        http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
-                .then((blobUrl) => updateSessionImages(blobUrl))
         updateSidebarState('end');
         openSidebar = true;
     };

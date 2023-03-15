@@ -16,11 +16,8 @@ import { BLEvent } from '@notest/common';
 function openCommunicationChannel() {
   //channel to communicate with page context (popup/background => page)
   chrome.runtime.onMessage.addListener(async function (request) {
-    if (request.messageType == 'set-reference') {
-      window.postMessage({ type: 'reference', data: request.data }, '*');
-    }
-    if (request.messageType == 'start-recording-from-extension'){
-       window.postMessage({type: request.messageType}, '*');
+    if (request.messageType == 'start-recording-from-extension') {
+      window.postMessage({ type: request.messageType }, '*');
     }
   });
 
@@ -47,11 +44,17 @@ function openCommunicationChannel() {
         ['session-event', 'screenshot-event'].includes(event.data.type)
       ) {
         const e: BLEvent = event.data.data;
-        console.log('collecting event', e);
         chrome.runtime.sendMessage(
           { ...e, messageType: event.data.type, data: document.title },
           (response) => {
             if (response) console.log(response);
+          }
+        );
+      } else if (event.data.type && event.data.type == 'fetch') {
+        chrome.runtime.sendMessage(
+          { messageType: event.data.type, data: event.data },
+          (response) => {
+            if (response) postMessage({ type: 'fetch-response', data: response }, '*');
           }
         );
       }

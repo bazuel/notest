@@ -1,4 +1,4 @@
 export const environment = {
-  api: 'https://api.notest.io',
-  frontend: 'https://app.notest.io/'
+  api: 'http://localhost:3005',
+  frontend: 'http://localhost:4200'
 };
