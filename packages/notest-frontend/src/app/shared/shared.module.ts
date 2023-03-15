@@ -23,6 +23,8 @@ import {AutocompleteComponent} from "./components/autocomplete/autocomplete.comp
 import {ClickOutsideDirective} from "./directives/click-outside.directive";
 import {ComponentInjectorDirective} from "./directives/component-injector.directive";
 import {HighlightPipe} from "./pipes/highlight.pipe";
+import {BadgeComponent} from "./components/badge/badge.component";
+import {SwitchComponent} from "./components/switch/switch.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import {HighlightPipe} from "./pipes/highlight.pipe";
     ClickOutsideDirective,
     AutocompleteComponent,
     ComponentInjectorDirective,
-    HighlightPipe
+    HighlightPipe,
+    BadgeComponent,
+    SwitchComponent
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -52,6 +56,8 @@ import {HighlightPipe} from "./pipes/highlight.pipe";
     SafeUrlPipe,
     AutocompleteComponent,
     ClickOutsideDirective,
+    BadgeComponent,
+    SwitchComponent
   ],
   providers: [
     HttpService,
