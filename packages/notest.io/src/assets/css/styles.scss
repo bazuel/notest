@@ -138,7 +138,7 @@ a {
 }
 
 footer {
-  @apply relative mt-32 overflow-hidden bg-nt-900 text-white;
+  @apply relative mt-32 overflow-hidden bg-nt-900 text-white pb-8;
   min-height: 420px;
   ul {
     @apply list-none p-12 text-white;
