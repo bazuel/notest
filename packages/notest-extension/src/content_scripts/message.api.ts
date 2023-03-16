@@ -11,34 +11,45 @@
  *  when sending private data
  */
 
-export function sendMessage(message: NTMessage, tabId?: number, forceWindowMessage?: boolean) {
-  if (forceWindowMessage) return sendWindowMessage(message);
-  if (tabId) return sendChromeMessageToTab(tabId, message);
-  if (chrome.runtime) return sendChromeMessage(message);
-  return sendWindowMessage(message);
+export function sendMessage(
+  message: NTMessage,
+  tabId?: number,
+  forceWindowMessage?: boolean,
+  responseCallback?: (response: any) => void
+) {
+  if (forceWindowMessage) sendWindowMessage(message);
+  else if (tabId) sendChromeMessageToTab(tabId, message);
+  else if (chrome.runtime) sendChromeMessage(message, responseCallback);
+  else sendWindowMessage(message);
 }
 
 export function addMessageListener(
-  callback: <T extends NTMessage>(message: T) => void,
+  callback: <T extends NTMessage>(message: T, sendResponse?) => void,
   forceWindowMessage?: boolean
 ) {
   if (forceWindowMessage || !chrome.runtime) addWindowMessageListener(callback);
   else addChromeMessageListener(callback);
 }
 
-function addChromeMessageListener(callback: (message: NTMessage) => any | Promise<any>) {
-  chrome.runtime.onMessage.addListener(callback);
+function addChromeMessageListener(
+  callback: (message: NTMessage, sendResponse: () => any) => any | Promise<any>
+) {
+  const listener = (message: NTMessage, _, sendResponse: (response?: any) => void) => {
+    callback(message, sendResponse);
+    return true;
+  };
+  chrome.runtime.onMessage.addListener(listener);
 }
 
 function addWindowMessageListener(callback) {
-  window.addEventListener('message', (ev) => {
+  addEventListener('message', (ev) => {
     if (ev.source != window) return;
     callback(ev.data);
   });
 }
 
-function sendChromeMessage(message: NTMessage) {
-  return chrome.runtime.sendMessage(message);
+function sendChromeMessage(message: NTMessage, responseCallback?: (response: any) => void) {
+  return chrome.runtime.sendMessage(message, responseCallback!);
 }
 
 function sendChromeMessageToTab(tabId: number, message: NTMessage) {
@@ -46,7 +57,7 @@ function sendChromeMessageToTab(tabId: number, message: NTMessage) {
 }
 
 function sendWindowMessage(message: NTMessage) {
-  window.postMessage(message, '*');
+  postMessage(message, '*');
 }
 
 export type NTMessageType =

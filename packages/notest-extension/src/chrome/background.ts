@@ -5,8 +5,13 @@ import { isRecording, setRecording } from '../content_scripts/functions/recordin
 import { uploadEvents } from './functions/upload.api';
 import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
 import { getCookiesFromDomain } from './functions/cookies.util';
-import { environment } from '../environments/environment';
-import { addMessageListener, NTMessageType, sendMessage } from '../content_scripts/message.api';
+import {
+  addMessageListener,
+  NTMessage,
+  NTMessageType,
+  sendMessage
+} from '../content_scripts/message.api';
+import { http } from './services/http.service';
 
 let cookieDetailsEvent: any = {};
 let events: BLEvent[] = [];
@@ -18,6 +23,17 @@ let events: BLEvent[] = [];
   }
 })();
 
+const executeByMessageType: {
+  [k in NTMessageName]: (request?, sendResponse?: () => any) => Promise<void>;
+} = {
+  'save-session': saveSession,
+  'stop-recording': stopSession,
+  'start-recording': startSession,
+  'cancel-recording': cancelSession,
+  'session-event': pushEvent,
+  fetch: doFetch
+};
+
 chrome.commands.onCommand.addListener(async function (command) {
   if (command == 'toggle-recording') {
     if (!(await isRecording())) {
@@ -27,9 +43,9 @@ chrome.commands.onCommand.addListener(async function (command) {
   }
 });
 
-addMessageListener(async (message: { type: NTMessageType }) => {
+addMessageListener(async (message: NTMessage, sendResponse) => {
   const functionToCall = executeByMessageType[message.type];
-  if (functionToCall) await functionToCall(message);
+  if (functionToCall) await functionToCall(message, sendResponse);
 });
 
 setRecording(false);
@@ -76,26 +92,16 @@ async function doFetch(
   message: { data: { url: string; options: RequestInit; body: any; method: 'POST' | 'GET' } },
   sendResponse?: (res) => any
 ) {
-  console.log('fetching: ', message.data.url, message.data.options, message.data.body);
-  fetch(`${environment.api}${message.data.url}`, {
-    method: message.data.method,
-    body: JSON.stringify(message.data.body),
-    headers: { 'Content-Type': 'application/json' }
-  }).then(async (res) => {
-    sendResponse!(await res.json());
-  });
+  if (message.data.method == 'GET')
+    http.get(message.data.url).then(async (res) => {
+      sendResponse!(res);
+    });
+  else {
+    http.post(message.data.url, message.data.body).then(async (res) => {
+      sendResponse!(res);
+    });
+  }
 }
-
-const executeByMessageType: {
-  [k in NTMessageName]: (request?, sendResponse?: () => any) => Promise<void>;
-} = {
-  'save-session': saveSession,
-  'stop-recording': stopSession,
-  'start-recording': startSession,
-  'cancel-recording': cancelSession,
-  'session-event': pushEvent,
-  fetch: doFetch
-};
 
 async function pushEvent(request) {
   const sid = (await chrome.storage.local.get('sid'))['sid'];

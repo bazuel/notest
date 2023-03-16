@@ -12,7 +12,6 @@ function openCommunicationChannel() {
 openCommunicationChannel();
 
 function callbackFromPageToBackground(message: NTMessage) {
-  console.log('event from page', message);
   if (
     message.type &&
     [
@@ -29,9 +28,11 @@ function callbackFromPageToBackground(message: NTMessage) {
     const e: BLEvent = message.data;
     sendMessage({ ...e, type: message.type, data: document.title });
   } else if (message.type && message.type == 'fetch') {
-    sendMessage(message)!.then((response) => {
-      if (response) postMessage({ type: 'fetch-response', data: response }, '*');
-    });
+    const responseCallback = (response) => {
+      response.id = message.data.id;
+      sendMessage({ type: 'fetch-response', data: response }, undefined, true);
+    };
+    sendMessage(message, undefined, undefined, responseCallback);
   }
 }
 

@@ -27,6 +27,7 @@
     "@notest/session-monitor": "link:..\\notest-session-monitor",
     "@notest/common": "link:..\\notest-common",
     "@butopen/design-system": "^1.1.5",
-    "fflate": "^0.7.3"
+    "fflate": "^0.7.3",
+    "xmlhttprequest": "^1.8.0"
   }
 }

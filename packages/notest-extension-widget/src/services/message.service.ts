@@ -11,7 +11,6 @@ class MessageService {
   }
 
   waitForMessage<T>(type: string): Promise<T> {
-    console.log("waiting for message", type);
     return new Promise((r) => {
       const responseListener = (ev: MessageEvent) => {
         console.log(ev.type);
@@ -31,7 +30,6 @@ class MessageService {
     const id = Math.random().toString(36).substring(7);
     return new Promise<T>((r) => {
       const responseListener = (ev: MessageEvent) => {
-        console.log("message listener", ev);
         if (ev.type == `${type}-response` && ev.data.id == id) {
           r(ev.data);
           removeEventListener("message", responseListener);

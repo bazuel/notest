@@ -17,12 +17,14 @@ specifiers:
   rimraf: ^3.0.2
   sass: ^1.54.5
   tailwindcss: ^3.1.8
+  xmlhttprequest: ^1.8.0
 
 dependencies:
   '@butopen/design-system': 1.1.5
   '@notest/common': link:../notest-common
   '@notest/session-monitor': link:../notest-session-monitor
   fflate: 0.7.3
+  xmlhttprequest: 1.8.0
 
 devDependencies:
   '@types/chrome': 0.0.204
@@ -1514,6 +1516,11 @@ packages:
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
+
+  /xmlhttprequest/1.8.0:
+    resolution: {integrity: sha512-58Im/U0mlVBLM38NdZjHyhuMtCqa61469k2YP/AaPbvCoV9aQGUpbJBj1QRm2ytRiVQBD/fsw7L2bJGDVQswBA==}
+    engines: {node: '>=0.4.0'}
+    dev: false
 
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
