@@ -61,9 +61,9 @@
         "https://*/*"
       ],
       "js": [
-        "chrome/monitor-embedder.js",
-        "chrome/channel-handler.js",
-        "chrome/storage.js"
+        "content_scripts/embedder.js",
+        "content_scripts/background-page-channel.js",
+        "content_scripts/storage.js"
       ],
       "run_at": "document_start"
     }
