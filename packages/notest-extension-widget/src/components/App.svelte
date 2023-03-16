@@ -1,15 +1,15 @@
 <script lang="ts">
-    import Icon from './shared/components/icon.svelte';
-    import Sidebar from "./components/Sidebar.svelte";
-    import Highlighter from "./shared/components/Highlighter.svelte";
-    import {recordingService} from "./services/recording.service";
+    import Icon from '../shared/components/icon.svelte';
+    import Sidebar from "./Sidebar.svelte";
+    import Highlighter from "../shared/components/highlighter.svelte";
+    import {recordingService} from "../services/recording.service";
     import {beforeUpdate, onMount} from "svelte";
-    import {appStore, updateSessionSaved, updateSidebarState} from "./stores/settings.store";
-    import ElementsSelector from './shared/components/elements-selector.svelte';
-    import {capture} from "./shared/services/screenshot.service";
-    import {http} from "./shared/services/http.service";
-    import {updateSessionImages, updateSessionTargetList} from "./stores/session.store";
-    import {messageService} from "./services/message.service";
+    import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store";
+    import ElementsSelector from '../shared/components/elements-selector.svelte';
+    import {capture} from "../shared/services/screenshot.service";
+    import {http} from "../shared/services/http.service";
+    import {updateSessionImages, updateSessionTargetList} from "../stores/session.store";
+    import {messageService} from "../services/message.service";
 
     let openSidebar = false;
     let recording;
@@ -127,7 +127,7 @@
 {/if}
 
 <style lang="scss">
-  @import '/app.scss';
+  @import 'app';
 
   .start-button {
     @apply cursor-pointer absolute bottom-[-7px] right-11 w-5 h-5;

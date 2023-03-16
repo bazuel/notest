@@ -1,7 +1,7 @@
 import { disableRecordingIcon, enableRecordingIcon } from './ui/recording-icon';
 import { BLEvent, BLHTTPResponseEvent, NTSession } from '@notest/common';
 import { getCurrentTab } from './functions/current-tab.util';
-import { isRecording, setRecording } from './functions/recording.state';
+import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
 import { uploadEvents } from './functions/upload.api';
 import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
 import { getCookiesFromDomain } from './functions/cookies.util';
