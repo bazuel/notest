@@ -9,7 +9,7 @@
   import {tokenService} from "../shared/services/token.service.js";
   import SessionPanel from "./SessionPanel.svelte";
   import {http} from "../shared/services/http.service";
-  import {appStore, updateLoginSession, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
+  import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
   import {router} from "../shared/services/router.service";
   import {initSessionStore, removeSessionImage, sessionStore} from "../stores/session.store";
 
@@ -32,11 +32,10 @@
         title: $sessionStore.title,
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
-        isLogin: $appStore.isLoginSession,
+        isLogin: false,
         reference: recordingService.reference,
       })
       updateSessionSaved(await recordingService.referenceAvailable())
-      updateLoginSession(false);
       loadUserSessions();
       //uploadScreenshot(sessionInfo.images[0], recordingService.reference)
     } else {
@@ -49,7 +48,6 @@
 
   function cancelSessionRecorded() {
     initSessionStore()
-    updateLoginSession(false)
     updateSidebarState('start');
   }
 

@@ -23,13 +23,6 @@ export function updateRecButtonOnScreen(recButtonOnScreen: boolean) {
   setSettings(settingsData);
 }
 
-export function updateLoginSession(isLoginSession: boolean) {
-  const settingsData = getSettings();
-  settingsData.isLoginSession = isLoginSession;
-  appStore.update({isLoginSession});
-  setSettings(settingsData);
-}
-
 export function updateSidebarState(sidebarState: "start" | "end") {
   const settingsData = getSettings();
   settingsData.sidebarState = sidebarState;
