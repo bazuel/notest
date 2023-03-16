@@ -86,7 +86,7 @@ steps:
     command_timeout: 2m
     script:
       - helm delete notest-backend --namespace notest
-      - helm --debug --namespace notest upgrade --install --force --cleanup-on-fail --values /nt/notest-backend/values.yaml --history-max=10 notest-backend /nt/notest-backend
+      - helm --debug --namespace notest upgrade --install --force --cleanup-on-fail --values /nt/notest-backend/values.yaml --history-max=10 notest-backend /nt/notest-backend --set nodeSelector.node-name=worker1
   depends_on:
     - backend-build
 
