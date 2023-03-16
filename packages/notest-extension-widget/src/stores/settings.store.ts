@@ -1,36 +1,37 @@
-import { loggedWritable } from "../shared/utils/store.util";
-import { tokenService } from "../shared/services/token.service";
+import {loggedWritable} from "../shared/utils/store.util";
+import {tokenService} from "../shared/services/token.service";
 
 export interface AppStateStore extends NTSettings {
   logged: boolean;
 }
 
-export const appStore = loggedWritable<AppStateStore>({
+export let appStore = loggedWritable<AppStateStore>({
   ...getSettings(),
-  logged: tokenService.logged,
+  logged: false,
 });
+
+initAppStore();
+
+async function initAppStore() {
+  appStore.update({logged: await tokenService.logged()});
+}
 
 export function updateRecButtonOnScreen(recButtonOnScreen: boolean) {
   const settingsData = getSettings();
   settingsData.recButtonOnScreen = recButtonOnScreen;
-  appStore.update({ recButtonOnScreen });
+  appStore.update({recButtonOnScreen});
   setSettings(settingsData);
 }
 
-export function updateLoginSession(isLoginSession: boolean) {
-  const settingsData = getSettings();
-  settingsData.isLoginSession = isLoginSession;
-  appStore.update({ isLoginSession });
-  setSettings(settingsData);
-}
-export function updateSidebarState(sidebarState :"start" | "end"){
+export function updateSidebarState(sidebarState: "start" | "end") {
   const settingsData = getSettings();
   settingsData.sidebarState = sidebarState;
   appStore.update({sidebarState});
   setSettings(settingsData);
 }
+
 export function updateLogged(logged: boolean) {
-  appStore.update({ logged });
+  appStore.update({logged});
 }
 
 export function updateSessionSaved(sessionSaved: boolean) {

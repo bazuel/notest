@@ -45,11 +45,11 @@
   @import "/app.scss";
 
   .nt-preview-image {
-    @apply w-56 h-36 rounded-md shadow-lg cursor-pointer;
+    @apply w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer;
   }
 
   .nt-session-panel-container {
-    @apply p-2 shadow-md h-fit;
+    @apply shadow-md p-2;
   }
 
   .nt-panel-session-list-container {

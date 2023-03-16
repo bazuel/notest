@@ -1,0 +1,7 @@
+:host {
+  &.sm {
+    .bo-badge {
+      @apply p-1 text-xs leading-tight;
+    }
+  }
+}

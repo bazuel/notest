@@ -1,29 +1,30 @@
 <script lang="ts">
     import {tokenService} from "../shared/services/token.service.ts";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import {http} from "../shared/services/http.service.ts";
     import {NTUser} from "@notest/common"
-    import {updateLogged} from "../stores/settings.store";
+    import {appStore, updateLogged} from "../stores/settings.store";
+
+    export const dispatcher = createEventDispatcher();
 
     let logged = false;
     let logging = false;
     let failLogin = false;
     let user: Partial<NTUser> = {};
 
-    onMount(() => {
-        logged = tokenService.logged
-        console.log(logged)
+    onMount(async () => {
+        logged = $appStore.logged;
     })
 
     const doLogin = async () => {
         const res = await http.post('/user/login', user).catch(() => user.password = '');
         if (res.token) {
             updateLogged(true)
-            tokenService.token = res.token
+            tokenService.login(res.token)
             logged = true
             logging = false;
             failLogin = false;
-            window.postMessage({type: 'login', token: res.token}, '*');
+            dispatcher('login')
         } else {
             user.password = '';
             failLogin = true;
@@ -32,7 +33,6 @@
     const doLogout = () => {
         updateLogged(false)
         tokenService.logout()
-        window.postMessage({type: 'logout'}, '*');
         logged = false;
     }
     let goToRegistration = () => {
