@@ -46,7 +46,7 @@
     </div>
 {/if}
 <Switch switched="{$appStore.recButtonOnScreen}"  on:switched-change={(ev) => updateRecButtonOnScreen(ev.detail)}>
-    Show on screen
+    Show Buttons on screen
 </Switch>
 <style lang="scss">
     @import "/app.scss";
