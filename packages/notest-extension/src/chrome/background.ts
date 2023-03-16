@@ -1,16 +1,17 @@
 import { disableRecordingIcon, enableRecordingIcon } from './ui/recording-icon';
-import {
-  BLEvent,
-  BLHTTPResponseEvent,
-  BLSessionEvent,
-  eventReference,
-  NTSession
-} from '@notest/common';
+import { BLEvent, BLHTTPResponseEvent, NTSession } from '@notest/common';
 import { getCurrentTab } from './functions/current-tab.util';
-import { isRecording, setRecording } from './functions/recording.state';
+import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
 import { uploadEvents } from './functions/upload.api';
 import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
 import { getCookiesFromDomain } from './functions/cookies.util';
+import {
+  addMessageListener,
+  NTMessage,
+  NTMessageType,
+  sendMessage
+} from '../content_scripts/message.api';
+import { http } from './services/http.service';
 
 let cookieDetailsEvent: any = {};
 let events: BLEvent[] = [];
@@ -22,20 +23,29 @@ let events: BLEvent[] = [];
   }
 })();
 
+const executeByMessageType: {
+  [k in NTMessageName]: (request?, sendResponse?: () => any) => Promise<void>;
+} = {
+  'save-session': saveSession,
+  'stop-recording': stopSession,
+  'start-recording': startSession,
+  'cancel-recording': cancelSession,
+  'session-event': pushEvent,
+  fetch: doFetch
+};
+
 chrome.commands.onCommand.addListener(async function (command) {
-    if (command == 'toggle-recording') {
-        if (!(await isRecording())) {
-            const tab = await getCurrentTab();
-            chrome.tabs.sendMessage(tab.id!, {messageType: 'start-recording-from-extension'});
-        }
+  if (command == 'toggle-recording') {
+    if (!(await isRecording())) {
+      const tab = await getCurrentTab();
+      sendMessage({ type: 'start-recording-from-extension' }, tab.id);
     }
+  }
 });
 
-chrome.runtime.onMessage.addListener(async function (request: { messageType: NTMessageName }) {
-  const functionToCall = executeByMessageType[request.messageType];
-  if (functionToCall) {
-    await functionToCall(request);
-  }
+addMessageListener(async (message: NTMessage, sendResponse) => {
+  const functionToCall = executeByMessageType[message.type];
+  if (functionToCall) await functionToCall(message, sendResponse);
 });
 
 setRecording(false);
@@ -62,6 +72,8 @@ async function startSession() {
     await chrome.tabs.reload(tabId);
     enableRecordingIcon();
     enableHeadersListeners();
+    console.log('Recording Session Started');
+    sendMessage({ type: 'take-screenshot' }, tabId);
   }
 }
 
@@ -71,25 +83,29 @@ async function saveSession(request: { data: { data: NTSession['info'] } }) {
     console.log('No tab found');
     return;
   }
-  console.log('Request: ', request.data.data);
   delete request.data.data.targetList;
   await uploadEvents(tab.url!, events, request.data.data);
   events = [];
 }
 
-const executeByMessageType: { [k in NTMessageName]: (request?) => Promise<void> } = {
-  'save-session': saveSession,
-  'stop-recording': stopSession,
-  'start-recording': startSession,
-  'cancel-recording': cancelSession,
-  'session-event': pushEvent,
-  login: async (request) => await chrome.storage.local.set({ NOTEST_TOKEN: request.data.token }),
-  logout: async () => await chrome.storage.local.remove('NOTEST_TOKEN')
-};
+async function doFetch(
+  message: { data: { url: string; options: RequestInit; body: any; method: 'POST' | 'GET' } },
+  sendResponse?: (res) => any
+) {
+  if (message.data.method == 'GET')
+    http.get(message.data.url).then(async (res) => {
+      sendResponse!(res);
+    });
+  else {
+    http.post(message.data.url, message.data.body).then(async (res) => {
+      sendResponse!(res);
+    });
+  }
+}
 
 async function pushEvent(request) {
   const sid = (await chrome.storage.local.get('sid'))['sid'];
-  const { messageType, ...r } = request;
+  const { type, ...r } = request;
   const tab = await getCurrentTab();
   const url = tab?.url ?? '';
   events.push({ ...r, timestamp: Date.now(), url, sid, tab: tab.id });
@@ -106,5 +122,4 @@ type NTMessageName =
   | 'cancel-recording'
   | 'save-session'
   | 'session-event'
-  | 'login'
-  | 'logout';
+  | 'fetch';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {beforeUpdate, createEventDispatcher, onMount} from "svelte";
+  import {createEventDispatcher, onMount} from "svelte";
   import Icon from '../shared/components/Icon.svelte';
   import Logo from '../shared/components/Logo.svelte';
   import StartTest from "./StartTest.svelte";
@@ -9,110 +9,65 @@
   import {tokenService} from "../shared/services/token.service.js";
   import SessionPanel from "./SessionPanel.svelte";
   import {http} from "../shared/services/http.service";
-  import {uploadScreenshot} from "../shared/services/screenshot.service";
   import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
   import {router} from "../shared/services/router.service";
+  import {initSessionStore, removeSessionImage, sessionStore} from "../stores/session.store";
 
   export const dispatcher = createEventDispatcher();
-  export let sessionInfo:
-    {
-      title: string,
-      description: string,
-      targetList: DOMRect[],
-      imgUrls: string[],
-      images: { timestamp: Date, data: Blob, name: string }[],
-      isLogin: boolean,
-      loginReference?: string
-    } = {
-    title: "",
-    imgUrls: [],
-    description: "",
-    targetList: [],
-    images: [],
-    isLogin: false,
-  }
 
-  let showLoginSessions = false;
   let validSessionTitle = true;
   let userSessions = []
-  let loginSessions = []
 
-  onMount(() => {
-    if (tokenService.logged && $appStore.sidebarState === 'start') {
-      http.get('/session/find-by-userid')
-        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
-    }
-    if ($appStore.sidebarState === 'end') {
-      http.get(`/session/login-sessions?domain=${window.location.hostname}`)
-        .then((res: NTSession[]) => {
-          loginSessions = res
-          console.log(loginSessions)
-        })
-
-      // http.get(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`).then((res:StreamableFile) =>{
-      //   const reader = new FileReader();
-      //   reader.readAsDataURL(res);
-      //   reader.onloadend = () => {
-      //     sessionInfo.imgUrls.push(reader.result as string)
-      //   }
-      // })
-    }
-  })
-
-  beforeUpdate(() => {
-    if (tokenService.logged && $appStore.sidebarState === 'start') {
-      http.get('/session/find-by-userid')
-        .then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
-    }
+  onMount(async () => {
+    if ($appStore.logged) loadUserSessions()
   })
 
   const onClickStartButton = () => {
     dispatcher('start-recording');
   };
   const onClickSaveButton = async () => {
-    if (sessionInfo.title) {
+    if ($sessionStore.title) {
       validSessionTitle = true;
-      dispatcher('save-session', sessionInfo);
+      recordingService.save({
+        title: $sessionStore.title,
+        description: $sessionStore.description,
+        targetList: $sessionStore.targetList,
+        isLogin: false,
+        reference: recordingService.reference,
+      })
       updateSessionSaved(await recordingService.referenceAvailable())
+      loadUserSessions();
       //uploadScreenshot(sessionInfo.images[0], recordingService.reference)
     } else {
       validSessionTitle = false;
     }
   }
-  const copyLinkReference = () => {
-    copyToClipboard(link(recordingService.reference))
-  };
+  const copyLinkReference = () => copyToClipboard(link(recordingService.reference))
 
   const link = (ref) => `${import.meta.env.VITE_APP_URL}/session/session-preview?reference=${ref}`
 
-  function filterImg(url) {
-    sessionInfo.imgUrls = sessionInfo.imgUrls.filter(img => img !== url)
-  }
-
   function cancelSessionRecorded() {
-    sessionInfo = {
-      title: "",
-      imgUrls: [],
-      description: "",
-      targetList: [],
-      images: [],
-      isLogin: false
-    }
+    initSessionStore()
     updateSidebarState('start');
   }
 
-  function redirect(reference) {
-    const token = tokenService.token
-    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, {token, reference})
-  }
-
-  function setLoginReference(reference) {
-    sessionInfo.loginReference = reference
-    showLoginSessions = false
+  async function redirect(reference) {
+    const token = await tokenService.getToken()
+    let params;
+    if (token) {
+      params = {token, reference}
+    } else {
+      params = {reference}
+    }
+    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params)
   }
 
   function redirectToDashboard() {
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`)
+  }
+
+  let loadUserSessions = () => {
+    http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
   }
 
 </script>
@@ -136,38 +91,24 @@
         </button>
       </div>
     {/if}
-    <LoginRegistration></LoginRegistration>
+    <LoginRegistration on:login={loadUserSessions}></LoginRegistration>
   {/if}
   {#if $appStore.sidebarState === 'end'}
     <div class="nt-session-ended-container">
-      <label class="nt-label">Title</label>
-      <input class="nt-input" placeholder="Session title" bind:value={sessionInfo.title}/>
+      <label class="nt-label">Title ⃰</label>
+      <input class="nt-input" autofocus placeholder="Session title" bind:value={$sessionStore.title}/>
       {#if !validSessionTitle}
         <p class="nt-title-not-inserted-container">*Insert TITLE before saving</p>
       {/if}
       <label class="nt-label">Description</label>
       <textarea class="nt-textarea" placeholder="Session description"
-                bind:value={sessionInfo.description}></textarea>
-      {#if !$appStore.sessionSaved}
-        <div class="nt-user-login-session-container">
-          <button class="nt-button nt-user-login-session-button"
-                  on:click={() => showLoginSessions = !showLoginSessions}>
-            Select User Login Session
-          </button>
-          {#if showLoginSessions}
-            <div class="nt-login-session-panel">
-              <SessionPanel sessions="{loginSessions}" title="Login Sessions"
-                            on:session-selected={(e) => setLoginReference(e.detail.reference)}></SessionPanel>
-            </div>
-          {/if}
-        </div>
-      {/if}
+                bind:value={$sessionStore.description}></textarea>
       <div>
         <label class="nt-label">Test assertions (Optional)</label>
         <div class="nt-test-assertion-container">
-          {#each sessionInfo.imgUrls as url }
+          {#each $sessionStore.images as url }
             <div class="nt-img-assertion-container"
-                 on:mouseup={() => filterImg(url)}>
+                 on:mouseup={() => removeSessionImage(url)}>
               <div class="nt-cancel-assertion">✖</div>
               <img class="nt-img-url-assertion" src={url} alt=""/>
             </div>
@@ -183,29 +124,34 @@
       </div>
       <div class="nt-session-save-delete-container">
         {#if !$appStore.sessionSaved}
-          <button on:click={onClickSaveButton} class="nt-button nt-save-session-button">
-            Save session
+          <button on:click={onClickSaveButton} title="Save this session" class="nt-button nt-save-session-button">
+            <Icon name="save" color="white"></Icon>
           </button>
-          <button class="nt-button nt-cancel-session-button" on:mouseup={cancelSessionRecorded}>
-            Cancel session
+          <button class="nt-button nt-cancel-session-button" title="Discard this session"
+                  on:mouseup={cancelSessionRecorded}>
+            <Icon name="discard" color="white"></Icon>
           </button>
         {:else}
-          <button class="nt-button nt-saved-button disabled">Saved</button>
-          <button class="nt-button nt-show-registered-session-button"
-                  on:click={()=>redirect(recordingService.reference)}>Show your
-            session
-          </button>
+          <div class="nt-session-saved-dialog">
+            Session Saved
+          </div>
         {/if}
       </div>
       {#if $appStore.sessionSaved}
         <div class="nt-copy-button-container">
           <input class="nt-input" value="{link(recordingService.reference)}"/>
-          <button class="nt-button nt-copy-button" on:click={copyLinkReference}>Copy</button>
-        </div>
-        <div>
-          <button class="nt-button nt-home-button"
-                  on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}> Home
+          <button class="nt-button nt-copy-button" title="Copy session link" on:click={copyLinkReference}>
+            <Icon name="copy" color="white"></Icon>
           </button>
+          <button class="nt-button nt-redirect-container" title="Open your session"
+                  on:click={()=>redirect(recordingService.reference)}>
+            <Icon color="white" name="redirect"></Icon>
+          </button>
+        </div>
+        <div class="nt-home-button-container">
+          <a class="nt-home-button"
+             on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
+          </a>
         </div>
       {/if}
     </div>
@@ -246,6 +192,10 @@
 
   .nt-dashboard-button {
     @apply w-2/3;
+  }
+
+  .nt-redirect-container {
+    @apply flex items-center ml-2 cursor-pointer;
   }
 
   .nt-session-ended-container {
@@ -293,15 +243,15 @@
   }
 
   .nt-save-session-button {
-    @apply my-5;
+    @apply my-5 w-10 h-10;
   }
 
   .nt-cancel-session-button {
-    @apply bg-bos ml-2;
+    @apply bg-bos ml-2 w-10 h-10;
   }
 
   .nt-saved-button {
-    @apply my-5 outline;
+    @apply my-5 border-0;
   }
 
   .nt-show-registered-session-button {
@@ -318,5 +268,13 @@
 
   .nt-home-button {
     @apply mt-2 items-center justify-center;
+  }
+
+  .nt-session-saved-dialog {
+    @apply text-bop mt-2 mb-2;
+  }
+
+  .nt-home-button-container {
+    @apply mt-5;
   }
 </style>

@@ -5,7 +5,13 @@
     <button class="ml-10 h-1/3" *ngIf="ready" title="Go to session Preview Mode" (click)="goTo()">Session Preview</button>
   </div>
   <nt-player class="w-2/3 m-5" *ngIf="ready" [session]="eventList"></nt-player>
-  <button class="m-4 bo-button" *ngIf="ready" (click)="getSessionTest()">Generate script</button>
+  <div class="flex flex-row">
+    <button class="m-4 bo-button" *ngIf="ready" (click)="getSessionTest()">Generate script</button>
+    <div *ngIf="!script && generatingScript" class="flex flex-row items-center justify-center">
+      <div class="bo-loading m-4"></div>
+      <div class="text-nt-300 text-bold">Generating Script...</div>
+    </div>
+  </div>
   <nt-codemirror-editor
     *ngIf="script"
     [script]="script"

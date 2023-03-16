@@ -3,24 +3,24 @@ class RecordingService {
 
   constructor() {
     //add event listener on sessionStorage
-    window.addEventListener("message", (ev: MessageEvent) => {
+    addEventListener("message", (ev: MessageEvent) => {
       if (ev.data.type === "reference") this.saveReference(ev.data.data);
     });
   }
 
   start() {
-    window.localStorage.setItem("nt-recording", "1");
-    window.postMessage({ type: "start-recording" }, "*");
+    localStorage.setItem("nt-recording", "1");
+    postMessage({ type: "start-recording" }, "*");
   }
 
   stop() {
-    window.localStorage.setItem("nt-recording", "0");
-    window.postMessage({ type: "stop-recording" }, "*");
+    localStorage.setItem("nt-recording", "0");
+    postMessage({ type: "stop-recording" }, "*");
   }
 
   cancel() {
-    window.localStorage.setItem("nt-recording", "0");
-    window.postMessage({ type: "cancel-recording" }, "*");
+    localStorage.setItem("nt-recording", "0");
+    postMessage({ type: "cancel-recording" }, "*");
   }
 
   save(sessionInfo: {
@@ -28,12 +28,13 @@ class RecordingService {
     description: string;
     targetList: any[];
     isLogin: boolean;
+    reference: string;
   }) {
-    window.postMessage({ type: "save-session", data: sessionInfo }, "*");
+    postMessage({ type: "save-session", data: sessionInfo }, "*");
   }
 
   get recording() {
-    return window.localStorage.getItem("nt-recording") === "1";
+    return localStorage.getItem("nt-recording") === "1";
   }
 
   saveReference(reference: string) {

@@ -17,6 +17,7 @@ export class SessionDebuggerComponent implements OnInit {
   session!: NTSession;
   events: NTEvent[] = [];
   ready = false;
+  generatingScript = false;
 
   constructor(private sessionService: SessionService, private urlParamsService: UrlParamsService, private router: Router) {}
 
@@ -26,11 +27,13 @@ export class SessionDebuggerComponent implements OnInit {
     this.eventList = await this.sessionService.getEventsByReference(this.reference);
     this.session = await this.sessionService.getSessionByReference(this.reference);
     this.ready = true;
+    this.generatingScript = false;
     console.log('ref: ', this.reference);
     console.log('session: ', this.eventList);
   }
 
   async getSessionTest() {
+    this.generatingScript = true;
     this.script = await this.sessionService.getSessionTest(this.reference);
   }
 

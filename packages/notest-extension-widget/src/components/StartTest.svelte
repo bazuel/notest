@@ -2,7 +2,7 @@
   import Icon from "../shared/components/icon.svelte";
   import Switch from '../shared/components/Switch.svelte';
   import {createEventDispatcher} from "svelte";
-  import {appStore, updateRecButtonOnScreen,updateLoginSession} from "../stores/settings.store.ts";
+  import {appStore, updateRecButtonOnScreen} from "../stores/settings.store.ts";
 
   export const dispatcher = createEventDispatcher()
 
@@ -45,11 +45,8 @@
         {/if}
     </div>
 {/if}
-<Switch switched="{$appStore.isLoginSession}"  on:switched-change={(ev) => updateLoginSession(ev.detail)}>
-    Register login session
-</Switch>
 <Switch switched="{$appStore.recButtonOnScreen}"  on:switched-change={(ev) => updateRecButtonOnScreen(ev.detail)}>
-    Show on screen
+    Show Buttons on screen
 </Switch>
 <style lang="scss">
     @import "/app.scss";
