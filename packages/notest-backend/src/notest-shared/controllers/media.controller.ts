@@ -15,8 +15,7 @@ export class MediaController {
     @Query('name') name: string
   ) {
     const buffer = await this.mediaService.getScreenshot(decodeURIComponent(reference), name);
-    res.header('Content-Disposition', `attachment; filename="${name}"`);
-    res.header('Access-Control-Expose-Headers', `Content-Disposition`);
+    res.header('Content-Type', 'image/png');
     const stream = Readable.from(buffer);
     return new StreamableFile(stream);
   }

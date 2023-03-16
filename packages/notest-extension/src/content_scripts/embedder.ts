@@ -1,5 +1,5 @@
 /**
- *  Content script are loaded into another context than the page, so if we use the HttpMinitor here directly
+ *  Content script are loaded into another context than the page, so if we use the HttpMonitor here directly
  *  we are NOT monitoring the page context, but the page extension context.
  *
  *  We need to add a script on the page (that will be

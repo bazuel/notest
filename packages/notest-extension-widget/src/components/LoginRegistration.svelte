@@ -20,12 +20,11 @@
         const res = await http.post('/user/login', user).catch(() => user.password = '');
         if (res.token) {
             updateLogged(true)
-            tokenService.token = res.token
+            tokenService.login(res.token)
             logged = true
             logging = false;
             failLogin = false;
             dispatcher('login')
-            window.postMessage({type: 'login', token: res.token}, '*');
         } else {
             user.password = '';
             failLogin = true;
@@ -34,7 +33,6 @@
     const doLogout = () => {
         updateLogged(false)
         tokenService.logout()
-        window.postMessage({type: 'logout'}, '*');
         logged = false;
     }
     let goToRegistration = () => {

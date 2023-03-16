@@ -1,19 +1,20 @@
 import { DomMonitor, SessionMonitor } from '@notest/session-monitor';
 import { BLSessionEvent, eventReference } from '@notest/common';
 import { environment } from '../environments/environment';
+import { addMessageListener, sendMessage } from '../content_scripts/message.api';
 
 async function sendToExtension(event) {
-  window.postMessage({ type: 'session-event', data: { ...event, data: document.title } }, '*');
+  sendMessage({ type: 'session-event', data: { ...event, data: document.title } });
 }
 
 let sessionMonitor = new SessionMonitor(sendToExtension);
 
-addEventListener('message', function (event) {
-  if (event.data.type == 'start-monitoring') {
+addMessageListener((event) => {
+  if (event.type == 'start-monitoring') {
     sessionMonitor.enable();
     getScreenshotFromFullDom();
-    addEventListener('message', function (event) {
-      if (event.data.type == 'stop-recording' || event.data.type == 'cancel-recording') {
+    addMessageListener((event) => {
+      if (event.type == 'stop-recording' || event.type == 'cancel-recording') {
         sessionMonitor.disable();
       }
     });
@@ -26,7 +27,7 @@ export function takeFullDomShot() {
 }
 
 function getScreenshotFromFullDom() {
-  addEventListener('DOMContentLoaded', () => sendShot(), { once: true });
+  addEventListener('DOMContentLoaded', sendShot, { once: true });
 }
 
 const sendShot = async () => {
@@ -41,7 +42,7 @@ const sendShot = async () => {
     url: window.location.href
   };
   const reference = eventReference(domSessionEvent);
-  window.postMessage({ type: 'reference', data: reference }, '*');
+  sendMessage({ type: 'reference', data: reference });
   const body = { fullDom, reference };
   fetch(`${environment.api}/api/session/shot`, {
     method: 'POST',
@@ -49,9 +50,7 @@ const sendShot = async () => {
     headers: {
       'Content-Type': 'application/json'
     }
-  }).then((res) => {
-    setTimeout(() => {
-      window.postMessage({ type: 'screenshot-saved' }, '*');
-    }, 5000);
+  }).then(() => {
+    sendMessage({ type: 'screenshot-saved' });
   });
 };

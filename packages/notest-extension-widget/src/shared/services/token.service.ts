@@ -23,6 +23,7 @@ export class TokenService {
       { key: TokenService.TOKEN },
       true
     );
+    console.log("get token response");
     return response.value;
   }
 
@@ -75,6 +76,10 @@ export class TokenService {
 
   logout() {
     this.token = "";
+  }
+
+  login(token: string) {
+    this.token = token;
   }
 
   async username(): Promise<string | undefined> {

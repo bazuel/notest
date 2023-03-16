@@ -6,6 +6,7 @@ import { uploadEvents } from './functions/upload.api';
 import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
 import { getCookiesFromDomain } from './functions/cookies.util';
 import { environment } from '../environments/environment';
+import { addMessageListener, NTMessageType, sendMessage } from '../content_scripts/message.api';
 
 let cookieDetailsEvent: any = {};
 let events: BLEvent[] = [];
@@ -21,19 +22,15 @@ chrome.commands.onCommand.addListener(async function (command) {
   if (command == 'toggle-recording') {
     if (!(await isRecording())) {
       const tab = await getCurrentTab();
-      chrome.tabs.sendMessage(tab.id!, { messageType: 'start-recording-from-extension' });
+      sendMessage({ type: 'start-recording-from-extension' }, tab.id);
     }
   }
 });
 
-chrome.runtime.onMessage.addListener(
-  async (request: { messageType: NTMessageName }, _, sendResponse) => {
-    const functionToCall = executeByMessageType[request.messageType];
-    if (functionToCall) {
-      await functionToCall(request, sendResponse);
-    }
-  }
-);
+addMessageListener(async (message: { type: NTMessageType }) => {
+  const functionToCall = executeByMessageType[message.type];
+  if (functionToCall) await functionToCall(message);
+});
 
 setRecording(false);
 
@@ -60,7 +57,7 @@ async function startSession() {
     enableRecordingIcon();
     enableHeadersListeners();
     console.log('Recording Session Started');
-    chrome.tabs.sendMessage(tabId, { messageType: 'take-screenshot' });
+    sendMessage({ type: 'take-screenshot' }, tabId);
   }
 }
 
@@ -70,7 +67,6 @@ async function saveSession(request: { data: { data: NTSession['info'] } }) {
     console.log('No tab found');
     return;
   }
-  console.log('Request: ', request.data.data);
   delete request.data.data.targetList;
   await uploadEvents(tab.url!, events, request.data.data);
   events = [];
@@ -84,11 +80,9 @@ async function doFetch(
   fetch(`${environment.api}${message.data.url}`, {
     method: message.data.method,
     body: JSON.stringify(message.data.body),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then((res) => {
-    sendResponse!(res);
+    headers: { 'Content-Type': 'application/json' }
+  }).then(async (res) => {
+    sendResponse!(await res.json());
   });
 }
 
@@ -100,14 +94,12 @@ const executeByMessageType: {
   'start-recording': startSession,
   'cancel-recording': cancelSession,
   'session-event': pushEvent,
-  login: async (request) => await chrome.storage.local.set({ NOTEST_TOKEN: request.data.token }),
-  logout: async () => await chrome.storage.local.remove('NOTEST_TOKEN'),
   fetch: doFetch
 };
 
 async function pushEvent(request) {
   const sid = (await chrome.storage.local.get('sid'))['sid'];
-  const { messageType, ...r } = request;
+  const { type, ...r } = request;
   const tab = await getCurrentTab();
   const url = tab?.url ?? '';
   events.push({ ...r, timestamp: Date.now(), url, sid, tab: tab.id });
@@ -124,6 +116,4 @@ type NTMessageName =
   | 'cancel-recording'
   | 'save-session'
   | 'session-event'
-  | 'login'
-  | 'logout'
   | 'fetch';

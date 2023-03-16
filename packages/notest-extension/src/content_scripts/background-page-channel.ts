@@ -1,66 +1,42 @@
-/**
- *  To communicate with page context we use
- *    - window.addEventListener( 'message', ... to receive messages
- *    - window.postMessage(...., '*'); to send messages
- *
- *  To communicate with extension context we use
- *    - chrome.runtime.onMessage.addEventListener(callBack) to receive messages
- *    - chrome.runtime.sendMessage to receive messages(message,...) to send messages
- *
- *  Note that messages from other sources may arrive, so assure we get messages from trusted sources
- *  when sending private data
- */
-
 import { BLEvent } from '@notest/common';
+import { addMessageListener, NTMessage, sendMessage } from './message.api';
 
 function openCommunicationChannel() {
   //channel to communicate with page context (popup/background => page)
-  chrome.runtime.onMessage.addListener(async function (request) {
-    if (request.messageType == 'start-recording-from-extension') {
-      window.postMessage({ type: request.messageType }, '*');
-    }
-  });
+  addMessageListener(callbackFromBackgroundToPage);
 
   //channel to the extension (page => popup/background)
-  window.addEventListener(
-    'message',
-    function (event) {
-      // We only accept messages from ourselves
-      if (event.source != window) return;
-      else if (
-        event.data.type &&
-        [
-          'start-recording',
-          'stop-recording',
-          'cancel-recording',
-          'login',
-          'logout',
-          'save-session'
-        ].includes(event.data.type)
-      ) {
-        chrome.runtime.sendMessage({ messageType: event.data.type, data: event.data });
-      } else if (
-        event.data.type &&
-        ['session-event', 'screenshot-event'].includes(event.data.type)
-      ) {
-        const e: BLEvent = event.data.data;
-        chrome.runtime.sendMessage(
-          { ...e, messageType: event.data.type, data: document.title },
-          (response) => {
-            if (response) console.log(response);
-          }
-        );
-      } else if (event.data.type && event.data.type == 'fetch') {
-        chrome.runtime.sendMessage(
-          { messageType: event.data.type, data: event.data },
-          (response) => {
-            if (response) postMessage({ type: 'fetch-response', data: response }, '*');
-          }
-        );
-      }
-    },
-    false
-  );
+  addMessageListener(callbackFromPageToBackground, true);
 }
 
 openCommunicationChannel();
+
+function callbackFromPageToBackground(message: NTMessage) {
+  console.log('event from page', message);
+  if (
+    message.type &&
+    [
+      'start-recording',
+      'stop-recording',
+      'cancel-recording',
+      'login',
+      'logout',
+      'save-session'
+    ].includes(message.type)
+  ) {
+    sendMessage(message);
+  } else if (message.type && ['session-event', 'screenshot-event'].includes(message.type)) {
+    const e: BLEvent = message.data;
+    sendMessage({ ...e, type: message.type, data: document.title });
+  } else if (message.type && message.type == 'fetch') {
+    sendMessage(message)!.then((response) => {
+      if (response) postMessage({ type: 'fetch-response', data: response }, '*');
+    });
+  }
+}
+
+function callbackFromBackgroundToPage(request: NTMessage) {
+  if (request.type == 'start-recording-from-extension') {
+    sendMessage(request, undefined, true);
+  }
+}

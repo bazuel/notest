@@ -16,6 +16,11 @@
     let enableElementsSelector = false;
     let enableHighlighter = false
 
+    messageService.waitForMessage('screenshot-saved').then(() => {
+        http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
+                .then((blobUrl) => updateSessionImages(blobUrl))
+    })
+
     onMount(() => {
         recording = recordingService.recording
         updateSidebarState('start');
@@ -24,18 +29,13 @@
                 startRecording();
             }
         });
-        console.log('onMount')
-        messageService.waitForMessage('screenshot-saved').then(() => {
-            http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
-                    .then((blobUrl) => updateSessionImages(blobUrl))
-        })
     })
+
     beforeUpdate(() => {
         recording = recordingService.recording;
     })
 
     let startRecording = () => {
-        console.log('startRecording')
         openSidebar = false;
         updateSessionSaved(false);
         recordingService.start();
@@ -74,20 +74,6 @@
         openSidebar = true
         updateSidebarState('end');
     }
-
-    // let oldSaveSession = (info) => {
-    //     sessionInfo = info
-    //     recordingService.save({
-    //         title: info.title,
-    //         description: info.description,
-    //         targetList: info.targetList,
-    //         isLogin: info.isLogin,
-    //         reference: recordingService.reference,
-    //         loginReference: info.loginReference,
-    //     })
-    //     sessionInfo.isLogin = false;
-    //     updateLoginSession(false);
-    // }
 </script>
 
 
