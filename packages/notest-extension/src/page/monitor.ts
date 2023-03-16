@@ -27,7 +27,8 @@ export function takeFullDomShot() {
 }
 
 function getScreenshotFromFullDom() {
-  addEventListener('DOMContentLoaded', sendShot, { once: true });
+  if (document.readyState !== 'loading') sendShot();
+  else addEventListener('DOMContentLoaded', sendShot, { once: true });
 }
 
 const sendShot = async () => {
