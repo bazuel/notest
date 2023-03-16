@@ -15,10 +15,10 @@ function getBuildOptions(more = {}) {
     entryPoints: [
       'src/popup.ts',
       'src/page/monitor.ts',
-      'src/chrome/monitor-embedder.ts',
       'src/chrome/background.ts',
-      'src/chrome/channel-handler.ts',
-      'src/chrome/storage.ts'
+      'src/content_scripts/embedder.ts',
+      'src/content_scripts/background-page-channel.ts',
+      'src/content_scripts/storage.ts'
     ],
     bundle: true,
     sourcemap: true
