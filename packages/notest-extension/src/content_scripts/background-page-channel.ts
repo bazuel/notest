@@ -33,6 +33,11 @@ function callbackFromPageToBackground(message: NTMessage) {
       sendMessage({ type: 'fetch-response', data: response }, undefined, true);
     };
     sendMessage(message, undefined, undefined, responseCallback);
+  } else if (message.type && message.type == 'take-screenshot') {
+    const responseCallback = (response) => {
+      sendMessage({ type: 'screenshot-saved', data: response }, undefined, true);
+    };
+    sendMessage(message, undefined, undefined, responseCallback);
   }
 }
 

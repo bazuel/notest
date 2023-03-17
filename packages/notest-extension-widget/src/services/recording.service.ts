@@ -2,10 +2,10 @@ class RecordingService {
   private _reference: string;
 
   constructor() {
-    //add event listener on sessionStorage
-    addEventListener("message", (ev: MessageEvent) => {
-      if (ev.data.type === "reference") this.saveReference(ev.data.data);
-    });
+    // //add event listener on sessionStorage
+    // addEventListener("message", (ev: MessageEvent) => {
+    //   if (ev.data.type === "reference") this.saveReference(ev.data.data);
+    // });
   }
 
   start() {

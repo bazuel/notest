@@ -1,5 +1,5 @@
 import { disableRecordingIcon, enableRecordingIcon } from './ui/recording-icon';
-import { BLEvent, BLHTTPResponseEvent, NTSession } from '@notest/common';
+import { BLEvent, BLHTTPResponseEvent, JsonCompressor, NTSession } from '@notest/common';
 import { getCurrentTab } from './functions/current-tab.util';
 import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
 import { uploadEvents } from './functions/upload.api';
@@ -12,6 +12,7 @@ import {
   sendMessage
 } from '../content_scripts/message.api';
 import { http } from './services/http.service';
+import { environment } from '../environments/environment';
 
 let cookieDetailsEvent: any = {};
 let events: BLEvent[] = [];
@@ -24,14 +25,15 @@ let events: BLEvent[] = [];
 })();
 
 const executeByMessageType: {
-  [k in NTMessageName]: (request?, sendResponse?: () => any) => Promise<void>;
+  [k in NTMessageType]?: (request?, sendResponse?: () => any) => Promise<void>;
 } = {
   'save-session': saveSession,
   'stop-recording': stopSession,
   'start-recording': startSession,
   'cancel-recording': cancelSession,
   'session-event': pushEvent,
-  fetch: doFetch
+  fetch: doFetch,
+  'take-screenshot': takeScreenshot
 };
 
 chrome.commands.onCommand.addListener(async function (command) {
@@ -96,7 +98,7 @@ async function doFetch(
     http.get(message.data.url).then(async (res) => {
       sendResponse!(res);
     });
-  else {
+  else if (message.data.method == 'POST') {
     http.post(message.data.url, message.data.body).then(async (res) => {
       sendResponse!(res);
     });
@@ -116,10 +118,24 @@ async function pushEvent(request) {
   }
 }
 
-type NTMessageName =
-  | 'stop-recording'
-  | 'start-recording'
-  | 'cancel-recording'
-  | 'save-session'
-  | 'session-event'
-  | 'fetch';
+async function takeScreenshot(
+  message: { data: { fullDom: string; reference: string } },
+  sendResponse?: (res) => any
+) {
+  const zip = await new JsonCompressor().zip(message.data);
+  const token = (await chrome.storage.local.get('NOTEST_TOKEN'))['NOTEST_TOKEN'];
+  const formData = new FormData();
+  formData.append('file', new Blob([zip], { type: 'application/zip' }), Date.now() + '.zip');
+  fetch(`${environment.api}/api/session/shot`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Authorization: 'Bearer ' + token
+    }
+  }).then(async () => {
+    sendResponse!(message.data.reference);
+  });
+  // http.post('/session/shot', zipped).then(async () => {
+  //   sendResponse!(message.data.reference);
+  // });
+}

@@ -10,7 +10,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "docker": "docker compose up",
-    "start": "nest start --watch --debug 9230",
+    "start": "nest start --debug 9230",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug 9230 --watch",
     "start:prod": "node dist/main",

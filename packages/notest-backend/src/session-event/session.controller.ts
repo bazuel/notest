@@ -35,15 +35,16 @@ export class SessionController {
   ) {}
 
   @Post('shot')
-  async takeScreenshot(
-    @Body() body: { reference: string; fullDom: BLSessionEvent },
-    @Res({ passthrough: true }) res
-  ) {
+  async takeScreenshot(@Req() req, @Res({ passthrough: true }) res) {
+    const data: MultipartFile = await req.file();
+    const zippedBody = await streamToBuffer(data.file);
+    const body: { reference: string; fullDom: BLSessionEvent } = await unzipJson(zippedBody);
     const { reference, fullDom } = body;
     console.log('takeScreenshot', fullDom);
     this.fullDoms[reference] = fullDom;
     const frontendBase = process.env.APP_URL || 'http://localhost:4200';
-    const frontendUrl = frontendBase + `/session/session-camera?id=${reference}`;
+    const frontendUrl =
+      frontendBase + `/session/session-camera?id=${encodeURIComponent(reference)}`;
     const shotUrl =
       process.env.SCREENSHOT_URL +
       `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
@@ -57,9 +58,8 @@ export class SessionController {
         fired: new Date()
       }
     ];
-    this.mediaService.saveScreenshot(screenshot, reference).then(() => {
-      res.send({ ok: true });
-    });
+    await this.mediaService.saveScreenshot(screenshot, reference);
+    return { ok: true };
   }
 
   @Get('shot')

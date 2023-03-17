@@ -75,6 +75,8 @@ export class SessionService {
   }
 
   async loadFullDom(fullDomId: string) {
-    return this.http.gest<BLDomEvent>(`/session/shot`, { id: fullDomId });
+    return this.http.gest<BLDomEvent>(`/session/shot`, {
+      id: fullDomId
+    });
   }
 }
