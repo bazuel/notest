@@ -37,7 +37,6 @@
       })
       updateSessionSaved(await recordingService.referenceAvailable())
       loadUserSessions();
-      //uploadScreenshot(sessionInfo.images[0], recordingService.reference)
     } else {
       validSessionTitle = false;
     }

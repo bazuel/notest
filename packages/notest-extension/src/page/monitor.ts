@@ -1,6 +1,5 @@
 import { DomMonitor, SessionMonitor } from '@notest/session-monitor';
 import { BLSessionEvent, eventReference } from '@notest/common';
-import { environment } from '../environments/environment';
 import { addMessageListener, sendMessage } from '../content_scripts/message.api';
 
 async function sendToExtension(event) {
@@ -27,8 +26,7 @@ export function takeFullDomShot() {
 }
 
 function getScreenshotFromFullDom() {
-  if (document.readyState !== 'loading') sendShot();
-  else addEventListener('DOMContentLoaded', sendShot, { once: true });
+  addEventListener('load', () => setTimeout(sendShot, 2000), { once: true });
 }
 
 const sendShot = async () => {
@@ -43,15 +41,6 @@ const sendShot = async () => {
     url: window.location.href
   };
   const reference = eventReference(domSessionEvent);
-  sendMessage({ type: 'reference', data: reference });
-  const body = { fullDom, reference };
-  fetch(`${environment.api}/api/session/shot`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then(() => {
-    sendMessage({ type: 'screenshot-saved' });
-  });
+  const data = { fullDom, reference };
+  sendMessage({ type: 'take-screenshot', data });
 };
