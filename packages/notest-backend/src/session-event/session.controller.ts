@@ -77,7 +77,8 @@ export class SessionController {
     const events: BLSessionEvent[] = await unzipJson(zipBuffer);
     const { reference, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
     const url = events[0].url;
-    await this.eventService.save(events, reference);
+    //TO-DO event.service.save not working
+    //await this.eventService.save(events, reference);
     const session: NTSession = {
       url,
       reference,
@@ -85,6 +86,7 @@ export class SessionController {
       info: sessionInfo
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
+    console.log("Send message to kafka");
     await this.producerService.produceMessage(decodeURIComponent(reference));
     res.send({ ok: true, reference });
   }

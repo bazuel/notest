@@ -79,14 +79,14 @@ async function startSession() {
   }
 }
 
-async function saveSession(request: { data: { data: NTSession['info'] } }) {
+async function saveSession(request: { data: NTSession['info'] } ) {
   const tab = await getCurrentTab();
   if (!tab) {
     console.log('No tab found');
     return;
   }
-  delete request.data.data.targetList;
-  await uploadEvents(tab.url!, events, request.data.data);
+  delete request.data.targetList;
+  await uploadEvents(tab.url!, events, request.data);
   events = [];
 }
 
