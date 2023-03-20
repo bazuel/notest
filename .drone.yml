@@ -34,8 +34,8 @@ steps:
       from_secret: registry_username
     password:
       from_secret: registry_password
-  depends_on:
-    - frontend-build
+#  depends_on:
+#    - frontend-build
 
 #- name: screenshot-service-build
 #  image: plugins/docker
