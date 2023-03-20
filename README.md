@@ -17,7 +17,7 @@ There are lots of tools to write tests automatically.
 
 NOTEST has a different approach.
 
-Our idea is simple: someone we'll use your webapp. 
+Our idea is simple: someone will use your webapp. 
 **When it happens, NOTEST creates a test and saves it for the future.**
 
 Without coding, you can be sure that your web app keeps working as expected, 
@@ -42,5 +42,13 @@ NOTEST is open source and released under a sustainable dual license. Check the `
 If your company has less than 6 employees, you can use NOTEST for free.
 
 If your company has more than 6 employees, you can contact us for a commercial license.
+
+Note that:
+- if you are a small company, you can ask for a free commercial license;
+- if you are a startup, you can ask for a free commercial license;
+- if you are a non-profit company, you can ask for a free commercial license;
+- if your company wroks on open source projects, you can ask for a free commercial license;
+
+♥ ♥ ♥ Enjoy NOTEST! ♥ ♥ ♥
 
 

@@ -17,6 +17,25 @@
 </head>
 <body>
 
+<header class="bo-header">
+    <div class="bo-header-container">
+        <a class="logo" href="/">
+            <img class="h-8" src="/assets/img/logo.png" />
+            <span class="text-2xl font-important text-ntp"><span class="text-nts">NO</span>TEST</span>
+        </a>
+        <div class="ml-auto flex items-center gap-4">
+            <a href="https://github.com/bazuel/notest">Github</a>
+            <a href="/privacy">Privacy</a>
+            <button class="bo-button mr-4 bg-nts">Add to Chrome <small>(coming soon)</small></button>
+
+            <!--
+            <a class="font-extrabold">LOGIN</a>
+            <a class="font-extrabold">SIGNUP</a>
+            -->
+        </div>
+    </div>
+</header>
+
 
 {{ content  }}
 
@@ -24,13 +43,19 @@
 
 
     <div class="por-description mx-auto text-center my-8">
-        <img src="assets/img/por.png" class="h-24 mx-auto rounded" alt="Progetto realizzato con il contributo della Regione Lazio - Programma FESR Lazio 2014-2020 Avviso PRE-SEED Plus Spesa rendicontata imputata al Progetto: 30.000 euro">
+        <img src="/assets/img/por.png" class="h-24 mx-auto rounded" alt="Progetto realizzato con il contributo della Regione Lazio - Programma FESR Lazio 2014-2020 Avviso PRE-SEED Plus Spesa rendicontata imputata al Progetto: 30.000 euro">
         <p>
             Progetto realizzato con il contributo della Regione Lazio - Programma FESR Lazio 2014-2020 Avviso PRE-SEED Plus Spesa rendicontata imputata al Progetto: 30.000 euro
         </p>
+        <p class="my-8 max-w-lg mx-auto">
+            Nei sistemi web scrivere test e manutenerli è costoso e la priorità va allo sviluppo di nuove funzionalità. NoTest genera automaticamente test unitari e e2e per app web, aumentando la qualità e l’affidabilità del sistema con costi bassissimi.
+        </p>
+        <p class="my-8 max-w-lg mx-auto">
+            In web applications, writing tests and maintaining them is expensive and the dev team priority goes to the development of new features. NoTest automatically generates unit tests and E2E tests for web apps, increasing the quality and reliability of the system with very low costs.
+        </p>
     </div>
 
-    <div class="copyright text-center text-slate-500">
+    <div class="copyright text-center text-slate-500 mt-4 ">
         <small class="bg-white p-1 rounded">© <span class="text-xs font-important text-ntp"><span class="text-nts">NO</span>TEST</span> - 2023</small>
     </div>
 </footer>
@@ -52,6 +77,18 @@
     })();
 </script>
 <!--End of Tawk.to Script-->
+
+
+<script>
+
+    document.documentElement.dataset.scroll = window.scrollY;
+    document.addEventListener('scroll', function () {
+        document.documentElement.dataset.scroll = window.scrollY;
+    }, {passive: true});
+
+
+</script>
+
 
 </body>
 </html>
