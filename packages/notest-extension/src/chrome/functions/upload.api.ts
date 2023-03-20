@@ -16,8 +16,13 @@ export async function uploadEvents(url: string, events: BLEvent[], sessionInfo: 
       Authorization: 'Bearer ' + token
     }
   })
-    .then(function (resp) {
-      return resp.json();
+    .then(async function (resp) {
+      try {
+        return await resp.json();
+      }
+      catch {
+        console.log(await resp.text())
+      }
     })
     .then(function (json) {
       console.log(json);
