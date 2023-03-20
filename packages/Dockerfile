@@ -5,6 +5,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh nano zopfli
  
 RUN npm i -g pnpm
+RUN pnpm i -g typescript
 
 RUN mkdir -p /app/packages/notest-common
 WORKDIR /app/packages/notest-common
