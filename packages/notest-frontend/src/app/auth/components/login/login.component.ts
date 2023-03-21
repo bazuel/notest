@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   email = '';
   password = '';
+  passwordRepeated= '';
   showForgotPasswordPopup = false;
   showResetPasswordPopup = false;
   tokenForPasswordReset = '';

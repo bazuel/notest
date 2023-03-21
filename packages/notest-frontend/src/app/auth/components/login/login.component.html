@@ -27,7 +27,7 @@
   </div>
 </div>
 
-<nt-popup *ngIf="showForgotPasswordPopup" (close)="showForgotPasswordPopup = false">
+<nt-popup *ngIf="showForgotPasswordPopup" [closeClickOutside]="false" (close)="showForgotPasswordPopup = false">
   <div class="p-4">
     <h2>Reset password</h2>
     <label class="text-gray-400">Please insert your email:</label>
@@ -42,14 +42,18 @@
   </div>
 </nt-popup>
 
-<nt-popup *ngIf="showResetPasswordPopup" (close)="showResetPasswordPopup = false">
+<nt-popup *ngIf="showResetPasswordPopup" [closeClickOutside]="false" (close)="showResetPasswordPopup = false">
   <div class="p-4">
-    <h2>Change la password</h2>
-    <label class="text-gray-400">Please insert the new password here:</label>
+    <h2>Reset password</h2>
+    <label class="text-gray-400">New password</label>
+    <input type="password" [(ngModel)]="password" class="w-full" />
 
-    <input type="text" [(ngModel)]="password" class="w-full" />
-
-    <div class="mt-4 flex justify-end">
+    <label class="text-gray-400">Confirm new password</label>
+    <input type="password" [(ngModel)]="passwordRepeated" class="w-full" />
+    <div class="form-error" *ngIf="password !== passwordRepeated">
+      Password Mismatch
+    </div>
+    <div [class.readonly]="password === '' || password !== passwordRepeated" class="mt-4 flex justify-end">
       <button (click)="onResetPassword()" class="bo-button" type="button">
         Change Password
       </button>
