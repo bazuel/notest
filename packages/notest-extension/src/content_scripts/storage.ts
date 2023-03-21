@@ -1,7 +1,6 @@
 import { addMessageListener, NTStorageMessage, sendMessage } from './message.api';
 
 addMessageListener((message: NTStorageMessage) => {
-  console.log('storage message', message);
   if (message.type === 'set-storage') setStorage(message.data!.key, message.data!.value);
   if (message.type === 'get-storage') sendStorage(message.data!.key, message.data!.id);
 }, true);

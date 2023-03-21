@@ -2,6 +2,7 @@
   import {NTSession} from '@notest/common'
   import {http} from "../shared/services/http.service";
   import {createEventDispatcher, onMount} from "svelte";
+  import {getUrlImage} from "../functions/url.functions";
 
   export let sessions: NTSession[] = []
   export let title: String = "";
@@ -11,11 +12,7 @@
   let imageList: string[] = []
 
   onMount(async () => {
-    imageList = await Promise.all(
-      sessions.map(
-        session => http.getStreamImg(`/media/screenshot-download?reference=${session.reference}&name=shot`).catch(() => '')
-      )
-    )
+    imageList = sessions.map(session => getUrlImage(session.reference));
   })
 
   let onSessionClick = (reference) => dispatcher('session-selected', {reference})

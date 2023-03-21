@@ -10,15 +10,17 @@
     import {http} from "../shared/services/http.service";
     import {updateSessionImages, updateSessionTargetList} from "../stores/session.store";
     import {messageService} from "../services/message.service";
+    import {getUrlImage} from "../functions/url.functions";
 
     let openSidebar = false;
     let recording;
     let enableElementsSelector = false;
     let enableHighlighter = false
 
-    messageService.waitForMessage('screenshot-saved').then(() => {
-        http.getStreamImg(`/media/screenshot-download?reference=${recordingService.reference}&name=shot`)
-                .then((blobUrl) => updateSessionImages(blobUrl))
+    messageService.waitForMessage<string>('screenshot-saved').then((reference) => {
+        recordingService.saveReference(reference)
+        console.log(getUrlImage(reference))
+        updateSessionImages(getUrlImage(reference))
     })
 
     onMount(() => {

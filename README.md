@@ -43,4 +43,12 @@ If your company has less than 6 employees, you can use NOTEST for free.
 
 If your company has more than 6 employees, you can contact us for a commercial license.
 
+Note that:
+- if you are a small company, you can ask for a free commercial license;
+- if you are a startup, you can ask for a free commercial license;
+- if you are a non-profit company, you can ask for a free commercial license;
+- if your company wroks on open source projects, you can ask for a free commercial license;
+
+♥ ♥ ♥ Enjoy NOTEST! ♥ ♥ ♥
+
 

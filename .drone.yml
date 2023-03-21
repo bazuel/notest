@@ -3,39 +3,39 @@ type: kubernetes
 name: notest-build
 
 steps:
-- name: frontend-build
-  image: plugins/docker
-  settings:
-    context: packages
-    dockerfile: packages/Dockerfile-frontend
-    repo: docker.bazuel.com/notest-frontend
-    registry: docker.bazuel.com
-    username:
-       from_secret: registry_username
-    password:
-       from_secret: registry_password
-    tags:
-      - latest
-    build_args:
-       from_secret: cloudflare_params
+#- name: frontend-build
+#  image: plugins/docker
+#  settings:
+#    context: packages
+#    dockerfile: packages/Dockerfile-frontend
+#    repo: docker.bazuel.com/notest-frontend
+#    registry: docker.bazuel.com
+#    username:
+#       from_secret: registry_username
+#    password:
+#       from_secret: registry_password
+#    tags:
+#      - latest
+#    build_args:
+#       from_secret: cloudflare_params
 
-- name: backend-build
-  image: plugins/docker
-  settings:
-    registry: docker.bazuel.com
-    repo: docker.bazuel.com/notest-backend
-    tags:
-      - latest
-      - ${DRONE_BUILD_STARTED}
-      - ${DRONE_COMMIT_BRANCH}
-    context: packages
-    dockerfile: packages/Dockerfile
-    username:
-      from_secret: registry_username
-    password:
-      from_secret: registry_password
-  depends_on:
-    - frontend-build
+#- name: backend-build
+#  image: plugins/docker
+#  settings:
+#    registry: docker.bazuel.com
+#    repo: docker.bazuel.com/notest-backend
+#    tags:
+#      - latest
+#      - ${DRONE_BUILD_STARTED}
+#      - ${DRONE_COMMIT_BRANCH}
+#    context: packages
+#    dockerfile: packages/Dockerfile
+#    username:
+#      from_secret: registry_username
+#    password:
+#      from_secret: registry_password
+#  depends_on:
+#    - frontend-build
 
 #- name: screenshot-service-build
 #  image: plugins/docker
@@ -55,40 +55,40 @@ steps:
 #  depends_on:
 #    - backend-build
 
-#- name: cluster-runner-build
-#  image: plugins/docker
-#  settings:
-#    registry: docker.bazuel.com
-#    repo: docker.bazuel.com/notest-cluster-runner
-#    tags:
-#      - latest
-#      - ${DRONE_BUILD_STARTED}
-#      - ${DRONE_COMMIT_BRANCH}
-#    context: packages
-#    dockerfile: packages/Dockerfile-clusterRunner
-#    username:
-#      from_secret: registry_username
-#    password:
-#      from_secret: registry_password
+- name: cluster-runner-build
+  image: plugins/docker
+  settings:
+    registry: docker.bazuel.com
+    repo: docker.bazuel.com/notest-cluster-runner
+    tags:
+      - latest
+      - ${DRONE_BUILD_STARTED}
+      - ${DRONE_COMMIT_BRANCH}
+    context: packages
+    dockerfile: packages/Dockerfile-clusterRunner
+    username:
+      from_secret: registry_username
+    password:
+      from_secret: registry_password
 #  depends_on:
 #    - screenshot-service-build
 
-- name: backend-deploy
-  image: appleboy/drone-ssh
-  settings:
-    host:
-      - 185.196.20.82
-    username:
-      from_secret: ssh_username
-    password:
-      from_secret: ssh_password
-    port: 22
-    command_timeout: 2m
-    script:
-      - helm delete notest-backend --namespace notest
-      - helm --debug --namespace notest upgrade --install --force --cleanup-on-fail --values /nt/notest-backend/values.yaml --history-max=10 notest-backend /nt/notest-backend
-  depends_on:
-    - backend-build
+#- name: backend-deploy
+#  image: appleboy/drone-ssh
+#  settings:
+#    host:
+#      - 185.196.20.82
+#    username:
+#      from_secret: ssh_username
+#    password:
+#      from_secret: ssh_password
+#    port: 22
+#    command_timeout: 2m
+#    script:
+#      - helm delete notest-backend --namespace notest
+#      - helm --debug --namespace notest upgrade --install --force --cleanup-on-fail --values /nt/notest-backend/values.yaml --history-max=10 notest-backend /nt/notest-backend --set nodeSelector.node-name=worker1
+#  depends_on:
+#    - backend-build
 
 #- name: screenshot-service-deploy
 #  image: appleboy/drone-ssh
@@ -107,23 +107,23 @@ steps:
 #  depends_on:
 #    - screenshot-service-build
 
-#- name: cluster-runner-deploy
-#  image: appleboy/drone-ssh
-#  settings:
-#    host:
-#      - 185.196.20.82
-#    username:
-#      from_secret: ssh_username
-#    password:
-#      from_secret: ssh_password
-#    port: 22
-#    command_timeout: 2m
-#    script:
-#      - sudo k0s kc delete deployment notest-cluster-runner -n notest
-#      - sudo k0s kc create -f /nt/notest-cluster-runner/kafka-consumer.yaml
-#  depends_on:
+- name: cluster-runner-deploy
+  image: appleboy/drone-ssh
+  settings:
+    host:
+      - 185.196.20.82
+    username:
+      from_secret: ssh_username
+    password:
+      from_secret: ssh_password
+    port: 22
+    command_timeout: 2m
+    script:
+      - sudo k0s kc delete deployment notest-cluster-runner -n notest
+      - sudo k0s kc create -f /nt/notest-cluster-runner/kafka-consumer.yaml
+  depends_on:
 #    - screenshot-service-deploy
-#    - cluster-runner-build
+    - cluster-runner-build
 trigger:
   branch:
     - release
