@@ -8,7 +8,7 @@ export class WheelMonitor implements BLMonitor {
   enable(): void {
     const updatePosition = throttle((evt) => {
       this.manageWheelEvent(evt as WheelEvent);
-    }, 50);
+    }, 5);
     this.disableWheel = on('wheel', updatePosition);
   }
 

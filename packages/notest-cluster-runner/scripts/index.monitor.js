@@ -744,7 +744,7 @@ var ScrollMonitor = class {
   enable() {
     const updatePosition = throttle((evt) => {
       this.manageScrollEvent(evt);
-    }, 50);
+    }, 5);
     this.disableScroll = on("scroll", updatePosition);
   }
   manageScrollEvent(evt) {
@@ -1975,7 +1975,7 @@ var WheelMonitor = class {
   enable() {
     const updatePosition = throttle((evt) => {
       this.manageWheelEvent(evt);
-    }, 50);
+    }, 5);
     this.disableWheel = on("wheel", updatePosition);
   }
   manageWheelEvent(evt) {

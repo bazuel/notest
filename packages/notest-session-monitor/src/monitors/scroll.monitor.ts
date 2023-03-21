@@ -8,7 +8,7 @@ export class ScrollMonitor implements BLMonitor {
   enable(): void {
     const updatePosition = throttle((evt) => {
       this.manageScrollEvent(evt);
-    }, 50);
+    }, 5);
     this.disableScroll = on('scroll', updatePosition);
   }
 
