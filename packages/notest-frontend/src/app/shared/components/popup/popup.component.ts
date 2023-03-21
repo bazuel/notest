@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'nt-popup',
@@ -7,6 +7,9 @@ import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/
 })
 export class PopupComponent implements OnInit {
   showCloseButton = true;
+
+  @Input()
+  closeClickOutside = true;
 
   @Output()
   close = new EventEmitter();

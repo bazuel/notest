@@ -1,4 +1,4 @@
-<div class="bo-popup" (click)="close.emit()">
+<div class="bo-popup" (click)="closeClickOutside ? close.emit() : ''">
   <div class="bo-popup-content" (click)="$event.stopPropagation()">
     <div *ngIf="showCloseButton" class="bo-popup-close" (click)="close.emit()"></div>
     <ng-content></ng-content>

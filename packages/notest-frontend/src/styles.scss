@@ -78,4 +78,14 @@ label {
   @apply transition-all duration-500 ease-in-out;
   @apply hover:scale-95 hover:shadow-lg hover:shadow-gray-400
 }
+.form-error {
+  @apply text-sm text-red-500;
+  &:before {
+    content: '*';
+    @apply mr-1;
+  }
+}
+.readonly  {
+  @apply pointer-events-none opacity-25;
+}
 
