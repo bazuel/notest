@@ -12,7 +12,7 @@ import {TokenService} from "../../services/token.service";
   styles: [
     `
       :host {
-        @apply flex items-center justify-center h-10 w-10 rounded-full bg-sm-50 text-gray-600 overflow-hidden;
+        @apply flex items-center justify-center h-10 w-10 rounded-full bg-nt-50 text-gray-600 overflow-hidden;
         &.profile-sm {
           @apply scale-50;
         }

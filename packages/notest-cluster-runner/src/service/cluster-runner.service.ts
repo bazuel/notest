@@ -49,13 +49,14 @@ export class ClusterRunnerService {
                 lastEvent,
                 false
             );
-            try {
-                await mediaService.saveScreenshot(screenshotList, newReference);
-                await mediaService.saveVideo(newReference, startVideoTimeStamp, videoPath);
-            } catch (e){
-                console.log("Failed to upload Screenshot/Video")
+            await mediaService.saveScreenshot(screenshotList, newReference).catch((e) => {
+                console.log("Failed to upload Screenshot", e);
                 assertion.info.execution_error = true;
-            }
+            });
+            await mediaService.saveVideo(newReference, startVideoTimeStamp, videoPath).catch((e) => {
+                console.log("Failed to upload Video", e);
+                assertion.info.execution_error = true;
+            });
             await assertionService.save(assertion);
             await this.clearFilesSaved();
             console.log('Session Ended');
