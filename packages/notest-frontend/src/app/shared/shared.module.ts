@@ -25,6 +25,7 @@ import {ComponentInjectorDirective} from "./directives/component-injector.direct
 import {HighlightPipe} from "./pipes/highlight.pipe";
 import {BadgeComponent} from "./components/badge/badge.component";
 import {SwitchComponent} from "./components/switch/switch.component";
+import {ProfileImageComponent} from "./components/profile-image/profile-image.component";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import {SwitchComponent} from "./components/switch/switch.component";
     ComponentInjectorDirective,
     HighlightPipe,
     BadgeComponent,
-    SwitchComponent
+    SwitchComponent,
+    ProfileImageComponent
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -57,7 +59,8 @@ import {SwitchComponent} from "./components/switch/switch.component";
     AutocompleteComponent,
     ClickOutsideDirective,
     BadgeComponent,
-    SwitchComponent
+    SwitchComponent,
+    ProfileImageComponent
   ],
   providers: [
     HttpService,

@@ -1,0 +1,33 @@
+.sidebar {
+  @apply flex h-screen w-10 flex-col overflow-hidden bg-gradient-to-br from-sm-50 to-white transition-all md:w-64;
+
+  ul {
+    @apply list-none m-0 p-0;
+  }
+
+  li {
+    @apply h-10 w-full cursor-pointer px-2 leading-10 whitespace-nowrap hover:bg-sm-100;
+    sm-icon {
+      @apply mr-2 indent-[0%];
+    }
+
+    a {
+      @apply flex items-center indent-[-1000%] uppercase text-sm-400 no-underline md:indent-[0%] md:ml-3;
+    }
+  }
+  nt-logo {
+    @apply indent-[-1000%] md:indent-[0%] my-4 mx-1;
+  }
+
+  .personal-info {
+    nt-icon {
+      @apply m-0 indent-0 absolute left-2 md:relative left-auto;
+    }
+
+    @apply indent-[-1000%] md:indent-[0%];
+  }
+}
+
+bazuel-link {
+  @apply m-2 block invisible md:visible;
+}

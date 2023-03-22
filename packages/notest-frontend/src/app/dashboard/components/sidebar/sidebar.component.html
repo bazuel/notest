@@ -1,0 +1,60 @@
+<div class="sidebar">
+  <nt-logo class="ml-4"></nt-logo>
+
+  <ul>
+    <li>
+      <a routerLink="/dashboard/home">
+        <nt-icon name="dashboard"></nt-icon>
+        Dashboard
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/dossier/dossier-dashboard">
+        <nt-icon name="card"></nt-icon>
+        Test e2e
+      </a>
+    </li>
+
+    <li>
+      <div class="flex flex-row">
+        <a routerLink="/company/company-dashboard">
+          <nt-icon name="company"></nt-icon>
+          Coming Soon
+        </a>
+        <nt-icon
+          class="ml-2 self-center text-gray-400"
+          title="Crea nuova Azienda"
+          (click)="$event.stopPropagation()"
+          routerLink="/company/company-form"
+          name="add"></nt-icon>
+      </div>
+    </li>
+
+    <li routerLink="/user/list" routerLinkActive="active">
+      <a>
+        <nt-icon name="user"></nt-icon>
+        Coming Soon
+      </a>
+    </li>
+
+    <li routerLink="/team/list" routerLinkActive="active">
+      <a>
+        <nt-icon name="users"></nt-icon>
+        Coming Soon
+      </a>
+    </li>
+  </ul>
+
+  <div class="relative mt-auto">
+    <div class="flex items-center bg-white p-4 personal-info">
+      <nt-profile-image *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
+      <div class="ml-2">
+        <div class="text-sm text-gray-700">{{ fullname }}</div>
+        <div class="text-xs uppercase text-gray-500">{{ role }}</div>
+      </div>
+      <nt-icon class="ml-auto text-gray-500" name="logout" (click)="logout()"></nt-icon>
+    </div>
+    <!--<bazuel-link></bazuel-link>-->
+  </div>
+</div>
