@@ -42,14 +42,20 @@ export class ClusterRunnerService {
             } as NTSession;
             const newEventsZipped = await new JsonCompressor().zip(events) as Buffer;
             await sessionService.save(newEventsZipped, newSession);
-            await mediaService.saveScreenshot(screenshotList, newReference);
-            await mediaService.saveVideo(newReference, startVideoTimeStamp, videoPath);
             const assertion = this.generateRunAssertion(
                 encodeURIComponent(reference),
                 eventReference(events[0]),
                 testFailed,
-                lastEvent
+                lastEvent,
+                false
             );
+            try {
+                await mediaService.saveScreenshot(screenshotList, newReference);
+                await mediaService.saveVideo(newReference, startVideoTimeStamp, videoPath);
+            } catch (e){
+                console.log("Failed to upload Screenshot/Video")
+                assertion.info.execution_error = true;
+            }
             await assertionService.save(assertion);
             await this.clearFilesSaved();
             console.log('Session Ended');
@@ -81,14 +87,16 @@ export class ClusterRunnerService {
         original_reference: string,
         new_reference: string,
         test_failed: boolean,
-        last_event: BLSessionEvent
+        last_event: BLSessionEvent,
+        execution_error: boolean
     ) {
         return {
             original_reference,
             new_reference,
             test_failed,
             info: {
-                last_event
+                last_event,
+                execution_error,
             }
         } as NTAssertion;
     }

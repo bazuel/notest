@@ -50,7 +50,10 @@ export interface NTAssertion {
     original_reference: string;
     new_reference: string;
     test_failed: boolean;
-    info?: { last_event: BLSessionEvent };
+    info?: {
+        last_event: BLSessionEvent,
+        execution_error: boolean
+    };
 }
 
 export interface NTRunnerConfig {
