@@ -16,7 +16,7 @@ export class SidebarComponent implements OnInit {
   constructor(private tokenService: TokenService) {}
 
   async ngOnInit() {
-    this.fullname = this.tokenService.tokenData().name + this.tokenService.tokenData().surname;
+    this.fullname = this.tokenService.tokenData().name + " " + this.tokenService.tokenData().surname;
     this.role = this.tokenService.tokenData().roles[0] ?? '';
     this.userid = this.tokenService.tokenData().id;
     this.ready = true;

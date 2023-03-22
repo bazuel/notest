@@ -38,7 +38,7 @@ export class ProfileImageComponent implements OnInit {
   constructor(private tokenService: TokenService) {}
 
   async ngOnInit() {
-    this.fullname = this.tokenService.tokenData().name + " " + this.tokenService.tokenData().surname;
+    this.fullname = this.tokenService.tokenData().name + this.tokenService.tokenData().surname;
     if (this.fullname) this.initials = getInitialsFormString(this.fullname);
   }
 }
