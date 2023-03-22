@@ -40,7 +40,7 @@ export const UserIdIfHasToken = createParamDecorator((data: unknown, ctx: Execut
   const req = ctx.switchToHttp().getRequest();
   tokenService = tokenService || findInjectedService(TokenService);
   console.log(tokenService.get(req));
-  if (tokenService.get(req) !== 'undefined') return emailAndRoles(ctx).id;
+  if (tokenService.get(req) && tokenService.get(req) !== 'undefined') return emailAndRoles(ctx).id;
   return null;
 });
 
