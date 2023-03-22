@@ -13,6 +13,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [DashboardHomeComponent, SidebarComponent],
+  exports: [SidebarComponent],
   imports: [CommonModule, RouterModule.forChild(routes), SharedModule, NotestSharedModule]
 })
 export class DashboardModule {}

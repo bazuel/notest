@@ -1,18 +1,18 @@
 .sidebar {
-  @apply flex h-screen w-10 flex-col overflow-hidden bg-gradient-to-br from-sm-50 to-white transition-all md:w-64;
+  @apply flex h-screen w-10 flex-col overflow-hidden bg-gradient-to-br from-nt-50 to-white transition-all md:w-64;
 
   ul {
     @apply list-none m-0 p-0;
   }
 
   li {
-    @apply h-10 w-full cursor-pointer px-2 leading-10 whitespace-nowrap hover:bg-sm-100;
-    sm-icon {
+    @apply h-10 w-full cursor-pointer px-2 leading-10 whitespace-nowrap hover:bg-nt-100;
+    nt-icon {
       @apply mr-2 indent-[0%];
     }
 
     a {
-      @apply flex items-center indent-[-1000%] uppercase text-sm-400 no-underline md:indent-[0%] md:ml-3;
+      @apply flex items-center indent-[-1000%] uppercase text-nt-400 no-underline md:indent-[0%] md:ml-3;
     }
   }
   nt-logo {

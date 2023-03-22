@@ -1,3 +1,10 @@
-<router-outlet></router-outlet>
+<div class="flex h-screen">
+  <nt-sidebar *ngIf="tokenService.logged"></nt-sidebar>
+
+  <div class="p-8 {{ pathClass }} flex-1 overflow-auto">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
 <nt-notification></nt-notification>
 <div class="bo-loading-full-screen" *ngIf="loadingService.isLoading()"></div>
