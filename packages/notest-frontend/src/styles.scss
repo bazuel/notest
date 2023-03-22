@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import 'node_modules/@butopen/design-system/src/index';
+@import url('https://fonts.googleapis.com/css?family=Anton');
 
 :root {
   --nt-primary-color: #0097e4;
@@ -36,6 +37,11 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.font-logo {
+  font-family: 'Anton', sans-serif;
+  @apply text-2xl;
 }
 
 body {
