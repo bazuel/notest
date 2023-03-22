@@ -3,21 +3,21 @@ type: kubernetes
 name: notest-build
 
 steps:
-#- name: frontend-build
-#  image: plugins/docker
-#  settings:
-#    context: packages
-#    dockerfile: packages/Dockerfile-frontend
-#    repo: docker.bazuel.com/notest-frontend
-#    registry: docker.bazuel.com
-#    username:
-#       from_secret: registry_username
-#    password:
-#       from_secret: registry_password
-#    tags:
-#      - latest
-#    build_args:
-#       from_secret: cloudflare_params
+- name: frontend-build
+  image: plugins/docker
+  settings:
+    context: packages
+    dockerfile: packages/Dockerfile-frontend
+    repo: docker.bazuel.com/notest-frontend
+    registry: docker.bazuel.com
+    username:
+       from_secret: registry_username
+    password:
+       from_secret: registry_password
+    tags:
+      - latest
+    build_args:
+       from_secret: cloudflare_params
 
 - name: backend-build
   image: plugins/docker
@@ -34,8 +34,8 @@ steps:
       from_secret: registry_username
     password:
       from_secret: registry_password
-#  depends_on:
-#    - frontend-build
+  depends_on:
+    - frontend-build
 
 #- name: screenshot-service-build
 #  image: plugins/docker
