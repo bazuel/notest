@@ -1,6 +1,4 @@
-<div *ngIf="session && !fullLoading" class="h-screen w-screen overflow-hidden p-5 flex">
-  <a *ngIf="userLogged" class="fixed bottom-5 left-5 h-10" routerLink="/session/session-dashboard">← Return to
-    dashboard</a>
+<div *ngIf="session && !fullLoading" class="h-full w-full p-5 flex">
   <div class="relative w-2/3 h-2/3">
     <div class="flex flex-row items-center">
       <h1 class="font-bold">{{session.info.title}}</h1>
@@ -25,7 +23,7 @@
       <div *ngIf="loading" class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
       <div *ngIf="loading" class="text-nt-300 ml-4 text-bold text-lg">Your session is running... 😉</div>
     </div>
-    <div class="h-full overflow-auto">
+    <div class="h-full overflow-auto scrollbar-hidden">
       <div class="h-fit animate-pulse" *ngIf="loading">
         <div class="bg-nt-50 h-4 rounded-lg my-5 w-28"></div>
         <div class="flex gap-2">
