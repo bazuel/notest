@@ -89,7 +89,7 @@
         <Icon name='settings' color='white'></Icon>
       </button>
       <button class='nt-button squared-10' class:nt-readonly='{!$appStore.logged}'
-              title={!$appStore.logged ? "Login for unlock Dashboard" : "Dashboard"}
+              title={!$appStore.logged ? "Login to unlock the Dashboard" : "Dashboard"}
               on:click={!$appStore.logged ? ()=>{} : redirectToDashboard}>
         <Icon name='home' color='white'></Icon>
       </button>
