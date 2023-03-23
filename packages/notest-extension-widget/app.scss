@@ -73,6 +73,10 @@
     @apply bg-white text-bop border border-bop;
   }
 
+  &.squared-10{
+    @apply w-10 h-10;
+  }
+
 }
 
 .nt-center {

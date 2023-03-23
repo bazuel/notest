@@ -1,172 +1,172 @@
-<script lang="ts">
-    import {createEventDispatcher, onMount} from "svelte";
-    import Icon from '../shared/components/Icon.svelte';
-    import Logo from '../shared/components/Logo.svelte';
-    import StartTest from "./StartTest.svelte";
-    import LoginRegistration from "./LoginRegistration.svelte";
-    import {recordingService} from "../services/recording.service.js";
-    import {copyToClipboard, NTSession} from "@notest/common";
-    import {tokenService} from "../shared/services/token.service.js";
-    import SessionPanel from "./SessionPanel.svelte";
-    import {http} from "../shared/services/http.service";
-    import {appStore, updateSessionSaved, updateSidebarState} from "../stores/settings.store.js";
-    import {router} from "../shared/services/router.service";
-    import {initSessionStore, removeSessionImage, sessionStore} from "../stores/session.store";
+<script lang='ts'>
+  import { createEventDispatcher, onMount } from 'svelte';
+  import Icon from '../shared/components/Icon.svelte';
+  import Logo from '../shared/components/Logo.svelte';
+  import StartTest from './StartTest.svelte';
+  import LoginRegistration from './LoginRegistration.svelte';
+  import { recordingService } from '../services/recording.service.js';
+  import { copyToClipboard, NTSession } from '@notest/common';
+  import { tokenService } from '../shared/services/token.service.js';
+  import SessionPanel from './SessionPanel.svelte';
+  import { http } from '../shared/services/http.service';
+  import { appStore, updateSessionSaved, updateSidebarState } from '../stores/settings.store.js';
+  import { router } from '../shared/services/router.service';
+  import { initSessionStore, removeSessionImage, sessionStore } from '../stores/session.store';
 
-    export const dispatcher = createEventDispatcher();
+  export const dispatcher = createEventDispatcher();
 
-    let validSessionTitle = true;
-    let userSessions = []
+  let validSessionTitle = true;
+  let userSessions = [];
 
-    onMount(async () => {
-        if ($appStore.logged) loadUserSessions()
-    })
+  onMount(async () => {
+    if ($appStore.logged) loadUserSessions();
+  });
 
-    const onClickStartButton = () => {
-        dispatcher('start-recording');
-    };
-    const onClickSaveButton = async () => {
-        if ($sessionStore.title) {
-            validSessionTitle = true;
-            recordingService.save({
-                title: $sessionStore.title,
-                description: $sessionStore.description,
-                targetList: $sessionStore.targetList,
-                isLogin: false,
-                reference: recordingService.reference,
-            })
-            updateSessionSaved(await recordingService.referenceAvailable())
-            loadUserSessions();
-        } else {
-            validSessionTitle = false;
-        }
+  const onClickStartButton = () => {
+    dispatcher('start-recording');
+  };
+  const onClickSaveButton = async () => {
+    if ($sessionStore.title) {
+      validSessionTitle = true;
+      recordingService.save({
+        title: $sessionStore.title,
+        description: $sessionStore.description,
+        targetList: $sessionStore.targetList,
+        isLogin: false,
+        reference: recordingService.reference
+      });
+      updateSessionSaved(await recordingService.referenceAvailable());
+      loadUserSessions();
+    } else {
+      validSessionTitle = false;
     }
-    const copyLinkReference = () => copyToClipboard(link(recordingService.reference))
+  };
+  const copyLinkReference = () => copyToClipboard(link(recordingService.reference));
 
-    const link = (ref) => `${import.meta.env.VITE_APP_URL}/session/session-preview?reference=${ref}`
+  const link = (ref) => `${import.meta.env.VITE_APP_URL}/session/session-preview?reference=${ref}`;
 
-    function cancelSessionRecorded() {
-        initSessionStore()
-        updateSidebarState('start');
+  function cancelSessionRecorded() {
+    initSessionStore();
+    updateSidebarState('start');
+  }
+
+  async function redirect(reference) {
+    const token = await tokenService.getToken();
+    let params;
+    if (token) {
+      params = { token, reference };
+    } else {
+      params = { reference };
     }
+    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params);
+  }
 
-    async function redirect(reference) {
-        const token = await tokenService.getToken()
-        let params;
-        if (token) {
-            params = {token, reference}
-        } else {
-            params = {reference}
-        }
-        router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params)
-    }
+  function redirectToDashboard() {
+    router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`);
+  }
 
-    function redirectToDashboard() {
-        router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`)
-    }
-
-    let loadUserSessions = () => {
-        http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions)
-    }
+  let loadUserSessions = () => {
+    http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions);
+  };
 
 </script>
 
-<div class="sidebar-right">
-    <div class="nt-close-sidebar-container" on:mouseup={() => {dispatcher('close-sidebar')}}>
-        <Icon color="gray" name="arrowRight"/>
+<div class='sidebar-right'>
+  <div class='nt-close-sidebar-container' on:mouseup={() => {dispatcher('close-sidebar')}}>
+    <Icon color='gray' name='arrowRight' />
+  </div>
+  <div class='nt-header-container'>
+    <Logo></Logo>
+    <div class='nt-widget-home-settings-container'>
+      <button class='nt-button squared-10' title='Settings' on:click={copyLinkReference}>
+        <Icon name='settings' color='white'></Icon>
+      </button>
+      <button class='nt-button squared-10' class:nt-readonly='{!$appStore.logged}'
+              title={!$appStore.logged ? "Login for unlock Dashboard" : "Dashboard"}
+              on:click={!$appStore.logged ? ()=>{} : redirectToDashboard}>
+        <Icon name='home' color='white'></Icon>
+      </button>
     </div>
-    <div class="nt-header-container">
-        <Logo></Logo>
-        <div class="nt-widget-home-settings-container">
-            <button class="nt-button" title="Settings" on:click={copyLinkReference}>
-                <Icon name="settings" color="white"></Icon>
-            </button>
-            <button class="nt-button" class:nt-readonly="{!$appStore.logged}"
-                    title={!$appStore.logged ? "Login for unlock Dashboard" : "Dashboard"}
-                    on:click={!$appStore.logged ? ()=>{} : redirectToDashboard}>
-                <Icon name="home" color="white"></Icon>
-            </button>
-        </div>
-    </div>
+  </div>
 
-    {#if $appStore.sidebarState === 'start'}
-        {#if $appStore.logged && userSessions.length > 0}
-            <SessionPanel sessions="{userSessions}" title="Session History"
-                          on:session-selected={(e) => redirect(e.detail.reference)}></SessionPanel>
+  {#if $appStore.sidebarState === 'start'}
+    {#if $appStore.logged && userSessions.length > 0}
+      <SessionPanel sessions='{userSessions}' title='Session History'
+                    on:session-selected={(e) => redirect(e.detail.reference)}></SessionPanel>
+    {/if}
+    <div class='nt-center nt-start-registration-container'>
+      <StartTest on:start-registration={onClickStartButton}></StartTest>
+    </div>
+    <LoginRegistration on:login={loadUserSessions}></LoginRegistration>
+  {/if}
+  {#if $appStore.sidebarState === 'end'}
+    <div class='nt-session-ended-container'>
+      <label class='nt-label'>Title ⃰</label>
+      <input class='nt-input' autofocus placeholder='Session title' bind:value={$sessionStore.title} />
+      {#if !validSessionTitle}
+        <p class='nt-title-not-inserted-container'>*Insert TITLE before saving</p>
+      {/if}
+      <label class='nt-label'>Description</label>
+      <textarea class='nt-textarea' placeholder='Session description'
+                bind:value={$sessionStore.description}></textarea>
+      <div>
+        <label class='nt-label'>Test assertions (Optional)</label>
+        <div class='nt-test-assertion-container'>
+          {#each $sessionStore.images as url }
+            <div class='nt-img-assertion-container'
+                 on:mouseup={() => removeSessionImage(url)}>
+              <div class='nt-cancel-assertion'>✖</div>
+              <img class='nt-img-url-assertion' src={url} alt='' />
+            </div>
+          {/each}
+          <button on:click={() => dispatcher('highlighter')} class='nt-button nt-assertion-utils'>
+            <Icon name='picker'></Icon>
+          </button>
+          <button on:click={() => dispatcher('selector')}
+                  class='nt-button nt-assertion-utils nt-assertion-selector-container'>
+            <Icon name='selector'></Icon>
+          </button>
+        </div>
+      </div>
+      <div class='nt-session-save-delete-container'>
+        {#if !$appStore.sessionSaved}
+          <button on:click={onClickSaveButton} title='Save this session'
+                  class='nt-button nt-save-session-button'>
+            <Icon name='save' color='white'></Icon>
+          </button>
+          <button class='nt-button nt-cancel-session-button' title='Discard this session'
+                  on:mouseup={cancelSessionRecorded}>
+            <Icon name='discard' color='white'></Icon>
+          </button>
+        {:else}
+          <div class='nt-session-saved-dialog'>
+            Session Saved
+          </div>
         {/if}
-        <div class="nt-center nt-start-registration-container">
-            <StartTest on:start-registration={onClickStartButton}></StartTest>
+      </div>
+      {#if $appStore.sessionSaved}
+        <div class='nt-copy-button-container'>
+          <input class='nt-input' value='{link(recordingService.reference)}' />
+          <button class='nt-button nt-copy-button' title='Copy session link' on:click={copyLinkReference}>
+            <Icon name='copy' color='white'></Icon>
+          </button>
+          <button class='nt-button nt-redirect-container' title='Open your session'
+                  on:click={()=>redirect(recordingService.reference)}>
+            <Icon color='white' name='redirect'></Icon>
+          </button>
         </div>
-        <LoginRegistration on:login={loadUserSessions}></LoginRegistration>
-    {/if}
-    {#if $appStore.sidebarState === 'end'}
-        <div class="nt-session-ended-container">
-            <label class="nt-label">Title ⃰</label>
-            <input class="nt-input" autofocus placeholder="Session title" bind:value={$sessionStore.title}/>
-            {#if !validSessionTitle}
-                <p class="nt-title-not-inserted-container">*Insert TITLE before saving</p>
-            {/if}
-            <label class="nt-label">Description</label>
-            <textarea class="nt-textarea" placeholder="Session description"
-                      bind:value={$sessionStore.description}></textarea>
-            <div>
-                <label class="nt-label">Test assertions (Optional)</label>
-                <div class="nt-test-assertion-container">
-                    {#each $sessionStore.images as url }
-                        <div class="nt-img-assertion-container"
-                             on:mouseup={() => removeSessionImage(url)}>
-                            <div class="nt-cancel-assertion">✖</div>
-                            <img class="nt-img-url-assertion" src={url} alt=""/>
-                        </div>
-                    {/each}
-                    <button on:click={() => dispatcher('highlighter')} class="nt-button nt-assertion-utils">
-                        <Icon name="picker"></Icon>
-                    </button>
-                    <button on:click={() => dispatcher('selector')}
-                            class="nt-button nt-assertion-utils nt-assertion-selector-container">
-                        <Icon name="selector"></Icon>
-                    </button>
-                </div>
-            </div>
-            <div class="nt-session-save-delete-container">
-                {#if !$appStore.sessionSaved}
-                    <button on:click={onClickSaveButton} title="Save this session"
-                            class="nt-button nt-save-session-button">
-                        <Icon name="save" color="white"></Icon>
-                    </button>
-                    <button class="nt-button nt-cancel-session-button" title="Discard this session"
-                            on:mouseup={cancelSessionRecorded}>
-                        <Icon name="discard" color="white"></Icon>
-                    </button>
-                {:else}
-                    <div class="nt-session-saved-dialog">
-                        Session Saved
-                    </div>
-                {/if}
-            </div>
-            {#if $appStore.sessionSaved}
-                <div class="nt-copy-button-container">
-                    <input class="nt-input" value="{link(recordingService.reference)}"/>
-                    <button class="nt-button nt-copy-button" title="Copy session link" on:click={copyLinkReference}>
-                        <Icon name="copy" color="white"></Icon>
-                    </button>
-                    <button class="nt-button nt-redirect-container" title="Open your session"
-                            on:click={()=>redirect(recordingService.reference)}>
-                        <Icon color="white" name="redirect"></Icon>
-                    </button>
-                </div>
-                <div class="nt-home-button-container">
-                    <a class="nt-home-button"
-                       on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
-                    </a>
-                </div>
-            {/if}
+        <div class='nt-redirect-home-button-container'>
+          <a class='nt-home-anchor'
+             on:click={()=>{cancelSessionRecorded(); updateSessionSaved(false)}}>↩ Go Back Home
+          </a>
         </div>
-    {/if}
+      {/if}
+    </div>
+  {/if}
 </div>
 
 
-<style lang="scss">
+<style lang='scss'>
   @import "/app.scss";
 
   .sidebar-right {
@@ -269,7 +269,7 @@
     @apply ml-4;
   }
 
-  .nt-home-button {
+  .nt-home-anchor {
     @apply mt-2 items-center justify-center;
   }
 
@@ -282,7 +282,7 @@
   }
 
   .nt-widget-home-settings-container {
-    @apply relative flex flex-row w-10 h-10 gap-2;
+    @apply relative flex flex-row gap-2;
   }
 
   .nt-readonly {
@@ -292,6 +292,7 @@
   .nt-settings-container {
     @apply absolute
   }
+
   .nt-header-container {
     @apply flex justify-between items-center
   }
