@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import Icon from '../shared/components/Icon.svelte';
   import Logo from '../shared/components/Logo.svelte';
+  import Switch from '../shared/components/Switch.svelte';
   import StartTest from './StartTest.svelte';
   import LoginRegistration from './LoginRegistration.svelte';
   import { recordingService } from '../services/recording.service.js';
@@ -9,7 +10,7 @@
   import { tokenService } from '../shared/services/token.service.js';
   import SessionPanel from './SessionPanel.svelte';
   import { http } from '../shared/services/http.service';
-  import { appStore, updateSessionSaved, updateSidebarState } from '../stores/settings.store.js';
+  import {appStore, updateRecButtonOnScreen, updateSessionSaved, updateSidebarState} from '../stores/settings.store.js';
   import { router } from '../shared/services/router.service';
   import { initSessionStore, removeSessionImage, sessionStore } from '../stores/session.store';
 
@@ -17,6 +18,7 @@
 
   let validSessionTitle = true;
   let userSessions = [];
+  let showPopupSettings = false;
 
   onMount(async () => {
     if ($appStore.logged) loadUserSessions();
@@ -65,9 +67,14 @@
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`);
   }
 
+  function togglePopupSettings() {
+    showPopupSettings = !showPopupSettings;
+  }
+
   let loadUserSessions = () => {
     http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions);
   };
+
 
 </script>
 
@@ -78,7 +85,7 @@
   <div class='nt-header-container'>
     <Logo></Logo>
     <div class='nt-widget-home-settings-container'>
-      <button class='nt-button squared-10' title='Settings' on:click={copyLinkReference}>
+      <button class='nt-button squared-10' title='Settings' on:click={togglePopupSettings}>
         <Icon name='settings' color='white'></Icon>
       </button>
       <button class='nt-button squared-10' class:nt-readonly='{!$appStore.logged}'
@@ -86,6 +93,14 @@
               on:click={!$appStore.logged ? ()=>{} : redirectToDashboard}>
         <Icon name='home' color='white'></Icon>
       </button>
+      {#if showPopupSettings}
+          <div class="nt-settings-container">
+            <p class="nt-settings-name">Settings</p>
+            <Switch switched="{$appStore.recButtonOnScreen}"  on:switched-change={(ev) => updateRecButtonOnScreen(ev.detail)}>
+              Show Buttons on screen
+            </Switch>
+          </div>
+      {/if}
     </div>
   </div>
 
@@ -290,10 +305,15 @@
   }
 
   .nt-settings-container {
-    @apply absolute
+    z-index: 2;
+    @apply absolute top-12 shadow-md shadow-gray-500 right-0 bg-white rounded-xl w-64
   }
 
   .nt-header-container {
     @apply flex justify-between items-center
+  }
+
+  .nt-settings-name {
+    @apply text-gray-400 ml-3
   }
 </style>
