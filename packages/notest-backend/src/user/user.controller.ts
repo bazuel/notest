@@ -31,7 +31,6 @@ export class UserController {
 
   @Post('login')
   async login(@Body() user: NTUser) {
-    console.log('login: ', user);
     const found = await this.userService.findUser(
       user.email.trim().toLowerCase(),
       user.password.trim()

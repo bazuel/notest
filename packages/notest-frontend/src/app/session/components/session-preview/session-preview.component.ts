@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import { NTAssertion, NTMedia, NTSession} from '@notest/common';
+import { NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common';
 import { TokenService } from '../../../shared/services/token.service';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
@@ -18,6 +18,7 @@ export class SessionPreviewComponent {
 
   loginSessions: { title: string; reference: string }[] = [];
   loginSessionSelected?: { title: string; reference: string };
+  backendType: NTRunnerConfig['backendType'] = 'full';
   sessionRunHistory!: {
     session: NTSession;
     screenshot: NTMedia[];
@@ -47,6 +48,7 @@ export class SessionPreviewComponent {
     this.isLoginSession = this.session.info.isLogin!;
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
+    this.backendType = rerunStorage.backendType || 'full';
     this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.session.reference);
     if (this.sessionRunHistory.length === 0) {
       this.fullLoading = true;
@@ -90,13 +92,14 @@ export class SessionPreviewComponent {
   }
 
   async rerunSession() {
-    this.sessionService.rerunSession(this.reference);
+    this.sessionService.rerunSession(this.reference, this.backendType);
     localStorage.setItem(
       'rerun',
       JSON.stringify({
         currentSessions: this.sessionRunHistory.length,
         reference: this.reference,
-        loading: true
+        loading: true,
+        backendType: this.backendType
       })
     );
     this.waitForSessionLoaded(this.sessionRunHistory.length);
@@ -113,11 +116,10 @@ export class SessionPreviewComponent {
   async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
     if (loginSession) {
       this.session.info.loginReference = loginSession.reference;
-      if(this.isLoginSession) {
+      if (this.isLoginSession) {
         await this.setIsLoginSessionState(false);
       }
-    }
-    else {
+    } else {
       this.session.info.loginReference = undefined;
     }
     this.loginSessionSelected = loginSession;
@@ -155,7 +157,7 @@ export class SessionPreviewComponent {
   async setIsLoginSessionState(isLogin: boolean) {
     this.isLoginSession = isLogin;
     this.session.info.isLogin = isLogin;
-    if(isLogin && this.loginSessionSelected){
+    if (isLogin && this.loginSessionSelected) {
       await this.setLoginReference(undefined);
     }
     await this.sessionService.updateSessionInfo(this.session);
@@ -166,4 +168,7 @@ export class SessionPreviewComponent {
     this.router.navigateByUrl(debuggerLink);
   }
 
+  toggleBackendType() {
+    this.backendType = this.backendType === 'full' ? 'mock' : 'full';
+  }
 }

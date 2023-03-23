@@ -4,18 +4,14 @@ import { environment } from '../environments/environment';
 
 export class ClusterConsumer {
   private kafkaConsumer: Consumer;
-  private config: {
-    backendType: string;
-  };
 
   private topic: ConsumerSubscribeTopics = {
     topics: [environment.topic],
     fromBeginning: false
   };
 
-  constructor(config: { backendType: string }) {
+  constructor() {
     this.kafkaConsumer = this.createConsumer();
-    this.config = config;
   }
 
   private createConsumer() {
@@ -38,7 +34,10 @@ export class ClusterConsumer {
       await this.kafkaConsumer.connect();
       await this.kafkaConsumer.subscribe(this.topic);
       await this.kafkaConsumer.run({
-        eachMessage: (m) => new ClusterRunnerService(this.config).runMessage(m)
+        eachMessage: (m) => {
+          console.log('Message received: ', m.topic, m.message.value.toString());
+          return new ClusterRunnerService().runMessage(m);
+        }
       });
     } catch (error) {
       console.log('Error: ', error);

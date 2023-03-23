@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { BLDomEvent, BLSessionEvent, NTSession } from '@notest/common';
+import { BLDomEvent, BLSessionEvent, NTRunnerConfig, NTSession } from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -49,8 +49,8 @@ export class SessionService {
       );
   }
 
-  rerunSession(reference: string) {
-    return this.http.gest(`/session/run`, { reference });
+  rerunSession(reference: string, backendType: NTRunnerConfig['backendType']) {
+    return this.http.gest(`/session/run`, { reference, backend_type: backendType });
   }
 
   updateSessionInfo(session: NTSession) {

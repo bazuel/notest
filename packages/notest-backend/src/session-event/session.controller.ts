@@ -77,7 +77,7 @@ export class SessionController {
     const events: BLSessionEvent[] = await unzipJson(zipBuffer);
     const { reference, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
     const url = events[0].url;
-    //TO-DO event.service.save not working
+    //TODO event.service.save not working
     //await this.eventService.save(events, reference);
     const session: NTSession = {
       url,
@@ -86,8 +86,11 @@ export class SessionController {
       info: sessionInfo
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
-    console.log("Send message to kafka");
-    await this.producerService.produceMessage(decodeURIComponent(reference));
+    console.log('Send message to kafka');
+    await this.producerService.produceMessage({
+      reference: decodeURIComponent(reference),
+      backendType: 'full'
+    });
     res.send({ ok: true, reference });
   }
 
@@ -103,8 +106,12 @@ export class SessionController {
   }
 
   @Get('run')
-  async run(@Query('reference') reference: string) {
-    await this.producerService.produceMessage(decodeURIComponent(reference));
+  async run(
+    @Query('reference') reference: string,
+    @Query('backend_type') backendType: 'mock' | 'full'
+  ) {
+    const message = { reference: decodeURIComponent(reference), backendType };
+    await this.producerService.produceMessage(message);
   }
 
   @Get('find-by-url')

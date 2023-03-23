@@ -50,6 +50,35 @@ export class SessionRunner extends SessionExecutor {
     await this.setup(session);
   }
 
+  private async setup(session: BLSessionEvent[]) {
+    this.browser = await chromium.launch({ headless: true });
+    this.context = await this.createBrowserContext(this.browser);
+    if (this.configuration.recordVideo) await this.addMouseHtmlElement();
+    if (this.configuration.backendType == 'mock') {
+      this.mockService = new MockService(this.context, session);
+      await this.mockService.setupMock();
+    }
+    if (this.configuration.monitoring) {
+      await setupMonitor(this.context, this.eventsCollected, this.monitorScript);
+    }
+    if (this.configuration.loginEvent) {
+      console.log('LOGIN EVENTS FOUNDED: \n');
+      console.log(this.configuration.loginEvent);
+      await this.setInitStorage(this.configuration.loginEvent);
+      await injectCookie(this.context, this.configuration.loginEvent);
+    } else {
+      await this.setInitStorage(session);
+    }
+    this.page = await this.context.newPage();
+    if (this.configuration.recordVideo) {
+      this.video = this.page.video();
+    }
+    this.startVideoTimeStamp = new Date();
+    const referrerAction = findEventsByName<BLPageReferrerEvent>(session, 'referrer');
+    await this.page.goto(referrerAction.url);
+    console.log(`setup phase, page: ${await this.page.title()}`);
+  }
+
   async executeEvent(index: number, session: BLSessionEvent[], event: BLSessionEvent) {
     if (
       screenshotWhitelist.includes(event.name) &&
@@ -144,35 +173,6 @@ export class SessionRunner extends SessionExecutor {
       startVideoTimeStamp: this.startVideoTimeStamp,
       videoPath: await this.video?.path()
     };
-  }
-
-  private async setup(session: BLSessionEvent[]) {
-    this.browser = await chromium.launch({ headless: true });
-    this.context = await this.createBrowserContext(this.browser);
-    if (this.configuration.recordVideo) await this.addMouseHtmlElement();
-    if (this.configuration.backendType == 'mock') {
-      this.mockService = new MockService(this.context, session);
-      await this.mockService.setupMock();
-    }
-    if (this.configuration.monitoring) {
-      await setupMonitor(this.context, this.eventsCollected, this.monitorScript);
-    }
-    if (this.configuration.loginEvent) {
-      console.log("LOGIN EVENTS FOUNDED: \n")
-      console.log(this.configuration.loginEvent);
-      await this.setInitStorage(this.configuration.loginEvent);
-      await injectCookie(this.context, this.configuration.loginEvent);
-    } else {
-      await this.setInitStorage(session);
-    }
-    this.page = await this.context.newPage();
-    if (this.configuration.recordVideo) {
-      this.video = this.page.video();
-    }
-    this.startVideoTimeStamp = new Date();
-    const referrerAction = findEventsByName<BLPageReferrerEvent>(session, 'referrer');
-    await this.page.goto(referrerAction.url);
-    console.log(`setup phase, page: ${await this.page.title()}`);
   }
 
   private async setInitStorage(session: BLSessionEvent[]) {

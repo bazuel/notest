@@ -1,60 +1,61 @@
-<div *ngIf="session && !fullLoading" class="h-full w-full p-5 flex">
-  <div class="relative w-2/3 h-2/3">
-    <div class="flex flex-row items-center">
-      <h1 class="font-bold">{{session.info.title}}</h1>
-      <button class="ml-10 h-1/3" title="Go to developer mode" (click)="goTo()">Developer Mode</button>
+<div *ngIf='session && !fullLoading' class='h-full w-full p-5 flex'>
+  <div class='relative w-2/3 h-2/3'>
+    <div class='flex flex-row items-center'>
+      <h1 class='font-bold'>{{session.info.title}}</h1>
+      <button class='ml-10 h-1/3' title='Go to developer mode' (click)='goTo()'>Developer Mode</button>
     </div>
-    <nt-video #video *ngIf="videoReference" class="absolute w-10/12 h-[85%]"
+    <nt-video #video *ngIf='videoReference' class='absolute w-10/12 h-[85%]'
               [reference]=videoReference></nt-video>
-    <nt-screenshot class="absolute mt-5 smooth-open w-11/12 h-[85%]" *ngIf="screenshotOnHover"
-                   [reference]="screenshotOnHover.reference"
+    <nt-screenshot class='absolute mt-5 smooth-open w-11/12 h-[85%]' *ngIf='screenshotOnHover'
+                   [reference]='screenshotOnHover.reference'
                    [name]=screenshotOnHover.name></nt-screenshot>
   </div>
-  <div class="w-1/3 h-4/5 px-8">
-    <div class="flex justify-items items-center">
-      <label class="text-2xl my-4 mr-4">Run history</label>
-      <div *ngIf="!loading" class="bo-button-icon w-10 h-10" title="Rerun session" (click)="rerunSession()">
-        <nt-icon name="rerun"></nt-icon>
+  <div class='w-1/3 h-4/5 px-8'>
+    <div class='flex justify-items items-center'>
+      <label class='text-2xl my-4 mr-4'>Run history</label>
+      <div *ngIf='!loading' class='bo-button-icon w-10 h-10' title='Rerun session' (click)='rerunSession()'>
+        <nt-icon name='rerun'></nt-icon>
       </div>
-      <div *ngIf="!loading" class="bo-button-icon w-10 h-10" title="Session settings"
-           (click)="showSessionSettings = !showSessionSettings">
-        <nt-icon name="settings"></nt-icon>
+      <div *ngIf='!loading' class='bo-button-icon w-10 h-10' title='Session settings'
+           (click)='showSessionSettings = !showSessionSettings'>
+        <nt-icon name='settings'></nt-icon>
       </div>
-      <div *ngIf="loading" class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
-      <div *ngIf="loading" class="text-nt-300 ml-4 text-bold text-lg">Your session is running... 😉</div>
+      <div *ngIf='loading' class='bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0'></div>
+      <div *ngIf='loading' class='text-nt-300 ml-4 text-bold text-lg'>Your session is running... 😉</div>
     </div>
-    <div class="h-full overflow-auto scrollbar-hidden">
-      <div class="h-fit animate-pulse" *ngIf="loading">
-        <div class="bg-nt-50 h-4 rounded-lg my-5 w-28"></div>
-        <div class="flex gap-2">
-          <div class="bg-nt-50 rounded-lg h-28 w-64 m-2"></div>
-          <div class="bg-nt-50 rounded-lg h-28 w-64 m-2"></div>
+    <div class='h-full overflow-auto scrollbar-sm'>
+      <div class='h-fit animate-pulse' *ngIf='loading'>
+        <div class='bg-nt-50 h-4 rounded-lg my-5 w-28'></div>
+        <div class='flex gap-2'>
+          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
+          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
         </div>
       </div>
-      <div *ngFor="let run of sessionRunHistory" class="flex flex-col mt-5"
-           (mouseenter)="setSessionHover(run.session)"
-           (mouseleave)="setSessionHover(undefined)">
-        <div class="flex items-center">
-          <label class="my-5">{{run.session.created | date:"dd-MM-YYYY, hh:mm"}}</label>
-          <nt-icon *ngIf="run.assertion.info?.execution_error" name="error"
-                   class="w-5 h-5 mx-2 text-red-500"></nt-icon>
-          <nt-icon *ngIf="!run.assertion.info?.execution_error" name="{{run.assertion.test_failed ? 'warning': 'success'}}"
+      <div *ngFor='let run of sessionRunHistory' class='flex flex-col mt-5'
+           (mouseenter)='setSessionHover(run.session)'
+           (mouseleave)='setSessionHover(undefined)'>
+        <div class='flex items-center'>
+          <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, hh:mm"}}</label>
+          <nt-icon *ngIf='run.assertion.info?.execution_error' name='error'
+                   class='w-5 h-5 mx-2 text-red-500'></nt-icon>
+          <nt-icon *ngIf='!run.assertion.info?.execution_error'
+                   name="{{run.assertion.test_failed ? 'warning': 'success'}}"
                    class="w-5 h-5 mx-2 {{run.assertion.test_failed ? 'text-orange-500': 'text-green-500'}}"></nt-icon>
-          <div *ngIf="run.session === sessionOnHover" class="bo-button-icon w-8 h-8"
-               (click)="showVideo(run.session.reference)">
-            <nt-icon name="play"></nt-icon>
+          <div *ngIf='run.session === sessionOnHover' class='bo-button-icon w-8 h-8'
+               (click)='showVideo(run.session.reference)'>
+            <nt-icon name='play'></nt-icon>
           </div>
         </div>
-        <div class="flex gap-2 overflow-auto scrollbar-sm">
-          <div *ngFor="let image of run.screenshot">
+        <div class='flex gap-2 overflow-auto scrollbar-sm'>
+          <div *ngFor='let image of run.screenshot'>
             <nt-screenshot
-              class="transition-all duration-50 w-64 h-28 rounded-md shadow-lg overflow-hidden border-nt-400 m-2 cursor-pointer"
-              [class.border-2]="screenshotOnHover === image"
-              (click)="goToVideo(run.session.reference,image.start!,run.video.start!)"
-              (mouseover)="showImage(image)"
-              (mouseout)="hideImage()"
-              [reference]="image.reference" [name]="image.name"
-              [lazyload]="true"></nt-screenshot>
+              class='transition-all duration-50 w-64 h-28 rounded-md shadow-lg overflow-hidden border-nt-400 m-2 cursor-pointer'
+              [class.border-2]='screenshotOnHover === image'
+              (click)='goToVideo(run.session.reference,image.start!,run.video.start!)'
+              (mouseover)='showImage(image)'
+              (mouseout)='hideImage()'
+              [reference]='image.reference' [name]='image.name'
+              [lazyload]='true'></nt-screenshot>
           </div>
         </div>
       </div>
@@ -62,49 +63,50 @@
   </div>
 </div>
 
-<div *ngIf="fullLoading" class="h-screen w-screen flex animate-pulse p-5">
-  <div class="relative w-2/3 h-2/3">
-    <div class="bg-nt-50 h-8 rounded-lg my-5 w-56"></div>
-    <div class="absolute w-10/12 h-[85%] bg-nt-50 rounded-lg"></div>
+<div *ngIf='fullLoading' class='h-full w-full flex animate-pulse p-5'>
+  <div class='relative w-2/3 h-2/3'>
+    <div class='bg-nt-50 h-8 rounded-lg my-5 w-56'></div>
+    <div class='absolute w-10/12 h-[85%] bg-nt-50 rounded-lg'></div>
   </div>
-  <div class="w-1/3 h-4/5 px-8">
-    <div class="flex justify-items items-center">
-      <label class="text-2xl my-4 mr-4">Run history</label>
-      <div class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
-      <div class="text-nt-300 ml-4 text-bold text-lg">Your session is running... 😉</div>
+  <div class='w-1/3 h-4/5 px-8'>
+    <div class='flex justify-items items-center'>
+      <label class='text-2xl my-4 mr-4'>Run history</label>
+      <div class='bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0'></div>
+      <div class='text-nt-300 ml-4 text-bold text-lg'>Your session is running... 😉</div>
     </div>
-    <div class="h-full overflow-auto">
-      <div class="h-fit animate-pulse">
-        <div class="bg-nt-50 h-4 rounded-lg my-5 w-28"></div>
-        <div class="flex gap-2">
-          <div class="bg-nt-50 rounded-lg h-28 w-64 m-2"></div>
-          <div class="bg-nt-50 rounded-lg h-28 w-64 m-2"></div>
+    <div class='h-full overflow-auto'>
+      <div class='h-fit animate-pulse'>
+        <div class='bg-nt-50 h-4 rounded-lg my-5 w-28'></div>
+        <div class='flex gap-2'>
+          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
+          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<nt-popup *ngIf="showSessionSettings" (close)="showSessionSettings = false">
-  <div class="p-2 w-96 h-96">
-    <label class="text-2xl mt-1">Settings</label>
-    <label class="text-sm">Apply User Login Session</label>
-    <div *ngIf="!loginSessionSelected" class="mt-2">
-      <sm-autocomplete *ngIf="!loading" [items]="loginSessions" [property]="'title'"
-                       (itemSelected)="setLoginReference($event); setIsLoginSessionState(false)"
-                       placeholder="Select Login Session"></sm-autocomplete>
+<nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>
+  <div class='p-5 w-96 h-96'>
+    <label class='text-2xl mt-1'>Settings</label>
+    <label>Apply User Login Session</label>
+    <div *ngIf='!loginSessionSelected' class='mt-2'>
+      <sm-autocomplete *ngIf='!loading' [items]='loginSessions' [property]="'title'"
+                       (itemSelected)='setLoginReference($event); setIsLoginSessionState(false)'
+                       placeholder='Select Login Session'></sm-autocomplete>
     </div>
-    <div class="relative shadow-md rounded-md w-fit mt-2" *ngIf="loginSessionSelected">
-      <nt-badge  (click)="setLoginReference(undefined)" class="p-0">
+    <div class='relative shadow-md rounded-md w-fit mt-2' *ngIf='loginSessionSelected'>
+      <nt-badge (click)='setLoginReference(undefined)' class='p-0'>
         {{loginSessionSelected.title}}
       </nt-badge>
     </div>
-    <label class="text-sm">Set this session as User Login Session</label>
-    <div class="w-fit mt-2">
-      <nt-switch [switched]="isLoginSession" (switchedChange)="setIsLoginSessionState($event)">
-        User Login Session
+    <label>Set this session as User Login Session</label>
+    <div class='w-fit mt-2'>
+      <nt-switch [switched]='isLoginSession' (switchedChange)='setIsLoginSessionState($event)'>
       </nt-switch>
     </div>
+    <label>Test only isolated frontend</label>
+    <nt-switch [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
   </div>
 </nt-popup>
 

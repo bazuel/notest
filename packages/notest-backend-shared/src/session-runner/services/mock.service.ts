@@ -29,10 +29,10 @@ export class MockService {
   }
 
   async setupMock() {
-    await this.setupMockCookie(this.session);
-    this.actualTimestamp = this.session[0].timestamp;
-    await this.exposeFunctions();
-    await this.mockDate();
+    //await this.setupMockCookie(this.session);
+    //this.actualTimestamp = this.session[0].timestamp;
+    //await this.exposeFunctions();
+    //await this.mockDate();
     await this.mockRoutes(this.session);
   }
 
@@ -60,9 +60,9 @@ export class MockService {
       }`);
   }
 
-  async mockRoutes(jsonEvents: BLEvent[]) {
+  async mockRoutes(eventList: BLEvent[]) {
     let key;
-    let responses = jsonEvents.filter((event) => event.name == 'after-response') as any;
+    let responses = eventList.filter((event) => event.name == 'after-response') as any;
     let requestMap: { [k: string]: any[] } = {};
     for (const { request, response } of responses) {
       key = `${request.method}.${request.url}`;
@@ -79,7 +79,7 @@ export class MockService {
         let headers = {};
         Object.keys(response.headers).forEach((h) => (headers[h] = response.headers[h]));
         await route.fulfill({
-          headers: headers,
+          headers,
           body: response.body as string,
           status: response.status
         });
