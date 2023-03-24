@@ -53,6 +53,7 @@ export class SessionService extends CrudService<NTSession> {
     if (!session[0].info?.loginReference) return undefined;
     return this.read(decodeURIComponent(session[0].info.loginReference));
   }
+
   async findByUrl(url: string) {
     return await this.findByField('url', url);
   }

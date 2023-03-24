@@ -1,6 +1,13 @@
 import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { AssertionService, MediaService, SessionService } from '@notest/backend-shared';
-import { BLEvent, BLSessionEvent, NTSession, streamToBuffer, unzipJson } from '@notest/common';
+import {
+  BLEvent,
+  BLSessionEvent,
+  NTAssertion,
+  NTSession,
+  streamToBuffer,
+  unzipJson
+} from '@notest/common';
 import { EventService } from './event.service';
 import { UserId, UserIdIfHasToken } from '../shared/token.decorator';
 import { ProducerService } from '../notest-shared/services/producer.service';
@@ -162,9 +169,24 @@ export class SessionController {
     return sessions[0];
   }
 
-  @Get('run-history')
+  @Get('get-run-history')
   async runHistory(@Query('reference') reference: string) {
     const assertions = await this.assertionService.findByField('original_reference', reference);
+    return this.getRunHistory(assertions);
+  }
+
+  @Get('login-sessions')
+  async loginSessions(@Query('domain') domain: string, @UserId() userid: string) {
+    const sessions = await this.sessionService.findByDomain(domain, userid);
+    return sessions.filter((s) => s.info.isLogin);
+  }
+
+  @Get('get-rerun-session')
+  async getRerunSession(@Query('reference') reference: string) {
+    return await this.assertionService.findByField('original_reference', reference);
+  }
+
+  private async getRunHistory(assertions: NTAssertion[]) {
     const runHistory = await Promise.all(
       assertions.map(async (assertion) => {
         const session = await this.sessionService.findByField('reference', assertion.new_reference);
@@ -178,11 +200,5 @@ export class SessionController {
       })
     );
     return runHistory.reverse();
-  }
-
-  @Get('login-sessions')
-  async loginSessions(@Query('domain') domain: string, @UserId() userid: string) {
-    const sessions = await this.sessionService.findByDomain(domain, userid);
-    return sessions.filter((s) => s.info.isLogin);
   }
 }

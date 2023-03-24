@@ -79,7 +79,7 @@
     </div>
     <label>Set this session as User Login Session</label>
     <div class='w-fit mt-2'>
-      <nt-switch [switched]='isLoginSession' (switchedChange)='setIsLoginSessionState($event)'>
+      <nt-switch [switched]='session.info.isLogin' (switchedChange)='setIsLoginSessionState($event)'>
       </nt-switch>
     </div>
     <label>Test only isolated frontend</label>

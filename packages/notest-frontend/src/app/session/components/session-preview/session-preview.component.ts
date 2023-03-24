@@ -30,8 +30,6 @@ export class SessionPreviewComponent {
   sessionOnHover?: NTSession;
   loading = false;
   fullLoading = false;
-  userLogged = false;
-  isLoginSession = false;
   showSessionSettings = false;
 
   constructor(
@@ -42,19 +40,14 @@ export class SessionPreviewComponent {
   ) {}
 
   async ngOnInit() {
-    this.userLogged = this.tokenService.logged;
     this.reference = this.urlParamsService.get('reference')!;
     this.session = await this.sessionService.getSessionByReference(this.reference);
-    this.isLoginSession = this.session.info.isLogin!;
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
-    this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.session.reference);
-    if (this.sessionRunHistory.length === 0) {
-      this.fullLoading = true;
-      this.sessionRunHistory = await this.sessionService.waitForReference(this.session.reference);
-      this.fullLoading = false;
-    }
+    this.fullLoading = true;
+    this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
+    this.fullLoading = false;
     this.sessionRunHistory.forEach((sessionRun) => sessionRun.screenshot);
     this.videoReference = this.sessionRunHistory[0].session.reference;
     if (rerunStorage.loading && rerunStorage.reference === this.reference) {
@@ -116,9 +109,7 @@ export class SessionPreviewComponent {
   async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
     if (loginSession) {
       this.session.info.loginReference = loginSession.reference;
-      if (this.isLoginSession) {
-        await this.setIsLoginSessionState(false);
-      }
+      await this.setIsLoginSessionState(!this.session.info.isLogin);
     } else {
       this.session.info.loginReference = undefined;
     }
@@ -128,12 +119,8 @@ export class SessionPreviewComponent {
 
   showVideo(reference: string) {
     this.videoReference = undefined;
-    setTimeout(() => {
-      this.videoReference = reference;
-    }, 10);
-    setTimeout(() => {
-      this.video?.play(0);
-    }, 100);
+    setTimeout(() => (this.videoReference = reference), 10);
+    setTimeout(() => this.video?.play(0), 100);
   }
 
   setSessionHover(session?: NTSession) {
@@ -155,7 +142,6 @@ export class SessionPreviewComponent {
   }
 
   async setIsLoginSessionState(isLogin: boolean) {
-    this.isLoginSession = isLogin;
     this.session.info.isLogin = isLogin;
     if (isLogin && this.loginSessionSelected) {
       await this.setLoginReference(undefined);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { BLDomEvent, BLSessionEvent, NTRunnerConfig, NTSession } from '@notest/common';
+import { BLDomEvent, BLSessionEvent, NTAssertion, NTRunnerConfig, NTSession } from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -49,8 +49,12 @@ export class SessionService {
       );
   }
 
-  rerunSession(reference: string, backendType: NTRunnerConfig['backendType']) {
-    return this.http.gest(`/session/run`, { reference, backend_type: backendType });
+  async getRerunSessions(reference: string) {
+    return this.http.gest<NTAssertion[]>(`/session/get-rerun-session`, { reference });
+  }
+
+  rerunSession(reference: string, backend_type: NTRunnerConfig['backendType']) {
+    return this.http.gest(`/session/run`, { reference, backend_type });
   }
 
   updateSessionInfo(session: NTSession) {
@@ -58,25 +62,20 @@ export class SessionService {
   }
 
   async loadNewSession(reference: string, currentSessions: number) {
-    return new Promise<any[]>((resolve) => {
+    await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
-        const sessions = await this.getSessionRunHistory(reference);
-        console.log('waiting for new session', currentSessions, sessions);
-        if (sessions.length > currentSessions) {
+        const rerunSessions = await this.getRerunSessions(reference);
+        console.log('waiting for new session', currentSessions, rerunSessions.length);
+        if (rerunSessions.length > currentSessions) {
           clearInterval(interval);
-          resolve(sessions);
+          resolve();
         }
       }, 1000);
     });
-  }
-
-  async waitForReference(reference: string) {
-    return await this.loadNewSession(reference, 0);
+    return this.getSessionRunHistory(reference);
   }
 
   async loadFullDom(fullDomId: string) {
-    return this.http.gest<BLDomEvent>(`/session/shot`, {
-      id: fullDomId
-    });
+    return this.http.gest<BLDomEvent>(`/session/shot`, { id: fullDomId });
   }
 }
