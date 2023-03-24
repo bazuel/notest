@@ -29,6 +29,8 @@ export class ClusterRunnerService {
       ) as NTClusterMessage;
 
       let eventList = await sessionService.read(reference);
+      if (!eventList.length) return;
+
       //login session
       const loginEventList = await sessionService.getLoginReference(reference);
       if (loginEventList) {
@@ -42,7 +44,6 @@ export class ClusterRunnerService {
         console.log('Login phase ended');
       }
       //Execute Event List
-      if (!eventList.length) return;
       const { events, testFailed, lastEvent, videoPath } = await this.runSessionWithConfiguration(
         eventList,
         {
@@ -62,9 +63,7 @@ export class ClusterRunnerService {
       );
       //Save Results and Clean
       const newReference = eventReference(events[0]);
-      const newSession: NTSession = {
-        reference: newReference
-      } as NTSession;
+      const newSession = { reference: newReference } as NTSession;
       const newEventsZipped = (await new JsonCompressor().zip(events)) as Buffer;
       await sessionService.save(newEventsZipped, newSession);
       const assertion = this.generateRunAssertion(
