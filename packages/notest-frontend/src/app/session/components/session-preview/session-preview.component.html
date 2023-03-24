@@ -65,7 +65,7 @@
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>
   <div class='p-5 w-fit h-fit'>
-    <label class='text-2xl mt-1'>Settings</label>
+    <label class='text-2xl mt-1'>Session Settings</label>
     <label>Apply User Login Session</label>
     <div *ngIf='!loginSessionSelected' class='mt-2'>
       <sm-autocomplete *ngIf='!loading' [items]='loginSessions' [property]="'title'"
@@ -82,16 +82,16 @@
       <nt-switch [switched]='session.info.isLogin' (switchedChange)='setIsLoginSessionState($event)'>
       </nt-switch>
     </div>
-    <label>Test only isolated frontend</label>
-    <nt-switch [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
+    <label>Test Frontend in isolated mode</label>
+    <nt-switch class="mt-2" [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
 
-    <label>Choose domain</label>
-    <div class='flex items-center gap-2'>
-      <input [(ngModel)]='sessionDomain.domain' [placeholder]='"www.domain.com"' />
-      <nt-switch [switched]='sessionDomain.ssl'>HTTP/HTTPS</nt-switch>
+    <label>Set Custom Domain Settings</label>
+    <div class='flex flex-row items-center gap-2 mt-2'>
+      <input [(ngModel)]='sessionDomain.domain' [placeholder]='"www.domain.com / localhost"' /> :
+      <input class="w-14" [(ngModel)]='sessionDomain.port' [placeholder]='"8080"' />
+      <nt-switch [switched]='sessionDomain.ssl'>SSL</nt-switch>
     </div>
-    <label>Port</label>
-    <input [(ngModel)]='sessionDomain.port' [placeholder]='"8080"' />
+
   </div>
 </nt-popup>
 
