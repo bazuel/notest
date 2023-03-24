@@ -73,7 +73,13 @@ export class MockService {
         requestMap[`${request.method()}.${request.url()}`] &&
         requestMap[`${request.method()}.${request.url()}`].length
       ) {
-        let response = requestMap[`${request.method()}.${request.url()}`].shift();
+        let response = {} as any;
+        let responseMap = requestMap[`${request.method()}.${request.url()}`];
+        if(responseMap.length > 1){
+          response = responseMap.shift();
+        } else {
+          response = responseMap[0];
+        }
         let headers = {};
         Object.keys(response.headers).forEach((h) => (headers[h] = response.headers[h]));
         await route.fulfill({
