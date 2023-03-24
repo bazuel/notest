@@ -11,6 +11,5 @@ import { Component } from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['./screenshot-list.component.scss']
 })
 export class ScreenshotListPlaceholderComponent {}

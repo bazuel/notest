@@ -171,7 +171,7 @@ export class SessionController {
 
   @Get('get-run-history')
   async runHistory(@Query('reference') reference: string) {
-    const assertions = await this.assertionService.findByField('original_reference', reference);
+    const assertions = await this.assertionService.findByField('original_reference', encodeURIComponent(reference));
     return this.getRunHistory(assertions);
   }
 
@@ -183,7 +183,7 @@ export class SessionController {
 
   @Get('get-rerun-session')
   async getRerunSession(@Query('reference') reference: string) {
-    return await this.assertionService.findByField('original_reference', reference);
+    return await this.assertionService.findByField('original_reference', encodeURIComponent(reference));
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {

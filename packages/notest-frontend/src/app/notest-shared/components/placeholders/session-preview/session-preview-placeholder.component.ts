@@ -26,6 +26,5 @@ import { Component } from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['./session-preview.component.scss']
 })
 export class SessionPreviewPlaceholderComponent {}

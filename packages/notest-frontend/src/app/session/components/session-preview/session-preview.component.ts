@@ -58,7 +58,7 @@ export class SessionPreviewComponent {
   private async waitForSessionLoaded(currentSessions: number) {
     this.loading = true;
     this.sessionRunHistory = await this.sessionService.loadNewSession(
-      encodeURIComponent(this.reference),
+      this.reference,
       currentSessions
     );
     this.loading = false;

@@ -41,7 +41,7 @@ export class SessionService {
 
   async getSessionRunHistory(reference: string) {
     return this.http
-      .gest<any[]>(`/session/run-history`, { reference })
+      .gest<any[]>(`/session/get-run-history`, { reference })
       .then((res) =>
         res.sort(
           (a, b) => new Date(b.session.created).getTime() - new Date(a.session.created).getTime()
@@ -66,6 +66,7 @@ export class SessionService {
       const interval = setInterval(async () => {
         const rerunSessions = await this.getRerunSessions(reference);
         console.log('waiting for new session', currentSessions, rerunSessions.length);
+        console.log(rerunSessions);
         if (rerunSessions.length > currentSessions) {
           clearInterval(interval);
           resolve();
