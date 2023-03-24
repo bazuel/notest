@@ -13,29 +13,27 @@
   <div class='w-1/3 h-4/5 px-8'>
     <div class='flex justify-items items-center'>
       <label class='text-2xl my-4 mr-4'>Run history</label>
-      <div *ngIf='!loading' class='bo-button-icon w-10 h-10' title='Rerun session' (click)='rerunSession()'>
-        <nt-icon name='rerun'></nt-icon>
-      </div>
-      <div *ngIf='!loading' class='bo-button-icon w-10 h-10' title='Session settings'
-           (click)='showSessionSettings = !showSessionSettings'>
-        <nt-icon name='settings'></nt-icon>
-      </div>
-      <div *ngIf='loading' class='bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0'></div>
-      <div *ngIf='loading' class='text-nt-300 ml-4 text-bold text-lg'>Your session is running... 😉</div>
+      <ng-container *ngIf='!loading'>
+        <div class='bo-button-icon w-10 h-10' title='Rerun session' (click)='rerunSession()'>
+          <nt-icon name='rerun'></nt-icon>
+        </div>
+        <div class='bo-button-icon w-10 h-10' title='Session settings'
+             (click)='showSessionSettings = !showSessionSettings'>
+          <nt-icon name='settings'></nt-icon>
+        </div>
+      </ng-container>
+      <ng-container *ngIf='loading'>
+        <div class='bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0'></div>
+        <div class='text-nt-300 ml-4 text-bold text-lg'>Your session is running... 😉</div>
+      </ng-container>
     </div>
     <div class='h-full overflow-auto scrollbar-sm'>
-      <div class='h-fit animate-pulse' *ngIf='loading'>
-        <div class='bg-nt-50 h-4 rounded-lg my-5 w-28'></div>
-        <div class='flex gap-2'>
-          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
-          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
-        </div>
-      </div>
+      <nt-screenshot-list-placeholder *ngIf='loading'></nt-screenshot-list-placeholder>
       <div *ngFor='let run of sessionRunHistory' class='flex flex-col mt-5'
            (mouseenter)='setSessionHover(run.session)'
            (mouseleave)='setSessionHover(undefined)'>
         <div class='flex items-center'>
-          <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, hh:mm"}}</label>
+          <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, HH:mm"}}</label>
           <nt-icon *ngIf='run.assertion.info?.execution_error' name='error'
                    class='w-5 h-5 mx-2 text-red-500'></nt-icon>
           <nt-icon *ngIf='!run.assertion.info?.execution_error'
@@ -63,28 +61,7 @@
   </div>
 </div>
 
-<div *ngIf='fullLoading' class='h-full w-full flex animate-pulse p-5'>
-  <div class='relative w-2/3 h-2/3'>
-    <div class='bg-nt-50 h-8 rounded-lg my-5 w-56'></div>
-    <div class='absolute w-10/12 h-[85%] bg-nt-50 rounded-lg'></div>
-  </div>
-  <div class='w-1/3 h-4/5 px-8'>
-    <div class='flex justify-items items-center'>
-      <label class='text-2xl my-4 mr-4'>Run history</label>
-      <div class='bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0'></div>
-      <div class='text-nt-300 ml-4 text-bold text-lg'>Your session is running... 😉</div>
-    </div>
-    <div class='h-full overflow-auto'>
-      <div class='h-fit animate-pulse'>
-        <div class='bg-nt-50 h-4 rounded-lg my-5 w-28'></div>
-        <div class='flex gap-2'>
-          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
-          <div class='bg-nt-50 rounded-lg h-28 w-64 m-2'></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<nt-session-preview-placeholder *ngIf='fullLoading'></nt-session-preview-placeholder>
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>
   <div class='p-5 w-96 h-96'>
