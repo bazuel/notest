@@ -4,6 +4,7 @@ import {
   BLEvent,
   BLSessionEvent,
   NTAssertion,
+  NTClusterMessage,
   NTSession,
   streamToBuffer,
   unzipJson
@@ -115,9 +116,14 @@ export class SessionController {
   @Get('run')
   async run(
     @Query('reference') reference: string,
-    @Query('backend_type') backendType: 'mock' | 'full'
+    @Query('backend_type') backendType: 'mock' | 'full',
+    @Query('session_domain') sessionDomain: string
   ) {
-    const message = { reference: decodeURIComponent(reference), backendType };
+    const message: NTClusterMessage = {
+      reference: decodeURIComponent(reference),
+      backendType,
+      sessionDomain
+    };
     await this.producerService.produceMessage(message);
   }
 
@@ -171,7 +177,10 @@ export class SessionController {
 
   @Get('get-run-history')
   async runHistory(@Query('reference') reference: string) {
-    const assertions = await this.assertionService.findByField('original_reference', encodeURIComponent(reference));
+    const assertions = await this.assertionService.findByField(
+      'original_reference',
+      encodeURIComponent(reference)
+    );
     return this.getRunHistory(assertions);
   }
 
@@ -183,7 +192,10 @@ export class SessionController {
 
   @Get('get-rerun-session')
   async getRerunSession(@Query('reference') reference: string) {
-    return await this.assertionService.findByField('original_reference', encodeURIComponent(reference));
+    return await this.assertionService.findByField(
+      'original_reference',
+      encodeURIComponent(reference)
+    );
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {

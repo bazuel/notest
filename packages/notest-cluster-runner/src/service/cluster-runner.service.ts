@@ -24,7 +24,7 @@ export class ClusterRunnerService {
       //get Event List from reference
       console.log('Session Started');
 
-      const { reference, backendType } = JSON.parse(
+      const { reference, backendType, sessionDomain } = JSON.parse(
         messagePayload.message.value.toString()
       ) as NTClusterMessage;
 
@@ -35,7 +35,8 @@ export class ClusterRunnerService {
         console.log('Login phase started');
         const loginResult = await this.runSessionWithConfiguration(loginEventList, {
           login: true,
-          backendType: 'full'
+          backendType: 'full',
+          sessionDomain
         });
         this.configuration.loginEvent = loginResult.events;
         console.log('Login phase ended');
@@ -47,14 +48,16 @@ export class ClusterRunnerService {
         {
           monitoring: true,
           recordVideo: true,
-          backendType
+          backendType,
+          sessionDomain
         }
       );
       const { screenshotList, startVideoTimeStamp } = await this.runSessionWithConfiguration(
         eventList,
         {
           takeScreenshot: true,
-          backendType
+          backendType,
+          sessionDomain
         }
       );
       //Save Results and Clean
@@ -100,7 +103,8 @@ export class ClusterRunnerService {
       login = false,
       monitoring = false,
       recordVideo = false,
-      backendType
+      backendType,
+      sessionDomain
     }: NTRunnerConfig
   ) {
     this.configuration.monitoring = monitoring;
@@ -108,6 +112,7 @@ export class ClusterRunnerService {
     this.configuration.login = login;
     this.configuration.takeScreenshot = takeScreenshot;
     this.configuration.backendType = backendType;
+    this.configuration.sessionDomain = sessionDomain;
     return await runNewSession(eventList, this.configuration);
   }
 

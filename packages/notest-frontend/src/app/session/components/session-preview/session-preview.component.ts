@@ -31,6 +31,7 @@ export class SessionPreviewComponent {
   loading = false;
   fullLoading = false;
   showSessionSettings = false;
+  sessionDomain = { domain: '', ssl: false, port: '' };
 
   constructor(
     private sessionService: SessionService,
@@ -42,6 +43,9 @@ export class SessionPreviewComponent {
   async ngOnInit() {
     this.reference = this.urlParamsService.get('reference')!;
     this.session = await this.sessionService.getSessionByReference(this.reference);
+    this.sessionDomain.ssl = this.session.url.includes('https://');
+    this.sessionDomain.domain = new URL(this.session.url).hostname;
+    this.sessionDomain.port = new URL(this.session.url).port;
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
@@ -85,7 +89,11 @@ export class SessionPreviewComponent {
   }
 
   async rerunSession() {
-    this.sessionService.rerunSession(this.reference, this.backendType);
+    const rerunUrl =
+      (this.sessionDomain.ssl ? 'https://' : 'http://') +
+      this.sessionDomain.domain +
+      (this.sessionDomain.port ? ':' + this.sessionDomain.port : '');
+    this.sessionService.rerunSession(this.reference, this.backendType, rerunUrl);
     localStorage.setItem(
       'rerun',
       JSON.stringify({

@@ -53,8 +53,12 @@ export class SessionService {
     return this.http.gest<NTAssertion[]>(`/session/get-rerun-session`, { reference });
   }
 
-  rerunSession(reference: string, backend_type: NTRunnerConfig['backendType']) {
-    return this.http.gest(`/session/run`, { reference, backend_type });
+  rerunSession(
+    reference: string,
+    backend_type: NTRunnerConfig['backendType'],
+    session_domain: string
+  ) {
+    return this.http.gest(`/session/run`, { reference, backend_type, session_domain });
   }
 
   updateSessionInfo(session: NTSession) {

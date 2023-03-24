@@ -64,7 +64,7 @@
 <nt-session-preview-placeholder *ngIf='fullLoading'></nt-session-preview-placeholder>
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>
-  <div class='p-5 w-96 h-96'>
+  <div class='p-5 w-fit h-fit'>
     <label class='text-2xl mt-1'>Settings</label>
     <label>Apply User Login Session</label>
     <div *ngIf='!loginSessionSelected' class='mt-2'>
@@ -84,6 +84,14 @@
     </div>
     <label>Test only isolated frontend</label>
     <nt-switch [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
+
+    <label>Choose domain</label>
+    <div class='flex items-center gap-2'>
+      <input [(ngModel)]='sessionDomain.domain' [placeholder]='"www.domain.com"' />
+      <nt-switch [switched]='sessionDomain.ssl'>HTTP/HTTPS</nt-switch>
+    </div>
+    <label>Port</label>
+    <input [(ngModel)]='sessionDomain.port' [placeholder]='"8080"' />
   </div>
 </nt-popup>
 

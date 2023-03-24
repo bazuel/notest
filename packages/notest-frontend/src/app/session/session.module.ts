@@ -14,6 +14,7 @@ import { NotestSharedModule } from '../notest-shared/notest-shared.module';
 import { SessionPreviewComponent } from './components/session-preview/session-preview.component';
 import { CameraComponent } from './components/camera/camera.component';
 import { CatchToken } from "../shared/services/catch-token";
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   { path: 'session-camera', component: CameraComponent },
@@ -34,7 +35,13 @@ const routes: Routes = [
     SessionPreviewComponent,
     CameraComponent
   ],
-  imports: [CommonModule, RouterModule.forChild(routes), SharedModule, NotestSharedModule],
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    SharedModule,
+    NotestSharedModule,
+    FormsModule
+  ],
   providers: [SessionService]
 })
 export class SessionModule {}

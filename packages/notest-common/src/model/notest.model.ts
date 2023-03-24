@@ -63,11 +63,13 @@ export interface NTRunnerConfig {
   login?: boolean;
   takeScreenshot?: boolean;
   loginEvent?: BLSessionEvent[];
+  sessionDomain?: string;
 }
 
 export type NTClusterMessage = {
   reference: string;
   backendType: "mock" | "full";
+  sessionDomain?: string;
 };
 
 export interface NTEvent {
