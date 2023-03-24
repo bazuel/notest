@@ -30,33 +30,31 @@ export class MockService {
 
   async setupMock() {
     //await this.setupMockCookie(this.session);
-    //this.actualTimestamp = this.session[0].timestamp;
-    //await this.exposeFunctions();
-    //await this.mockDate();
+    this.actualTimestamp = this.session[0].timestamp;
+    await this.exposeFunctions();
+    await this.mockDate();
     await this.mockRoutes(this.session);
   }
 
   async mockDate() {
     // Update the Date accordingly in your test pages
-    await this.context.addInitScript(`{
-        // Extend Date constructor to default to fakeNow
-         (async() => {
-              let fakeNow = await window.getActualMockedTimestamp()
-              Date = class extends Date {
-                constructor(...args) {
-                  if (args.length === 0) {
-                    super(fakeNow);
-                  } else {
-                    super(...args);
-                  }
-                }
-              }
-              // Override Date.now() to start from fakeNow
-              const __DateNowOffset = fakeNow - Date.now();
-              const __DateNow = Date.now;
-              Date.now = () => __DateNow() + __DateNowOffset;
-              await window.setMockDateTrue()
-         })()
+    await this.context.addInitScript(`
+      {
+        (async() => {
+          if(window.controlMock?.date) return;
+          fakeNow = await window.getActualMockedTimestamp()
+          // Override the default Date constructor with a custom constructor
+          OriginalDate = Date;
+          Date = function() {
+            if (arguments.length === 0) {
+              return new OriginalDate(fakeNow);
+            } else {
+              return new OriginalDate(...arguments);
+            }
+          }
+          Date.now = () => new Date().getTime()
+          await window.setMockDateTrue()
+        })()
       }`);
   }
 
@@ -93,10 +91,10 @@ export class MockService {
     await this.context.exposeFunction('controlMock', () => this.mockedState);
     await this.context.exposeFunction('getActualMockedTimestamp', () => this._actualTimestamp);
     await this.context.exposeFunction('setMockDateTrue', () => (this.mockedState.date = true));
-    await this.context.exposeFunction(
-      'setMockStorageTrue',
-      () => (this.mockedState.storage = true)
-    );
+    // await this.context.exposeFunction(
+    //   'setMockStorageTrue',
+    //   () => (this.mockedState.storage = true)
+    // );
   }
 
   set actualTimestamp(value: number) {
