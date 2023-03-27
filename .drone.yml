@@ -123,6 +123,7 @@ steps:
       - sudo k0s kc create -f /nt/notest-cluster-runner/kafka-consumer.yaml
   depends_on:
     - backend-deploy
+
 trigger:
   branch:
     - release
