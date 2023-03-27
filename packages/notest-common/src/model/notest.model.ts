@@ -49,10 +49,12 @@ export interface NTSession {
 export interface NTAssertion {
   original_reference: string;
   new_reference: string;
-  test_failed: boolean;
   info?: {
     last_event: BLSessionEvent;
     execution_error: boolean;
+    backend_type: NTRunnerConfig['backendType'];
+    test_failed: boolean;
+    session_logged: boolean;
   };
 }
 

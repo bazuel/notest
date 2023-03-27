@@ -24,6 +24,7 @@ export class SessionPreviewComponent {
     screenshot: NTMedia[];
     video: NTMedia;
     assertion: NTAssertion;
+    showInfo: boolean;
   }[];
   screenshotOnHover?: NTMedia;
   videoReference?: string;
@@ -164,5 +165,15 @@ export class SessionPreviewComponent {
 
   toggleBackendType() {
     this.backendType = this.backendType === 'full' ? 'mock' : 'full';
+  }
+
+  toggleSessionInfoPopup(reference : string) {
+    this.sessionRunHistory = this.sessionRunHistory.map(element => {
+      if(element.session.reference === reference){
+          console.log(element.session.info?.loginReference)
+          element.showInfo =! element.showInfo;
+      }
+      return element;
+    })
   }
 }

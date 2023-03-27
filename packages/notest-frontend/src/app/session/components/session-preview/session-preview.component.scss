@@ -15,3 +15,7 @@
 .login-ref-delete {
   @apply cursor-pointer text-nt-500 -top-2.5 -right-2.5 absolute;
 }
+.nt-session-info {
+  z-index: 3;
+  @apply absolute top-12 shadow-md shadow-gray-500 right-0 bg-white rounded-xl w-64
+}

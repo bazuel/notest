@@ -71,7 +71,9 @@ export class ClusterRunnerService {
         eventReference(events[0]),
         testFailed,
         lastEvent,
-        false
+        false,
+        backendType,
+        loginEventList ? true : false,
       );
       await mediaService.saveScreenshot(screenshotList, newReference).catch((e) => {
         console.log('Failed to upload Screenshot', e);
@@ -120,15 +122,19 @@ export class ClusterRunnerService {
     new_reference: string,
     test_failed: boolean,
     last_event: BLSessionEvent,
-    execution_error: boolean
+    execution_error: boolean,
+    backend_type : NTRunnerConfig['backendType'],
+    session_logged: boolean
   ) {
     return {
       original_reference,
       new_reference,
-      test_failed,
       info: {
         last_event,
-        execution_error
+        execution_error,
+        backend_type,
+        test_failed,
+        session_logged
       }
     } as NTAssertion;
   }
