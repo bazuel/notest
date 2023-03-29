@@ -55,6 +55,7 @@ export interface NTAssertion {
     backend_type: NTRunnerConfig['backendType'];
     test_failed: boolean;
     session_logged: boolean;
+    http_test_pass: boolean;
   };
 }
 
