@@ -1,7 +1,8 @@
 import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
-import {BLHTTPResponseEvent, BLSessionEvent, NTAssertion} from '@notest/common';
+import { BLHTTPResponseEvent, BLSessionEvent, NTAssertion } from '@notest/common';
 import { CrudService } from '../shared/services/crud.service';
-import { HttpComparator } from '../session-comparator/http-comparator';
+import { HttpComparator } from '../session-comparator/http-assertion/http-comparator';
+import { StatusResponseAssertion } from '../session-comparator/http-assertion/status-response.assertion';
 
 export class AssertionService extends CrudService<NTAssertion> {
   protected table = 'nt_assertion';
@@ -11,46 +12,49 @@ export class AssertionService extends CrudService<NTAssertion> {
   constructor(db: PostgresDbService) {
     super(db);
     this.generateTable();
-    this.httpComparator = new HttpComparator();
+    this.httpComparator = new StatusResponseAssertion();
   }
 
   async generateTable() {
     const tableExists = await this.db.tableExists(this.table);
     if (!tableExists) {
       await this.db.query`
-          create table if not exists ${sql(this.table)}
-          (
-              ${sql(this.id)}    BIGSERIAL PRIMARY KEY,
-              original_reference text,
-              new_reference      text,
-              info               jsonb,
-              created            TIMESTAMPTZ
-          );
-      `;
+                create table if not exists ${sql(this.table)}
+                (
+                    ${sql(this.id)}
+                    BIGSERIAL
+                    PRIMARY
+                    KEY,
+                    original_reference
+                    text,
+                    new_reference
+                    text,
+                    info
+                    jsonb,
+                    created
+                    TIMESTAMPTZ
+                );
+            `;
       await this.db.query`CREATE INDEX ON ${sql(this.table)} (original_reference);`;
     }
   }
-  compareHttpRequest(originalEventList: BLSessionEvent[], newEventList: BLSessionEvent[]){
-    let originalRequestList : BLHTTPResponseEvent[] = [];
-    let newRequestList : BLHTTPResponseEvent[] = [];
-    for (let originalEvent of originalEventList){
-      if(originalEvent.name === 'after-response'){
-        originalRequestList.push(originalEvent as unknown as BLHTTPResponseEvent)
-      }
-    }
-    for (let newEvent of newEventList){
-      if(newEvent.name === 'after-response'){
-        newRequestList.push(newEvent as unknown as BLHTTPResponseEvent)
-      }
-    }
-    return this.httpComparator.compareList(newRequestList,originalRequestList);
+
+  compareHttpRequest(originalEventList: BLSessionEvent[], newEventList: BLSessionEvent[]) {
+    const httpEventsFilter = (event: BLSessionEvent) => event.name === 'after-response';
+    const originalRequestList = originalEventList.filter(
+      httpEventsFilter
+    ) as unknown as BLHTTPResponseEvent[];
+    const newRequestList = newEventList.filter(
+      httpEventsFilter
+    ) as unknown as BLHTTPResponseEvent[];
+    return this.httpComparator.compareList(originalRequestList, newRequestList);
   }
+
   async save(assert: NTAssertion) {
     console.log('Saving:', assert);
     return this.db.query<NTAssertion>`
-        insert into ${sql(this.table)}
-            ${sql({ ...cleanUndefined(assert), created: new Date() })}
-            returning *`;
+            insert into ${sql(this.table)}
+                ${sql({ ...cleanUndefined(assert), created: new Date() })} returning *`;
   }
 }
 

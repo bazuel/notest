@@ -74,7 +74,7 @@ export class ClusterRunnerService {
         false,
         backendType,
         !!loginEventList,
-          assertionService.compareHttpRequest(eventList,events)
+        assertionService.compareHttpRequest(eventList,events)
       );
       await mediaService.saveScreenshot(screenshotList, newReference).catch((e) => {
         console.log('Failed to upload Screenshot', e);
