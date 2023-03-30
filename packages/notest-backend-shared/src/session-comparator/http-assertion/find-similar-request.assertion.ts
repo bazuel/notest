@@ -10,15 +10,17 @@ export abstract class FindSimilarRequestAssertion extends HttpComparator {
       requestMap[key].push(event);
     }
     let eventsError = [];
+
     for (const currentHttpEvent of eventList1) {
       let key = `${currentHttpEvent.request.method}.${currentHttpEvent.request.url}`;
-      const similarRequest = requestMap[key].shift();
+      const similarRequest = requestMap[key]?.shift();
       if (!similarRequest) eventsError.push(currentHttpEvent);
       else if (!this.compare(similarRequest, currentHttpEvent)) {
         eventsError.push(currentHttpEvent);
       }
     }
-    return eventsError.length == 0;
+    const testPass = eventsError.length == 0;
+    return testPass;
   }
 
   abstract compare(event1: BLHTTPResponseEvent, event2: BLHTTPResponseEvent);

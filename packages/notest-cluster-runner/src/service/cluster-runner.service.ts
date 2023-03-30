@@ -13,6 +13,9 @@ import { assertionService } from 'notest-backend-shared';
 import { mediaService } from 'notest-backend-shared';
 import { sessionService } from 'notest-backend-shared';
 import { EachMessagePayload } from 'kafkajs';
+import { StatusResponseAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/status-response.assertion';
+import { CompareBodyTypeAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-body-type.assertion';
+import { CompareJsonBodyKeysAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-json-body-keys.assertion';
 
 export class ClusterRunnerService {
   private configuration: NTRunnerConfig = {} as any;
@@ -66,6 +69,21 @@ export class ClusterRunnerService {
       const newSession = { reference: newReference } as NTSession;
       const newEventsZipped = (await new JsonCompressor().zip(events)) as Buffer;
       await sessionService.save(newEventsZipped, newSession);
+      const fetch_response_pass = assertionService.compareHttpRequest(
+        eventList,
+        events,
+        new StatusResponseAssertion()
+      );
+      const fetch_body_type_pass = assertionService.compareHttpRequest(
+        eventList,
+        events,
+        new CompareBodyTypeAssertion()
+      );
+      const response_body_match_pass = assertionService.compareHttpRequest(
+        eventList,
+        events,
+        new CompareJsonBodyKeysAssertion()
+      );
       const assertion = this.generateRunAssertion(
         encodeURIComponent(reference),
         eventReference(events[0]),
@@ -74,7 +92,9 @@ export class ClusterRunnerService {
         false,
         backendType,
         !!loginEventList,
-        assertionService.compareHttpRequest(eventList,events)
+        fetch_response_pass,
+        fetch_body_type_pass,
+        response_body_match_pass
       );
       await mediaService.saveScreenshot(screenshotList, newReference).catch((e) => {
         console.log('Failed to upload Screenshot', e);
@@ -124,20 +144,26 @@ export class ClusterRunnerService {
     test_failed: boolean,
     last_event: BLSessionEvent,
     execution_error: boolean,
-    backend_type : NTRunnerConfig['backendType'],
+    backend_type: NTRunnerConfig['backendType'],
     session_logged: boolean,
-    http_test_pass: boolean
+    fetch_response_pass: boolean,
+    fetch_body_type_pass: boolean,
+    response_body_match_pass: boolean
   ) {
     return {
       original_reference,
       new_reference,
+      assertions: {
+        fetch_response_pass,
+        fetch_body_type_pass,
+        response_body_match_pass
+      },
       info: {
         last_event,
         execution_error,
         backend_type,
         test_failed,
-        session_logged,
-        http_test_pass,
+        session_logged
       }
     } as NTAssertion;
   }

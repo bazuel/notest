@@ -49,13 +49,17 @@ export interface NTSession {
 export interface NTAssertion {
   original_reference: string;
   new_reference: string;
+  assertions: {
+    fetch_response_pass: boolean;
+    fetch_body_type_pass: boolean;
+    response_body_match_pass: boolean;
+  };
   info?: {
     last_event: BLSessionEvent;
     execution_error: boolean;
-    backend_type: NTRunnerConfig['backendType'];
+    backend_type: NTRunnerConfig["backendType"];
     test_failed: boolean;
     session_logged: boolean;
-    http_test_pass: boolean;
   };
 }
 
