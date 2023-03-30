@@ -105,7 +105,7 @@
     <div class='flex flex-row items-center gap-2 mt-2'>
       <input [(ngModel)]='sessionDomain.domain' [placeholder]='"domain"' /> :
       <input class="w-14" [(ngModel)]='sessionDomain.port' [placeholder]='"port"' />
-      <nt-switch [switched]='sessionDomain.ssl'>SSL</nt-switch>
+      <nt-switch [switched]='sessionDomain.ssl' (switchedChange)='sessionDomain.ssl = !sessionDomain.ssl'>SSL</nt-switch>
     </div>
 
   </div>
