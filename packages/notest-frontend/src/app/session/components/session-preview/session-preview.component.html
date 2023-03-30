@@ -34,11 +34,11 @@
            (mouseleave)='setSessionHover(undefined)'>
         <div class='flex items-center'>
           <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, HH:mm"}}</label>
-          <nt-icon *ngIf='run.assertion.info?.execution_error' name='error'
+          <nt-icon *ngIf='run.assertion.info.execution_error' name='error'
                    class='w-5 h-5 mx-2 text-red-500'></nt-icon>
-          <nt-icon *ngIf='!run.assertion.info?.execution_error'
-                   name="{{run.assertion.test_failed ? 'warning': 'success'}}"
-                   class="w-5 h-5 mx-2 {{run.assertion.test_failed ? 'text-orange-500': 'text-green-500'}}"></nt-icon>
+          <nt-icon *ngIf='!run.assertion.info.execution_error'
+                   name="{{run.assertion.info.test_failed ? 'warning': 'success'}}"
+                   class="w-5 h-5 mx-2 {{run.assertion.info.test_failed ? 'text-orange-500': 'text-green-500'}}"></nt-icon>
           <div *ngIf='run.session === sessionOnHover' class='bo-button-icon w-8 h-8'
                (click)='showVideo(run.session.reference)'>
             <nt-icon name='play'></nt-icon>
@@ -89,7 +89,7 @@
     <div class='flex flex-row items-center gap-2 mt-2'>
       <input [(ngModel)]='sessionDomain.domain' [placeholder]='"www.domain.com / localhost"' /> :
       <input class="w-14" [(ngModel)]='sessionDomain.port' [placeholder]='"8080"' />
-      <nt-switch [switched]='sessionDomain.ssl'>SSL</nt-switch>
+      <nt-switch [switched]='sessionDomain.ssl' (switchedChange)='sessionDomain.ssl = !sessionDomain.ssl'>SSL</nt-switch>
     </div>
 
   </div>

@@ -20,7 +20,6 @@ export class AssertionService extends CrudService<NTAssertion> {
               ${sql(this.id)}    BIGSERIAL PRIMARY KEY,
               original_reference text,
               new_reference      text,
-              test_failed        boolean,
               info               jsonb,
               created            TIMESTAMPTZ
           );

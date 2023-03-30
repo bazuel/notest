@@ -125,8 +125,8 @@ export class ClusterRunnerService {
     return {
       original_reference,
       new_reference,
-      test_failed,
       info: {
+        test_failed,
         last_event,
         execution_error
       }

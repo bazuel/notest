@@ -49,8 +49,8 @@ export interface NTSession {
 export interface NTAssertion {
   original_reference: string;
   new_reference: string;
-  test_failed: boolean;
-  info?: {
+  info: {
+    test_failed: boolean;
     last_event: BLSessionEvent;
     execution_error: boolean;
   };

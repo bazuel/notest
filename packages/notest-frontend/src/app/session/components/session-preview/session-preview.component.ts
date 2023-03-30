@@ -49,9 +49,12 @@ export class SessionPreviewComponent {
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
-    this.fullLoading = true;
-    this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
-    this.fullLoading = false;
+    this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.reference);
+    if (this.sessionRunHistory?.length == 0) {
+      this.fullLoading = true;
+      this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
+      this.fullLoading = false;
+    }
     this.sessionRunHistory.forEach((sessionRun) => sessionRun.screenshot);
     this.videoReference = this.sessionRunHistory[0].session.reference;
     if (rerunStorage.loading && rerunStorage.reference === this.reference) {
