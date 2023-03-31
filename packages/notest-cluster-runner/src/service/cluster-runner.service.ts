@@ -4,21 +4,16 @@ import {
   JsonCompressor,
   NTAssertion,
   NTClusterMessage,
-  NTRunnerConfig,
   NTSession
 } from '@notest/common';
 import * as fs from 'fs';
-import { runNewSession } from '../functions/run-new-session';
-import { assertionService } from 'notest-backend-shared';
-import { mediaService } from 'notest-backend-shared';
-import { sessionService } from 'notest-backend-shared';
+import { runLoginSession, runSession } from '../functions/run-new-session';
+import { assertionService, mediaService, sessionService } from 'notest-backend-shared';
 import { EachMessagePayload } from 'kafkajs';
 
 export class ClusterRunnerService {
-  private configuration: NTRunnerConfig = {} as any;
-
   async runMessage(messagePayload: EachMessagePayload) {
-    if (messagePayload.message.size == 0) return;
+    if (messagePayload.message.size == 0) throw new Error('Empty message');
     const timer = setInterval(() => messagePayload.heartbeat(), 5000);
     try {
       //get Event List from reference
@@ -29,111 +24,66 @@ export class ClusterRunnerService {
       ) as NTClusterMessage;
 
       let eventList = await sessionService.read(reference);
-      if (!eventList.length) return;
+      if (!eventList.length) throw new Error('No events found');
 
       //login session
       const loginEventList = await sessionService.getLoginReference(reference);
+      let loggedStoragesAndCookie: BLSessionEvent[] = [];
       if (loginEventList) {
-        console.log('Login phase started');
-        const loginResult = await this.runSessionWithConfiguration(loginEventList, {
-          login: true,
-          backendType: 'full',
-          sessionDomain
-        });
-        this.configuration.loginEvent = loginResult.events;
-        console.log('Login phase ended');
+        loggedStoragesAndCookie = await runLoginSession(loginEventList, sessionDomain);
       }
       //Execute Event List
-      const { events, testFailed, lastEvent, videoPath } = await this.runSessionWithConfiguration(
+      const [monitoringSession, screenshotSession] = await runSession(
         eventList,
-        {
-          monitoring: true,
-          recordVideo: true,
-          backendType,
-          sessionDomain
-        }
-      );
-      const { screenshotList, startVideoTimeStamp } = await this.runSessionWithConfiguration(
-        eventList,
-        {
-          takeScreenshot: true,
-          backendType,
-          sessionDomain
-        }
+        sessionDomain,
+        backendType,
+        loggedStoragesAndCookie
       );
       //Save Results and Clean
-      const newReference = eventReference(events[0]);
-      const newSession = { reference: newReference } as NTSession;
-      const newEventsZipped = (await new JsonCompressor().zip(events)) as Buffer;
+      const newReference = eventReference(monitoringSession.events[0]);
+      const newSession: Partial<NTSession> = {
+        reference: newReference,
+        info: {
+          title: '',
+          description: '',
+          backend_type: backendType,
+          internal_error: false,
+          session_logged: !!loginEventList
+        }
+      };
+      await mediaService
+        .saveScreenshot(screenshotSession.screenshotList, newReference)
+        .catch((e) => {
+          console.log('Failed to upload Screenshot', e);
+          newSession.info.internal_error = true;
+        });
+      await mediaService
+        .saveVideo(newReference, screenshotSession.startVideoTimeStamp, monitoringSession.videoPath)
+        .catch((e) => {
+          console.log('Failed to upload Video', e);
+          newSession.info.internal_error = true;
+        });
+      const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
-      const assertion = this.generateRunAssertion(
-        encodeURIComponent(reference),
-        eventReference(events[0]),
-        testFailed,
-        lastEvent,
-        false
-      );
-      await mediaService.saveScreenshot(screenshotList, newReference).catch((e) => {
-        console.log('Failed to upload Screenshot', e);
-        assertion.info.execution_error = true;
-      });
-      await mediaService.saveVideo(newReference, startVideoTimeStamp, videoPath).catch((e) => {
-        console.log('Failed to upload Video', e);
-        assertion.info.execution_error = true;
-      });
+      const assertion: NTAssertion = {
+        original_reference: encodeURIComponent(reference),
+        new_reference: newReference,
+        info: {
+          last_event: monitoringSession.lastEvent,
+          test_failed: monitoringSession.testFailed
+        }
+      };
       await assertionService.save(assertion);
-      await this.clearFilesSaved();
       console.log('Session Ended');
-      clearInterval(timer);
     } catch (e) {
+      console.log(`Error: \nsession reference: ${messagePayload.message.value.toString()}`, e);
+    } finally {
+      await this.removeVideo();
       clearInterval(timer);
-      console.log(
-        `Error: Session not found reference: ${messagePayload.message.value.toString()}`,
-        e
-      );
-      await this.clearFilesSaved();
     }
   }
 
-  private async runSessionWithConfiguration(
-    eventList: BLSessionEvent[],
-    {
-      takeScreenshot = false,
-      login = false,
-      monitoring = false,
-      recordVideo = false,
-      backendType,
-      sessionDomain
-    }: NTRunnerConfig
-  ) {
-    this.configuration.monitoring = monitoring;
-    this.configuration.recordVideo = recordVideo;
-    this.configuration.login = login;
-    this.configuration.takeScreenshot = takeScreenshot;
-    this.configuration.backendType = backendType;
-    this.configuration.sessionDomain = sessionDomain;
-    return await runNewSession(eventList, this.configuration);
-  }
-
-  private generateRunAssertion(
-    original_reference: string,
-    new_reference: string,
-    test_failed: boolean,
-    last_event: BLSessionEvent,
-    execution_error: boolean
-  ) {
-    return {
-      original_reference,
-      new_reference,
-      info: {
-        test_failed,
-        last_event,
-        execution_error
-      }
-    } as NTAssertion;
-  }
-
-  private async clearFilesSaved() {
+  private async removeVideo() {
     await fs.rmSync(process.cwd() + '/video', { recursive: true, force: true });
   }
 }

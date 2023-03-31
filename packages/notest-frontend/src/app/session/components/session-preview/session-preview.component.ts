@@ -24,6 +24,7 @@ export class SessionPreviewComponent {
     screenshot: NTMedia[];
     video: NTMedia;
     assertion: NTAssertion;
+    showInfo: boolean;
   }[];
   screenshotOnHover?: NTMedia;
   videoReference?: string;
@@ -117,17 +118,6 @@ export class SessionPreviewComponent {
     this.screenshotOnHover = undefined;
   }
 
-  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
-    if (loginSession) {
-      this.session.info.loginReference = loginSession.reference;
-      await this.setIsLoginSessionState(!this.session.info.isLogin);
-    } else {
-      this.session.info.loginReference = undefined;
-    }
-    this.loginSessionSelected = loginSession;
-    await this.sessionService.updateSessionInfo(this.session);
-  }
-
   showVideo(reference: string) {
     this.videoReference = undefined;
     setTimeout(() => (this.videoReference = reference), 10);
@@ -152,7 +142,21 @@ export class SessionPreviewComponent {
     }, 100);
   }
 
+  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
+    //TODO mandiamo l'informazione nel messaggio al runner
+    if (loginSession) {
+      this.session.info.loginReference = loginSession.reference;
+      await this.setIsLoginSessionState(false);
+      this.backendType = 'full';
+    } else {
+      this.session.info.loginReference = undefined;
+    }
+    this.loginSessionSelected = loginSession;
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+
   async setIsLoginSessionState(isLogin: boolean) {
+    //TODO mandiamo l'informazione nel messaggio al runner
     this.session.info.isLogin = isLogin;
     if (isLogin && this.loginSessionSelected) {
       await this.setLoginReference(undefined);
@@ -160,12 +164,13 @@ export class SessionPreviewComponent {
     await this.sessionService.updateSessionInfo(this.session);
   }
 
-  goTo() {
+  goToDebugger() {
     const debuggerLink = this.router.url.replace('preview', 'debugger');
     this.router.navigateByUrl(debuggerLink);
   }
 
-  toggleBackendType() {
+  async toggleBackendType() {
     this.backendType = this.backendType === 'full' ? 'mock' : 'full';
+    if (this.backendType === 'mock') await this.setLoginReference(undefined);
   }
 }

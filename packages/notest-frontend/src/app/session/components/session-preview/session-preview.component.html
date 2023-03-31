@@ -2,7 +2,7 @@
   <div class='relative w-2/3 h-2/3'>
     <div class='flex flex-row items-center'>
       <h1 class='font-bold'>{{session.info.title}}</h1>
-      <button class='ml-10 h-1/3' title='Go to developer mode' (click)='goTo()'>Developer Mode</button>
+      <button class='ml-10 h-1/3' title='Go to developer mode' (click)='goToDebugger()'>Developer Mode</button>
     </div>
     <nt-video #video *ngIf='videoReference' class='absolute w-10/12 h-[85%]'
               [reference]=videoReference></nt-video>
@@ -11,11 +11,17 @@
                    [name]=screenshotOnHover.name></nt-screenshot>
   </div>
   <div class='w-1/3 h-4/5 px-8'>
-    <div class='flex justify-items items-center'>
+    <div class='flex justify-items items-center gap-3'>
       <label class='text-2xl my-4 mr-4'>Run history</label>
       <ng-container *ngIf='!loading'>
-        <div class='bo-button-icon w-10 h-10' title='Rerun session' (click)='rerunSession()'>
+        <div class='bo-button-icon h-10 px-3 gap-2'
+             title='Rerun session' (click)='rerunSession()'>
           <nt-icon name='rerun'></nt-icon>
+          <nt-icon *ngIf="backendType == 'mock'" name='frontend_isolated'
+                   class='w-5 h-5 text-bop'
+                   title='Frontend isolated'></nt-icon>
+          <nt-icon *ngIf='loginSessionSelected' name='user' class='w-5 h-5 text-bop'
+                   title='Logged Session'></nt-icon>
         </div>
         <div class='bo-button-icon w-10 h-10' title='Session settings'
              (click)='showSessionSettings = !showSessionSettings'>
@@ -32,13 +38,29 @@
       <div *ngFor='let run of sessionRunHistory' class='flex flex-col mt-5'
            (mouseenter)='setSessionHover(run.session)'
            (mouseleave)='setSessionHover(undefined)'>
-        <div class='flex items-center'>
+        <div class='flex items-center gap-3'>
           <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, HH:mm"}}</label>
-          <nt-icon *ngIf='run.assertion.info.execution_error' name='error'
-                   class='w-5 h-5 mx-2 text-red-500'></nt-icon>
-          <nt-icon *ngIf='!run.assertion.info.execution_error'
-                   name="{{run.assertion.info.test_failed ? 'warning': 'success'}}"
-                   class="w-5 h-5 mx-2 {{run.assertion.info.test_failed ? 'text-orange-500': 'text-green-500'}}"></nt-icon>
+          <nt-icon *ngIf='run.session.info?.internal_error' name='error'
+                   class='w-5 h-5 text-red-500'></nt-icon>
+
+          <div class='relative flex items-center'>
+            <nt-icon *ngIf='!run.session.info?.internal_error'
+                     name="{{run.assertion.info?.test_failed ? 'warning': 'success'}}"
+                     (click)='run.showInfo = !run.showInfo'
+                     class='w-5 h-5 text-green-500'
+                     [class.text-orange-500]='run.assertion.info?.test_failed'></nt-icon>
+            <div *ngIf='run.showInfo' class='nt-session-info-popup'>
+              <div class='text-gray-400 w-20 p-2'>Test Info</div>
+            </div>
+          </div>
+
+          <nt-icon *ngIf="run.session.info?.backend_type == 'mock'" name='frontend_isolated'
+                   class='w-5 h-5 text-bop'
+                   title='Frontend isolated'></nt-icon>
+
+          <nt-icon *ngIf='run.session.info?.session_logged' name='user' class='w-5 h-5 text-bop'
+                   title='Logged Session'></nt-icon>
+
           <div *ngIf='run.session === sessionOnHover' class='bo-button-icon w-8 h-8'
                (click)='showVideo(run.session.reference)'>
             <nt-icon name='play'></nt-icon>
@@ -65,33 +87,54 @@
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>
   <div class='p-5 w-fit h-fit'>
-    <label class='text-2xl mt-1'>Session Settings</label>
-    <label>Apply User Login Session</label>
-    <div *ngIf='!loginSessionSelected' class='mt-2'>
-      <sm-autocomplete *ngIf='!loading' [items]='loginSessions' [property]="'title'"
-                       (itemSelected)='setLoginReference($event); setIsLoginSessionState(false)'
-                       placeholder='Select Login Session'></sm-autocomplete>
-    </div>
-    <div class='relative shadow-md rounded-md w-fit mt-2' *ngIf='loginSessionSelected'>
-      <nt-badge (click)='setLoginReference(undefined)' class='p-0'>
-        {{loginSessionSelected.title}}
-      </nt-badge>
-    </div>
-    <label>Set this session as User Login Session</label>
+    <h4 class='text-xl'>Session Settings</h4>
+    <label class='mt-4'>Set this session as User Login Session</label>
     <div class='w-fit mt-2'>
       <nt-switch [switched]='session.info.isLogin' (switchedChange)='setIsLoginSessionState($event)'>
       </nt-switch>
     </div>
-    <label>Test Frontend in isolated mode</label>
-    <nt-switch class="mt-2" [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
-
-    <label>Set Custom Domain Settings</label>
-    <div class='flex flex-row items-center gap-2 mt-2'>
-      <input [(ngModel)]='sessionDomain.domain' [placeholder]='"www.domain.com / localhost"' /> :
-      <input class="w-14" [(ngModel)]='sessionDomain.port' [placeholder]='"8080"' />
-      <nt-switch [switched]='sessionDomain.ssl' (switchedChange)='sessionDomain.ssl = !sessionDomain.ssl'>SSL</nt-switch>
+    <h4 class='text-xl mt-5'>Rerun Settings</h4>
+    <div class='flex items-end gap-3 mb-2'>
+      <label class='mt-4'>Apply User Login Session</label>
+      <nt-icon
+        name='user'
+        class='w-5 h-5'
+        title='Logged Session'
+        [class.text-bop]='loginSessionSelected'
+        [class.text-gray-300]='!loginSessionSelected'>
+      </nt-icon>
+    </div>
+    <sm-autocomplete
+      *ngIf='!loginSessionSelected'
+      [items]='loginSessions'
+      [property]="'title'"
+      (itemSelected)='setLoginReference($event); setIsLoginSessionState(false)'
+      placeholder='Select Login Session'>
+    </sm-autocomplete>
+    <div class='w-fit h-10 flex items-center' *ngIf='loginSessionSelected'>
+      <nt-badge (click)='setLoginReference(undefined)'>
+        {{loginSessionSelected.title}}
+      </nt-badge>
     </div>
 
+    <div class='flex items-end gap-3'>
+      <label class='mt-4'>Test Frontend in isolated mode</label>
+      <nt-icon name='frontend_isolated' class='w-5 h-5'
+               [class.text-bop]='backendType == "mock"'
+               [class.text-gray-300]='backendType == "full"'
+               title='Frontend isolated'></nt-icon>
+    </div>
+    <nt-switch class='mt-2' [switched]="backendType == 'mock'" (switchedChange)='toggleBackendType()'></nt-switch>
+
+    <label class='mt-4'>Set Custom Domain Settings</label>
+    <div class='flex flex-row items-center gap-2 mt-2'>
+      <input [(ngModel)]='sessionDomain.domain' [placeholder]='"domain"' /> :
+      <input class='w-14' [(ngModel)]='sessionDomain.port' [placeholder]='"port"' />
+      <nt-switch
+        [switched]='sessionDomain.ssl'
+        (switchedChange)='sessionDomain.ssl = !sessionDomain.ssl'>SSL
+      </nt-switch>
+    </div>
   </div>
 </nt-popup>
 
