@@ -61,11 +61,11 @@ export class SessionRunner extends SessionExecutor {
     if (this.configuration.monitoring) {
       await setupMonitor(this.context, this.eventsCollected, this.monitorScript);
     }
-    if (this.configuration.loginEvent) {
+    if (!this.configuration.isLoginSession && this.configuration.loginEvents.length) {
       console.log('LOGIN EVENTS FOUNDED: \n');
-      console.log(this.configuration.loginEvent);
-      await this.setInitStorage(this.configuration.loginEvent);
-      await injectCookie(this.context, this.configuration.loginEvent);
+      console.log(this.configuration.loginEvents);
+      await this.setInitStorage(this.configuration.loginEvents);
+      await injectCookie(this.context, this.configuration.loginEvents);
     } else {
       await this.setInitStorage(session);
     }
@@ -125,7 +125,7 @@ export class SessionRunner extends SessionExecutor {
     if (this.configuration.monitoring) {
       await this.page.evaluate(() => window.nt_monitorInstance.disable());
     }
-    if (this.configuration.login) {
+    if (this.configuration.isLoginSession) {
       const { cookies, origins } = await this.context.storageState();
       const sessionStorage: Storage = await this.page.evaluate(() => window.sessionStorage);
       const url = this.page.url();

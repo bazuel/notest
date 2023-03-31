@@ -79,7 +79,7 @@ label {
 }
 
 .bo-button-icon {
-  @apply bg-gray-100 shadow-md shadow-gray-400 rounded-full p-3 m-2 cursor-pointer;
+  @apply bg-gray-100 shadow-md shadow-gray-400 rounded-full p-3 cursor-pointer;
   @apply flex items-center justify-center;
   @apply transition-all duration-500 ease-in-out;
   @apply hover:scale-95 hover:shadow-lg hover:shadow-gray-400

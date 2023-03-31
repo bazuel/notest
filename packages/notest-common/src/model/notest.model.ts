@@ -42,8 +42,11 @@ export interface NTSession {
     targetList?: string[];
     loginReference?: string;
     isLogin?: boolean;
+    session_logged: boolean;
+    internal_error: boolean;
+    backend_type: NTRunnerConfig["backendType"];
   };
-  created: Date | null;
+  created?: Date | null;
 }
 
 export interface NTAssertion {
@@ -51,10 +54,7 @@ export interface NTAssertion {
   new_reference: string;
   info?: {
     last_event: BLSessionEvent;
-    execution_error: boolean;
-    backend_type: NTRunnerConfig['backendType'];
     test_failed: boolean;
-    session_logged: boolean;
   };
 }
 
@@ -62,9 +62,9 @@ export interface NTRunnerConfig {
   backendType: "mock" | "full";
   monitoring?: boolean;
   recordVideo?: boolean;
-  login?: boolean;
+  isLoginSession?: boolean;
   takeScreenshot?: boolean;
-  loginEvent?: BLSessionEvent[];
+  loginEvents?: BLSessionEvent[];
   sessionDomain?: string;
 }
 

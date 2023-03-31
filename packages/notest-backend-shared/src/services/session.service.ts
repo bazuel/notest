@@ -34,7 +34,7 @@ export class SessionService extends CrudService<NTSession> {
       `;
   }
 
-  async save(events: Buffer, session: NTSession) {
+  async save(events: Buffer | Uint8Array, session: Partial<NTSession>) {
     const path = pathSessionFromReference(session.reference);
     const id = await this.create(session).then((result) => result[0][this.id]);
     console.log('Uploaded New Session to DB');

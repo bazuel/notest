@@ -115,7 +115,7 @@
 {/if}
 
 <style lang="scss">
-  @import 'app';
+  @import '../../app';
 
   .start-button {
     @apply cursor-pointer absolute bottom-[-7px] right-11 w-5 h-5;

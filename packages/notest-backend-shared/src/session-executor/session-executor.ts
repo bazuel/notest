@@ -2,23 +2,23 @@ import { BLSessionEvent } from '@notest/common';
 
 export abstract class SessionExecutor {
   private session: BLSessionEvent[];
-  private config: { [k:string]:any}
+  private config: { [k: string]: any };
 
   /**
    * Execute all session events
    */
-  async run(session: BLSessionEvent[], config) {
+  async run<C, R>(session: BLSessionEvent[], config: C): Promise<R> {
     this.config = config;
     this.session = session;
     await this.init(this.config, this.session);
-    await this.executeSession().catch((e)=>console.log(`Execution error on event: ${e}`));
+    await this.executeSession().catch((e) => console.log(`Execution error on event: ${e}`));
     return await this.end();
   }
 
   /**
    *  Init configuration
    */
-  async init(config: { [k:string]:any} , session: BLSessionEvent[]) {}
+  async init(config: { [k: string]: any }, session: BLSessionEvent[]) {}
 
   /**
    * Execute the Session operations
