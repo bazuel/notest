@@ -19,14 +19,11 @@ export class ClusterConsumer {
       clientId: 'consumer-client',
       brokers: ['185.196.20.82:30718']
     });
-    const consumer = kafka.consumer({
+    return kafka.consumer({
       groupId: environment.groupId,
-      /*sessionTimeout: 50000,
-      heartbeatInterval: 13333,*/
       sessionTimeout: 80000,
       heartbeatInterval: 21333
     });
-    return consumer;
   }
 
   async startConsumer() {
@@ -40,7 +37,7 @@ export class ClusterConsumer {
         }
       });
     } catch (error) {
-      console.log('Error: ', error);
+      console.log('Error on starting consumer: ', error);
       await this.shutdownConsumer();
       await this.startConsumer();
     }

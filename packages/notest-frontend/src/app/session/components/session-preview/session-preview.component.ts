@@ -50,9 +50,12 @@ export class SessionPreviewComponent {
     this.getLoginSessionItem();
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
-    this.fullLoading = true;
-    this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
-    this.fullLoading = false;
+    this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.reference);
+    if (this.sessionRunHistory?.length == 0) {
+      this.fullLoading = true;
+      this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
+      this.fullLoading = false;
+    }
     this.sessionRunHistory.forEach((sessionRun) => sessionRun.screenshot);
     this.videoReference = this.sessionRunHistory[0].session.reference;
     if (rerunStorage.loading && rerunStorage.reference === this.reference) {
@@ -115,17 +118,6 @@ export class SessionPreviewComponent {
     this.screenshotOnHover = undefined;
   }
 
-  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
-    if (loginSession) {
-      this.session.info.loginReference = loginSession.reference;
-      await this.setIsLoginSessionState(!this.session.info.isLogin);
-    } else {
-      this.session.info.loginReference = undefined;
-    }
-    this.loginSessionSelected = loginSession;
-    await this.sessionService.updateSessionInfo(this.session);
-  }
-
   showVideo(reference: string) {
     this.videoReference = undefined;
     setTimeout(() => (this.videoReference = reference), 10);
@@ -150,7 +142,21 @@ export class SessionPreviewComponent {
     }, 100);
   }
 
+  async setLoginReference(loginSession?: (typeof this.loginSessions)[number]) {
+    //TODO mandiamo l'informazione nel messaggio al runner
+    if (loginSession) {
+      this.session.info.loginReference = loginSession.reference;
+      await this.setIsLoginSessionState(false);
+      this.backendType = 'full';
+    } else {
+      this.session.info.loginReference = undefined;
+    }
+    this.loginSessionSelected = loginSession;
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+
   async setIsLoginSessionState(isLogin: boolean) {
+    //TODO mandiamo l'informazione nel messaggio al runner
     this.session.info.isLogin = isLogin;
     if (isLogin && this.loginSessionSelected) {
       await this.setLoginReference(undefined);
@@ -158,22 +164,13 @@ export class SessionPreviewComponent {
     await this.sessionService.updateSessionInfo(this.session);
   }
 
-  goTo() {
+  goToDebugger() {
     const debuggerLink = this.router.url.replace('preview', 'debugger');
     this.router.navigateByUrl(debuggerLink);
   }
 
-  toggleBackendType() {
+  async toggleBackendType() {
     this.backendType = this.backendType === 'full' ? 'mock' : 'full';
-  }
-
-  toggleSessionInfoPopup(reference : string) {
-    this.sessionRunHistory = this.sessionRunHistory.map(element => {
-      if(element.session.reference === reference){
-          console.log(element.session.info?.loginReference)
-          element.showInfo =! element.showInfo;
-      }
-      return element;
-    })
+    if (this.backendType === 'mock') await this.setLoginReference(undefined);
   }
 }
