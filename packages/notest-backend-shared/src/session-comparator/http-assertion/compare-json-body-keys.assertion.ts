@@ -47,10 +47,7 @@ export class CompareJsonBodyKeysAssertion extends FindSimilarRequestAssertion {
     }
   }
 }
-interface JsonObject {
-  [key: string]: any;
-}
-function getAllKeys(jsonObj: JsonObject): string[] {
+function getAllKeys(jsonObj: { [key: string]: any }): string[] {
   let allKeys: string[] = [];
 
   if (Array.isArray(jsonObj)) {
@@ -63,6 +60,5 @@ function getAllKeys(jsonObj: JsonObject): string[] {
       allKeys = [...allKeys, ...getAllKeys(jsonObj[key])];
     }
   }
-
   return allKeys;
 }

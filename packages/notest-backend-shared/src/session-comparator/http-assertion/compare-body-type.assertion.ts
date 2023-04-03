@@ -24,13 +24,11 @@ export class CompareBodyTypeAssertion extends FindSimilarRequestAssertion {
 
   private getType(contentType: string, event: BLHTTPResponseEvent) {
     if (contentType.includes('json') && typeof event.response.body === 'string') {
-      let body;
       try {
-        body = JSON.parse(event.response.body);
+        JSON.parse(event.response.body);
         return 'json';
       } catch (e) {
-        //TODO fix this
-        if (body instanceof Blob) {
+        if ((event.response.body as any) instanceof Blob) {
           return 'blob';
         }
         return 'string';
