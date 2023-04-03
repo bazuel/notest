@@ -4,7 +4,6 @@ import {
   JsonCompressor,
   NTAssertion,
   NTClusterMessage,
-  NTRunnerConfig,
   NTSession
 } from '@notest/common';
 import * as fs from 'fs';
@@ -70,19 +69,19 @@ export class ClusterRunnerService {
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
       const fetch_response_pass = assertionService.compareHttpRequest(
-          eventList,
-          monitoringSession.events,
-          new StatusResponseAssertion()
+        eventList,
+        monitoringSession.events,
+        new StatusResponseAssertion()
       );
       const fetch_body_type_pass = assertionService.compareHttpRequest(
-          eventList,
-          monitoringSession.events,
-          new CompareBodyTypeAssertion()
+        eventList,
+        monitoringSession.events,
+        new CompareBodyTypeAssertion()
       );
       const response_body_match_pass = assertionService.compareHttpRequest(
-          eventList,
-          monitoringSession.events,
-          new CompareJsonBodyKeysAssertion()
+        eventList,
+        monitoringSession.events,
+        new CompareJsonBodyKeysAssertion()
       );
       const assertion: NTAssertion = {
         original_reference: encodeURIComponent(reference),
@@ -90,7 +89,7 @@ export class ClusterRunnerService {
         info: {
           last_event: monitoringSession.lastEvent,
           test_failed: monitoringSession.testFailed
-        }
+        },
         assertions: {
           fetch_response_pass,
           fetch_body_type_pass,
