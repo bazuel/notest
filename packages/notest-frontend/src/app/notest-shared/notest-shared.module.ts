@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 import { VideoComponent } from './components/video/video.component';
 import { SessionPreviewPlaceholderComponent } from './components/placeholders/session-preview/session-preview-placeholder.component';
 import { ScreenshotListPlaceholderComponent } from './components/placeholders/session-preview/screenshot-list-placeholder.component';
+import { AssertionResultsPipe } from './pipes/assertion-results.pipe';
 
 @NgModule({
   declarations: [
@@ -13,14 +14,16 @@ import { ScreenshotListPlaceholderComponent } from './components/placeholders/se
     ScreenshotComponent,
     VideoComponent,
     SessionPreviewPlaceholderComponent,
-    ScreenshotListPlaceholderComponent
+    ScreenshotListPlaceholderComponent,
+    AssertionResultsPipe
   ],
   exports: [
     LogoComponent,
     ScreenshotComponent,
     VideoComponent,
     SessionPreviewPlaceholderComponent,
-    ScreenshotListPlaceholderComponent
+    ScreenshotListPlaceholderComponent,
+    AssertionResultsPipe
   ],
   imports: [CommonModule, SharedModule]
 })

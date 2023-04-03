@@ -9,18 +9,18 @@ export abstract class FindSimilarRequestAssertion extends HttpComparator {
       if (!requestMap[key]) requestMap[key] = [];
       requestMap[key].push(event);
     }
-    let eventsError = [];
+    let eventsError: BLHTTPResponseEvent[] = [];
 
     for (const currentHttpEvent of eventList1) {
       let key = `${currentHttpEvent.request.method}.${currentHttpEvent.request.url}`;
       const similarRequest = requestMap[key]?.shift();
       if (!similarRequest) eventsError.push(currentHttpEvent);
+      //TO-DO qui dobbiamo fare una mappa con output
       else if (!this.compare(similarRequest, currentHttpEvent)) {
         eventsError.push(currentHttpEvent);
       }
     }
-    const testPass = eventsError.length == 0;
-    return testPass;
+    return eventsError;
   }
 
   abstract compare(event1: BLHTTPResponseEvent, event2: BLHTTPResponseEvent);

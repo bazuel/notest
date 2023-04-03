@@ -1,4 +1,9 @@
-import { BLEventName, BLEventType, BLSessionEvent } from "./events";
+import {
+  BLEventName,
+  BLEventType,
+  BLHTTPResponseEvent,
+  BLSessionEvent,
+} from "./events";
 
 export interface NTInstrumentedEvent {
   project_name: string;
@@ -57,9 +62,14 @@ export interface NTAssertion {
     fetch_body_type_pass: boolean;
     response_body_match_pass: boolean;
   };
+  assertions_details: {
+    fetch_response_fail_list: BLHTTPResponseEvent[];
+    fetch_body_type_fail_list: BLHTTPResponseEvent[];
+    response_body_match_fail_list: BLHTTPResponseEvent[];
+  };
   info?: {
     last_event: BLSessionEvent;
-    test_failed: boolean;
+    test_execution_failed: boolean;
   };
 }
 

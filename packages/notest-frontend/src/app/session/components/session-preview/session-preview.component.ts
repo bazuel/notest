@@ -32,7 +32,15 @@ export class SessionPreviewComponent {
   loading = false;
   fullLoading = false;
   showSessionSettings = false;
+  showAssertionPopup: boolean = false;
   sessionDomain = { domain: '', ssl: false, port: '' };
+  runSelected?: {
+    session: NTSession;
+    screenshot: NTMedia[];
+    video: NTMedia;
+    assertion: NTAssertion;
+    showInfo: boolean;
+  };
 
   constructor(
     private sessionService: SessionService,

@@ -68,17 +68,17 @@ export class ClusterRunnerService {
         });
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
-      const fetch_response_pass = assertionService.compareHttpRequest(
+      const fetch_response_fail_list = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
         new StatusResponseAssertion()
       );
-      const fetch_body_type_pass = assertionService.compareHttpRequest(
+      const fetch_body_type_fail_list = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
         new CompareBodyTypeAssertion()
       );
-      const response_body_match_pass = assertionService.compareHttpRequest(
+      const response_body_match_fail_list = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
         new CompareJsonBodyKeysAssertion()
@@ -88,12 +88,17 @@ export class ClusterRunnerService {
         new_reference: newReference,
         info: {
           last_event: monitoringSession.lastEvent,
-          test_failed: monitoringSession.testFailed
+          test_execution_failed: monitoringSession.testFailed
         },
         assertions: {
-          fetch_response_pass,
-          fetch_body_type_pass,
-          response_body_match_pass
+          fetch_response_pass: fetch_response_fail_list.length == 0,
+          fetch_body_type_pass: fetch_body_type_fail_list.length == 0,
+          response_body_match_pass: response_body_match_fail_list.length == 0
+        },
+        assertions_details: {
+          fetch_response_fail_list,
+          fetch_body_type_fail_list,
+          response_body_match_fail_list
         }
       };
       await assertionService.save(assertion);
