@@ -12,7 +12,7 @@ import { assertionService, mediaService, sessionService } from 'notest-backend-s
 import { EachMessagePayload } from 'kafkajs';
 import { StatusResponseAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/status-response.assertion';
 import { CompareBodyTypeAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-body-type.assertion';
-import { CompareJsonBodyKeysAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-json-body-keys.assertion';
+import { CompareJsonBodyRequestKeysAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-json-body-request-keys.assertion';
 
 export class ClusterRunnerService {
   async runMessage(messagePayload: EachMessagePayload) {
@@ -68,21 +68,28 @@ export class ClusterRunnerService {
         });
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
-      const fetch_response_fail_list = assertionService.compareHttpRequest(
+      const fetch_response = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
         new StatusResponseAssertion()
       );
-      const fetch_body_type_fail_list = assertionService.compareHttpRequest(
+      const fetch_body_type = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
         new CompareBodyTypeAssertion()
       );
-      const response_body_match_fail_list = assertionService.compareHttpRequest(
+      const response_body_match = assertionService.compareHttpRequest(
         eventList,
         monitoringSession.events,
-        new CompareJsonBodyKeysAssertion()
+        new CompareJsonBodyRequestKeysAssertion()
       );
+      const fetch_response_pass =
+        fetch_response.notFoundedEvents.length == 0 && fetch_response.eventsError.length == 0;
+      const fetch_body_type_pass =
+        fetch_body_type.notFoundedEvents.length == 0 && fetch_body_type.eventsError.length == 0;
+      const response_body_match_pass =
+        response_body_match.notFoundedEvents.length == 0 &&
+        response_body_match.eventsError.length == 0;
       const assertion: NTAssertion = {
         original_reference: encodeURIComponent(reference),
         new_reference: newReference,
@@ -91,14 +98,17 @@ export class ClusterRunnerService {
           test_execution_failed: monitoringSession.testFailed
         },
         assertions: {
-          fetch_response_pass: fetch_response_fail_list.length == 0,
-          fetch_body_type_pass: fetch_body_type_fail_list.length == 0,
-          response_body_match_pass: response_body_match_fail_list.length == 0
+          fetch_response_pass,
+          fetch_body_type_pass,
+          response_body_match_pass
         },
         assertions_details: {
-          fetch_response_fail_list,
-          fetch_body_type_fail_list,
-          response_body_match_fail_list
+          fetch_response_match_not_found: fetch_response.notFoundedEvents,
+          fetch_response_compare_error: fetch_response.eventsError,
+          fetch_body_type_match_not_found: fetch_body_type.notFoundedEvents,
+          fetch_body_type_compare_error: fetch_body_type.eventsError,
+          request_body_match_not_found: response_body_match.notFoundedEvents,
+          request_body_compare_error: response_body_match.eventsError
         }
       };
       await assertionService.save(assertion);

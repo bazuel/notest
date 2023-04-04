@@ -63,9 +63,21 @@ export interface NTAssertion {
     response_body_match_pass: boolean;
   };
   assertions_details: {
-    fetch_response_fail_list: BLHTTPResponseEvent[];
-    fetch_body_type_fail_list: BLHTTPResponseEvent[];
-    response_body_match_fail_list: BLHTTPResponseEvent[];
+    fetch_response_match_not_found: BLHTTPResponseEvent[];
+    fetch_body_type_match_not_found: BLHTTPResponseEvent[];
+    request_body_match_not_found: BLHTTPResponseEvent[];
+    fetch_response_compare_error: {
+      originalEvent: BLHTTPResponseEvent;
+      newEvent: BLHTTPResponseEvent;
+    }[];
+    fetch_body_type_compare_error: {
+      originalEvent: BLHTTPResponseEvent;
+      newEvent: BLHTTPResponseEvent;
+    }[];
+    request_body_compare_error: {
+      originalEvent: BLHTTPResponseEvent;
+      newEvent: BLHTTPResponseEvent;
+    }[];
   };
   info?: {
     last_event: BLSessionEvent;

@@ -1,7 +1,7 @@
 import { FindSimilarRequestAssertion } from './find-similar-request.assertion';
 import { BLHTTPResponseEvent } from '@notest/common';
 
-export class CompareJsonBodyKeysAssertion extends FindSimilarRequestAssertion {
+export class CompareJsonBodyRequestKeysAssertion extends FindSimilarRequestAssertion {
   compare(event1: BLHTTPResponseEvent, event2: BLHTTPResponseEvent) {
     try {
       const unmatchedKeys = [];
@@ -22,7 +22,6 @@ export class CompareJsonBodyKeysAssertion extends FindSimilarRequestAssertion {
           console.log('Lunghezza diversa delle chiavi', jsonBodyKeysEvent1, jsonBodyKeysEvent2);
           return false;
         }
-        console.log('keys1', jsonBodyKeysEvent1, 'keys2', jsonBodyKeysEvent2);
         //qui sono sicuro che sono json
         for (let key of jsonBodyKeysEvent1) {
           const matchedKey = jsonBodyKeysEvent2.find((value) => value == key);
