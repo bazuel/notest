@@ -13,8 +13,8 @@ addMessageListener((event) => {
     sessionMonitor.enable();
     addMessageListener((event) => {
       if (event.type == 'stop-recording') {
-        getScreenshotFromFullDom();
         sessionMonitor.disable();
+        getInstantScreenshotFullDom();
       }
       if (event.type == 'cancel-recording') {
         sessionMonitor.disable();
@@ -28,8 +28,11 @@ export function takeFullDomShot() {
   return domMonitor.takeDomScreenshot();
 }
 
-function getScreenshotFromFullDom() {
+function getScreenshotFromFullDomAfterDomLoaded() {
   addEventListener('load', () => setTimeout(sendShot, 2000), { once: true });
+}
+function getInstantScreenshotFullDom() {
+  sendShot();
 }
 
 const sendShot = async () => {

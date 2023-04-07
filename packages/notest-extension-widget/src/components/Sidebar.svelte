@@ -78,7 +78,7 @@
 
 </script>
 
-<div class='sidebar-right'>
+<div id="sidebar-right" class='sidebar-right'>
   <div class='nt-close-sidebar-container' on:mouseup={() => {dispatcher('close-sidebar')}}>
     <Icon color='gray' name='arrowRight' />
   </div>

@@ -75,7 +75,6 @@ async function startSession() {
     enableRecordingIcon();
     enableHeadersListeners();
     console.log('Recording Session Started');
-    //sendMessage({ type: 'take-screenshot' }, tabId);
   }
 }
 
