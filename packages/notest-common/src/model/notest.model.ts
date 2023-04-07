@@ -85,6 +85,8 @@ export interface NTAssertion {
   };
 }
 
+export type NTComparatorStrategy<T> = (l1: T, l2: T) => boolean;
+
 export interface NTRunnerConfig {
   backendType: "mock" | "full";
   monitoring?: boolean;

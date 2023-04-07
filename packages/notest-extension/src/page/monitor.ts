@@ -11,9 +11,12 @@ let sessionMonitor = new SessionMonitor(sendToExtension);
 addMessageListener((event) => {
   if (event.type == 'start-monitoring') {
     sessionMonitor.enable();
-    getScreenshotFromFullDom();
     addMessageListener((event) => {
-      if (event.type == 'stop-recording' || event.type == 'cancel-recording') {
+      if (event.type == 'stop-recording') {
+        getScreenshotFromFullDom();
+        sessionMonitor.disable();
+      }
+      if (event.type == 'cancel-recording') {
         sessionMonitor.disable();
       }
     });

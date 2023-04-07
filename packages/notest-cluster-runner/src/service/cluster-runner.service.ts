@@ -1,18 +1,20 @@
 import {
+  afterResponseFilter,
   BLSessionEvent,
   eventReference,
   JsonCompressor,
   NTAssertion,
   NTClusterMessage,
+  NTComparatorStrategy,
   NTSession
 } from '@notest/common';
 import * as fs from 'fs';
 import { runLoginSession, runSession } from '../functions/run-new-session';
 import { assertionService, mediaService, sessionService } from 'notest-backend-shared';
 import { EachMessagePayload } from 'kafkajs';
-import { StatusResponseAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/status-response.assertion';
-import { CompareBodyTypeAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-body-type.assertion';
-import { CompareJsonBodyRequestKeysAssertion } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-json-body-request-keys.assertion';
+import { compareStatusResponse } from 'notest-backend-shared/src/session-comparator/http-assertion/status-response.assertion';
+import { compareBodyType } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-body-type.assertion';
+import { compareBodyKeys } from 'notest-backend-shared/src/session-comparator/http-assertion/compare-json-body-request-keys.assertion';
 
 export class ClusterRunnerService {
   async runMessage(messagePayload: EachMessagePayload) {
@@ -68,28 +70,50 @@ export class ClusterRunnerService {
         });
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
-      const fetch_response = assertionService.compareHttpRequest(
-        eventList,
-        monitoringSession.events,
-        new StatusResponseAssertion()
-      );
-      const fetch_body_type = assertionService.compareHttpRequest(
-        eventList,
-        monitoringSession.events,
-        new CompareBodyTypeAssertion()
-      );
-      const response_body_match = assertionService.compareHttpRequest(
-        eventList,
-        monitoringSession.events,
-        new CompareJsonBodyRequestKeysAssertion()
-      );
+
+      type possibleAssertions = 'response_body_match' | 'fetch_body_type' | 'fetch_response';
+
+      const assertions: possibleAssertions[] = [
+        'response_body_match',
+        'fetch_body_type',
+        'fetch_response'
+      ];
+
+      const assertionMap: {
+        [k in possibleAssertions]: {
+          comparator: NTComparatorStrategy<any>;
+          filter: (e: BLSessionEvent) => e is any;
+        };
+      } = {
+        response_body_match: { comparator: compareStatusResponse, filter: afterResponseFilter },
+        fetch_body_type: { comparator: compareBodyKeys, filter: afterResponseFilter },
+        fetch_response: { comparator: compareBodyType, filter: afterResponseFilter }
+      };
+
+      const assertionResults: { [k in possibleAssertions]: { eventsError; notFoundedEvents } } = {
+        response_body_match: { eventsError: [], notFoundedEvents: [] },
+        fetch_body_type: { eventsError: [], notFoundedEvents: [] },
+        fetch_response: { eventsError: [], notFoundedEvents: [] }
+      };
+
+      assertions.forEach((type) => {
+        assertionResults[type] = assertionService.compareSimilarList(
+          assertionMap[type].comparator,
+          eventList,
+          monitoringSession.events,
+          assertionMap[type].filter
+        );
+      });
+
       const fetch_response_pass =
-        fetch_response.notFoundedEvents.length == 0 && fetch_response.eventsError.length == 0;
+        assertionResults.fetch_response.notFoundedEvents.length == 0 &&
+        assertionResults.fetch_response.eventsError.length == 0;
       const fetch_body_type_pass =
-        fetch_body_type.notFoundedEvents.length == 0 && fetch_body_type.eventsError.length == 0;
+        assertionResults.fetch_body_type.notFoundedEvents.length == 0 &&
+        assertionResults.fetch_body_type.eventsError.length == 0;
       const response_body_match_pass =
-        response_body_match.notFoundedEvents.length == 0 &&
-        response_body_match.eventsError.length == 0;
+        assertionResults.response_body_match.notFoundedEvents.length == 0 &&
+        assertionResults.response_body_match.eventsError.length == 0;
       const assertion: NTAssertion = {
         original_reference: encodeURIComponent(reference),
         new_reference: newReference,
@@ -103,12 +127,12 @@ export class ClusterRunnerService {
           response_body_match_pass
         },
         assertions_details: {
-          fetch_response_match_not_found: fetch_response.notFoundedEvents,
-          fetch_response_compare_error: fetch_response.eventsError,
-          fetch_body_type_match_not_found: fetch_body_type.notFoundedEvents,
-          fetch_body_type_compare_error: fetch_body_type.eventsError,
-          request_body_match_not_found: response_body_match.notFoundedEvents,
-          request_body_compare_error: response_body_match.eventsError
+          fetch_response_match_not_found: assertionResults.fetch_response.notFoundedEvents,
+          fetch_response_compare_error: assertionResults.fetch_response.eventsError,
+          fetch_body_type_match_not_found: assertionResults.fetch_body_type.notFoundedEvents,
+          fetch_body_type_compare_error: assertionResults.fetch_body_type.eventsError,
+          request_body_match_not_found: assertionResults.response_body_match.notFoundedEvents,
+          request_body_compare_error: assertionResults.response_body_match.eventsError
         }
       };
       await assertionService.save(assertion);

@@ -75,11 +75,11 @@ async function startSession() {
     enableRecordingIcon();
     enableHeadersListeners();
     console.log('Recording Session Started');
-    sendMessage({ type: 'take-screenshot' }, tabId);
+    //sendMessage({ type: 'take-screenshot' }, tabId);
   }
 }
 
-async function saveSession(request: { data: NTSession['info'] } ) {
+async function saveSession(request: { data: NTSession['info'] }) {
   const tab = await getCurrentTab();
   if (!tab) {
     console.log('No tab found');
