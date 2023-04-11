@@ -63,6 +63,7 @@ function sendWindowMessage(message: NTMessage) {
 export type NTMessageType =
   | 'save-session'
   | 'stop-recording'
+  | 'stop-recording-response'
   | 'start-recording'
   | 'cancel-recording'
   | 'session-event'

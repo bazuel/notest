@@ -70,17 +70,8 @@ export class DomMonitor implements BLMonitor {
     blevent.dom.full(fullEvent);
     return snapshot;
   }
-  private takeDomSnapShot(serializer: ElementSerializer) {
-    let style = document.getElementById('sidebar-right')!.style.display;
-    document.getElementById('sidebar-right')!.style.display = 'none';
-    let snapshot = serializer.serialize(document);
-    const fullEvent = { full: snapshot } as BLDomEvent;
-    blevent.dom.full(fullEvent);
-    document.getElementById('sidebar-right')!.style.display = style;
-    return snapshot;
-  }
 
   takeDomScreenshot() {
-    return this.takeDomSnapShot(new ElementSerializer());
+    return this.fireFullDomEvent(new ElementSerializer());
   }
 }

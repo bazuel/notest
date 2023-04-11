@@ -1,3 +1,5 @@
+import { messageService } from './message.service';
+
 class RecordingService {
   private _reference: string;
 
@@ -9,18 +11,18 @@ class RecordingService {
   }
 
   start() {
-    localStorage.setItem("nt-recording", "1");
-    postMessage({ type: "start-recording" }, "*");
+    localStorage.setItem('nt-recording', '1');
+    postMessage({ type: 'start-recording' }, '*');
   }
 
-  stop() {
-    localStorage.setItem("nt-recording", "0");
-    postMessage({ type: "stop-recording" }, "*");
+  async stop() {
+    localStorage.setItem('nt-recording', '0');
+    await messageService.sendMessage('stop-recording', {}, true);
   }
 
   cancel() {
-    localStorage.setItem("nt-recording", "0");
-    postMessage({ type: "cancel-recording" }, "*");
+    localStorage.setItem('nt-recording', '0');
+    postMessage({ type: 'cancel-recording' }, '*');
   }
 
   save(sessionInfo: {
@@ -30,11 +32,11 @@ class RecordingService {
     isLogin: boolean;
     reference: string;
   }) {
-    postMessage({ type: "save-session", data: sessionInfo }, "*");
+    postMessage({ type: 'save-session', data: sessionInfo }, '*');
   }
 
   get recording() {
-    return localStorage.getItem("nt-recording") === "1";
+    return localStorage.getItem('nt-recording') === '1';
   }
 
   saveReference(reference: string) {
@@ -49,7 +51,7 @@ class RecordingService {
     return new Promise<boolean>((resolve, reject) => {
       setTimeout(() => {
         if (this._reference) resolve(true);
-        else reject("Reference not found");
+        else reject('Reference not found');
       }, 1000);
     });
   }

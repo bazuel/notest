@@ -48,7 +48,7 @@
   };
   let stopRecording = async () => {
     recording = false;
-    recordingService.stop();
+    await recordingService.stop();
     updateSidebarState('end');
     openSidebar = true;
   };

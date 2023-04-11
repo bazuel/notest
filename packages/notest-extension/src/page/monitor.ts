@@ -14,7 +14,8 @@ addMessageListener((event) => {
     addMessageListener((event) => {
       if (event.type == 'stop-recording') {
         sessionMonitor.disable();
-        getInstantScreenshotFullDom();
+        sendShot();
+        sendMessage({ type: 'stop-recording-response', data: event.data });
       }
       if (event.type == 'cancel-recording') {
         sessionMonitor.disable();
@@ -28,14 +29,7 @@ export function takeFullDomShot() {
   return domMonitor.takeDomScreenshot();
 }
 
-function getScreenshotFromFullDomAfterDomLoaded() {
-  addEventListener('load', () => setTimeout(sendShot, 2000), { once: true });
-}
-function getInstantScreenshotFullDom() {
-  sendShot();
-}
-
-const sendShot = async () => {
+const sendShot = () => {
   const fullDom = takeFullDomShot();
   const domSessionEvent: BLSessionEvent = {
     name: 'dom-full',
