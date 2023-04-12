@@ -1,6 +1,13 @@
 import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
 import { BLSessionEvent, NTAssertion, NTComparatorStrategy } from '@notest/common';
 import { CrudService } from '../shared/services/crud.service';
+import {
+  compareImage,
+  cropImage,
+  cropOriginalImage,
+  PNGtoBuffer
+} from '../session-comparator/screenshot-comparator';
+import { mediaService } from './media.service';
 
 export class AssertionService extends CrudService<NTAssertion> {
   protected table = 'nt_assertion';
@@ -37,6 +44,46 @@ export class AssertionService extends CrudService<NTAssertion> {
     }
   }
 
+  async compareImages(targetList: DOMRect[], reference: string, newReference: string) {
+    let testFail = false;
+    let originalFinalImage = await mediaService.getScreenshot(
+      decodeURIComponent(reference),
+      'shot'
+    );
+    const newFinalImage = await mediaService.getScreenshot(
+      decodeURIComponent(newReference),
+      'final'
+    );
+    const assertionScreenshot: { name: string; data: Buffer; fired: Date }[] = [];
+    const assertionPixel: number[] = [];
+    if (targetList) {
+      for (let i = 0; i < targetList.length; i++) {
+        let rect = targetList[i];
+        let origImg = cropOriginalImage(originalFinalImage, rect);
+        let newImg = cropImage(newFinalImage, rect);
+        let { imageDiff, pixelMismatch } = compareImage(origImg, newImg);
+        assertionScreenshot.push({
+          name: `${i}-original`,
+          data: PNGtoBuffer(origImg),
+          fired: new Date()
+        });
+        assertionScreenshot.push({
+          name: `${i}-new`,
+          data: PNGtoBuffer(newImg),
+          fired: new Date()
+        });
+        assertionScreenshot.push({
+          name: `${i}-diff`,
+          data: PNGtoBuffer(imageDiff),
+          fired: new Date()
+        });
+        if (pixelMismatch != 0) testFail = true;
+        assertionPixel.push(pixelMismatch);
+      }
+      await mediaService.saveScreenshot(assertionScreenshot, newReference);
+    }
+    return { testResults: !testFail, assertionPixelList: assertionPixel };
+  }
   compareSimilarList<T extends BLSessionEvent>(
     comparatorStrategy: NTComparatorStrategy<T>,
     originalEventList: BLSessionEvent[],

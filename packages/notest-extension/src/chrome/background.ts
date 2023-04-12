@@ -84,7 +84,6 @@ async function saveSession(request: { data: NTSession['info'] }) {
     console.log('No tab found');
     return;
   }
-  delete request.data.targetList;
   await uploadEvents(tab.url!, events, request.data);
   events = [];
 }

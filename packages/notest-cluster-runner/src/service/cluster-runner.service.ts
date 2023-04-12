@@ -28,6 +28,8 @@ export class ClusterRunnerService {
         messagePayload.message.value.toString()
       ) as NTClusterMessage;
 
+      const targetList = await sessionService.getTargetListFromReference(reference);
+
       let eventList = await sessionService.read(reference);
       if (!eventList.length) throw new Error('No events found');
 
@@ -71,6 +73,13 @@ export class ClusterRunnerService {
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
 
+      const { testResults, assertionPixelList } = await assertionService.compareImages(
+        targetList,
+        reference,
+        newReference
+      );
+
+      //**************************************************************************************************************//
       type possibleAssertions = 'response_body_match' | 'fetch_body_type' | 'fetch_response';
 
       const assertions: possibleAssertions[] = [
@@ -124,9 +133,13 @@ export class ClusterRunnerService {
         assertions: {
           fetch_response_pass,
           fetch_body_type_pass,
-          response_body_match_pass
+          response_body_match_pass,
+          image_comparison_pass: testResults
         },
         assertions_details: {
+          image_comparison: {
+            mismatched_pixel: assertionPixelList
+          },
           fetch_response_match_not_found: assertionResults.fetch_response.notFoundedEvents,
           fetch_response_compare_error: assertionResults.fetch_response.eventsError,
           fetch_body_type_match_not_found: assertionResults.fetch_body_type.notFoundedEvents,
@@ -136,6 +149,7 @@ export class ClusterRunnerService {
         }
       };
       await assertionService.save(assertion);
+      //**************************************************************************************************************//
       console.log('Session Ended');
     } catch (e) {
       console.log(`Error: \nsession reference: ${messagePayload.message.value.toString()}`, e);

@@ -7,7 +7,7 @@
   import { appStore, updateSessionSaved, updateSidebarState } from '../stores/settings.store';
   import ElementsSelector from '../shared/components/elements-selector.svelte';
   import { capture } from '../shared/services/screenshot.service';
-  import { updateSessionImages, updateSessionTargetList } from '../stores/session.store';
+  import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
   import { messageService } from '../services/message.service';
   import { getUrlImage } from '../functions/url.functions';
 
@@ -40,6 +40,7 @@
   let startRecording = () => {
     openSidebar = false;
     updateSessionSaved(false);
+    initSessionStore();
     recordingService.start();
   };
   let cancelRecording = () => {

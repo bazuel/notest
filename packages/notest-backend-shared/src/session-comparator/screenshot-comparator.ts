@@ -82,4 +82,37 @@ export class ScreenshotComparator {
   }
 }
 
+//TODO: remove after test
+export function crop1PxBorder(image: Buffer) {
+  let sourceImg = PNG.sync.read(image);
+  let extractedImage = new PNG({ width: sourceImg.width - 2, height: sourceImg.height - 2 });
+  PNG.bitblt(sourceImg, extractedImage, 1, 1, sourceImg.width - 2, sourceImg.height - 2);
+  return extractedImage;
+}
+export function cropImage(image: Buffer, rect: DOMRect) {
+  let sourceImg = PNG.sync.read(image);
+  let extractedImage = new PNG({ width: rect.width, height: rect.height });
+  PNG.bitblt(sourceImg, extractedImage, rect.x, rect.y, rect.width, rect.height);
+  return extractedImage;
+}
+
+export function cropOriginalImage(image: Buffer, rect: DOMRect) {
+  let sourceImg = PNG.sync.read(image);
+  let extractedImage = new PNG({ width: rect.width, height: rect.height });
+  PNG.bitblt(sourceImg, extractedImage, rect.x + 1, rect.y + 1, rect.width, rect.height);
+  return extractedImage;
+}
+
+export function PNGtoBuffer(image: PNG) {
+  return PNG.sync.write(image);
+}
+
+export function compareImage(image1: PNG, image2: PNG) {
+  const { width, height } = image1;
+  const diff = new PNG({ width, height });
+  const numberOfPixels = pixelmatch(image1.data, image2.data, diff.data, width, height);
+  console.log(`number of different pixel are: ${numberOfPixels} of ${width * height} total pixel`);
+  return { imageDiff: diff, pixelMismatch: numberOfPixels };
+}
+
 type NTScreenshot = { name: string; data: Buffer };

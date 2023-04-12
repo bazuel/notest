@@ -61,8 +61,12 @@ export interface NTAssertion {
     fetch_response_pass: boolean;
     fetch_body_type_pass: boolean;
     response_body_match_pass: boolean;
+    image_comparison_pass: boolean;
   };
   assertions_details: {
+    image_comparison: {
+      mismatched_pixel: number[];
+    };
     fetch_response_match_not_found: BLHTTPResponseEvent[];
     fetch_body_type_match_not_found: BLHTTPResponseEvent[];
     request_body_match_not_found: BLHTTPResponseEvent[];

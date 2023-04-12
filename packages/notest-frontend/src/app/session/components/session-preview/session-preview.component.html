@@ -55,7 +55,7 @@
                      [class.text-green-500]='run.assertion | assertionResults'>
             </nt-icon>
             <div *ngIf='run.showInfo' class='nt-session-info-popup'>
-              <div class='text-gray-400 w-44 p-2'>Test Results</div>
+              <div class='text-gray-400 w-56 p-2'>Test Results</div>
               <div class="flex flex-row justify-between p-2 items-center">
                 <div class='flex flex-row text-sm text-gray-400 w-fit'>Test executed:
                 </div>
@@ -78,6 +78,12 @@
                 <nt-icon
                   class="{{run.assertion.assertions.response_body_match_pass ? 'text-green-500' : 'text-red-500'}}"
                   name="{{run.assertion.assertions.response_body_match_pass ? 'success' : 'cross'}}"></nt-icon>
+              </div>
+              <div class="flex flex-row justify-between p-2 items-center">
+                <div class='flex flex-row text-sm text-gray-400 w-fit'>Visual comparison test:</div>
+                <nt-icon
+                  class="{{run.assertion.assertions.image_comparison_pass ? 'text-green-500' : 'text-red-500'}}"
+                  name="{{run.assertion.assertions.image_comparison_pass ? 'success' : 'cross'}}"></nt-icon>
               </div>
             </div>
           </div>

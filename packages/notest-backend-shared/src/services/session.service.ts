@@ -55,6 +55,11 @@ export class SessionService extends CrudService<NTSession> {
     return this.read(decodeURIComponent(session[0].info.loginReference));
   }
 
+  async getTargetListFromReference(reference: string) {
+    const session = await this.findByField('reference', encodeURIComponent(reference));
+    return session[0].info.targetList as unknown as DOMRect[];
+  }
+
   async findByUrl(url: string) {
     return await this.findByField('url', url);
   }
