@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --watch",
-    "build prod": "vite build --watch --mode prod",
+    "build:prod": "vite build --watch --mode prod",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "assets": "http-server src\\assets"
