@@ -1,5 +1,6 @@
 import {
   afterResponseFilter,
+  BLHTTPResponseEvent,
   BLSessionEvent,
   eventReference,
   JsonCompressor,

@@ -1,5 +1,11 @@
 import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
-import { BLSessionEvent, NTAssertion, NTComparatorStrategy } from '@notest/common';
+import {
+  BLSessionEvent,
+  NTAssertion,
+  NTAssertionComparison,
+  NTAssertionType,
+  NTComparatorStrategy
+} from '@notest/common';
 import { CrudService } from '../shared/services/crud.service';
 import {
   compareImage,
@@ -84,11 +90,13 @@ export class AssertionService extends CrudService<NTAssertion> {
     }
     return { testResults: !testFail, mismatchedPixel: assertionPixel };
   }
+
   compareSimilarList<T extends BLSessionEvent>(
     comparatorStrategy: NTComparatorStrategy<T>,
     originalEventList: BLSessionEvent[],
     newEventList: BLSessionEvent[],
-    filter: (e: BLSessionEvent) => e is T
+    filter: (e: BLSessionEvent) => e is T,
+    type: NTAssertionType
   ) {
     let eventsError: NTAssertionComparison<T>[] = [];
     let notFoundedEvents: T[] = [];

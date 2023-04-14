@@ -4,9 +4,7 @@ export function compareBodyKeys(event1: BLHTTPResponseEvent, event2: BLHTTPRespo
     const unmatchedKeys = [];
     if (typeof event1.request.body === 'string' && typeof event2.request.body === 'string') {
       const jsonBodyEvent1 = JSON.parse(event1.request.body);
-      //let jsonBodyKeysEvent1 = Object.keys(jsonBodyEvent1);
       const jsonBodyEvent2 = JSON.parse(event2.request.body);
-      //let jsonBodyKeysEvent2 = Object.keys(jsonBodyEvent2);
 
       //controllo se sono array e non json
       if (Array.isArray(jsonBodyEvent1) && Array.isArray(jsonBodyEvent2)) {
@@ -16,7 +14,6 @@ export function compareBodyKeys(event1: BLHTTPResponseEvent, event2: BLHTTPRespo
       let jsonBodyKeysEvent2 = getAllKeys(jsonBodyEvent2);
 
       if (jsonBodyKeysEvent1.length != jsonBodyKeysEvent2.length) {
-        console.log('Lunghezza diversa delle chiavi', jsonBodyKeysEvent1, jsonBodyKeysEvent2);
         return false;
       }
       //qui sono sicuro che sono json
@@ -24,14 +21,6 @@ export function compareBodyKeys(event1: BLHTTPResponseEvent, event2: BLHTTPRespo
         const matchedKey = jsonBodyKeysEvent2.find((value) => value == key);
         if (!matchedKey) {
           unmatchedKeys.push(key);
-          console.log(
-            'Key non trovata',
-            key,
-            'body1',
-            event1.request.body,
-            'body2',
-            event2.request.body
-          );
         } else {
           jsonBodyKeysEvent2.splice(jsonBodyKeysEvent2.indexOf(matchedKey), 1);
         }
