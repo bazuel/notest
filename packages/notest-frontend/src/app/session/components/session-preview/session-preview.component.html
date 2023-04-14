@@ -65,8 +65,8 @@
               <div class="flex flex-row justify-between p-2 items-center">
                 <div class='flex flex-row text-sm text-gray-400 w-fit'>Fetch Response test:
                 </div>
-                <nt-icon class="{{run.assertion.assertions.fetch_response_pass ? 'text-green-500' : 'text-red-500'}}"
-                         name="{{run.assertion.assertions.fetch_response_pass ? 'success' : 'cross'}}"></nt-icon>
+                <nt-icon class="{{run.assertion.assertions.http_response ? 'text-green-500' : 'text-red-500'}}"
+                         name="{{run.assertion.assertions.http_response ? 'success' : 'cross'}}"></nt-icon>
               </div>
               <div class="flex flex-row justify-between p-2 items-center">
                 <div class='flex flex-row text-sm text-gray-400 w-fit'>Fetch Body Type test:</div>
@@ -127,10 +127,10 @@
       Method: {{httpResp.request.method}} Path: {{httpResp.request.path.split('api')[1]}}
     </div>
     <label class='mt-4'>Fetch Response Status</label>
-    <div *ngIf="runSelected!.assertion!.assertions.fetch_response_pass"> All responses of the
+    <div *ngIf="runSelected!.assertion!.assertions.http_response"> All responses of the
       2 sessions are matched with the same STATUS CODE
     </div>
-    <div *ngIf="!runSelected!.assertion!.assertions.fetch_response_pass"> Original Responses
+    <div *ngIf="!runSelected!.assertion!.assertions.http_response"> Original Responses
       Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_response_match_not_found?.length}}
       <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_response_compare_error?.length}}
         <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_compare_error">

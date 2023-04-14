@@ -73,81 +73,48 @@ export class ClusterRunnerService {
       const newEventsZipped = await new JsonCompressor().zip(monitoringSession.events);
       await sessionService.save(newEventsZipped, newSession);
 
-      const { testResults, assertionPixelList } = await assertionService.compareImages(
+      //**************************************************************************************************************//
+
+      const assertion: NTAssertion = {} as any;
+      const { mismatchedPixel } = await assertionService.compareImages(
         targetList,
         reference,
         newReference
       );
 
-      //**************************************************************************************************************//
-      type possibleAssertions = 'response_body_match' | 'fetch_body_type' | 'fetch_response';
+      assertion.assertions.visual = { ...assertion.assertions.visual, mismatchedPixel };
 
-      const assertions: possibleAssertions[] = [
-        'response_body_match',
-        'fetch_body_type',
-        'fetch_response'
-      ];
+      const status = assertionService.compareSimilarList(
+        compareStatusResponse,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter,
+        'status'
+      );
+      const body = assertionService.compareSimilarList(
+        compareBodyKeys,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter,
+        'bodyRequest'
+      );
+      const type = assertionService.compareSimilarList(
+        compareBodyType,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter,
+        'contentType'
+      );
 
-      const assertionMap: {
-        [k in possibleAssertions]: {
-          comparator: NTComparatorStrategy<any>;
-          filter: (e: BLSessionEvent) => e is any;
-        };
-      } = {
-        response_body_match: { comparator: compareStatusResponse, filter: afterResponseFilter },
-        fetch_body_type: { comparator: compareBodyKeys, filter: afterResponseFilter },
-        fetch_response: { comparator: compareBodyType, filter: afterResponseFilter }
-      };
+      if (status.notFoundedEvents.length > 0)
+        assertion.assertions.http.notFounded = status.notFoundedEvents;
+      if (type.eventsError.length > 0 || status.eventsError.length > 0 || body.eventsError)
+        assertion.assertions.http.comparisons = [
+          ...type.eventsError,
+          ...status.eventsError,
+          ...body.eventsError
+        ];
 
-      const assertionResults: { [k in possibleAssertions]: { eventsError; notFoundedEvents } } = {
-        response_body_match: { eventsError: [], notFoundedEvents: [] },
-        fetch_body_type: { eventsError: [], notFoundedEvents: [] },
-        fetch_response: { eventsError: [], notFoundedEvents: [] }
-      };
-
-      assertions.forEach((type) => {
-        assertionResults[type] = assertionService.compareSimilarList(
-          assertionMap[type].comparator,
-          eventList,
-          monitoringSession.events,
-          assertionMap[type].filter
-        );
-      });
-
-      const fetch_response_pass =
-        assertionResults.fetch_response.notFoundedEvents.length == 0 &&
-        assertionResults.fetch_response.eventsError.length == 0;
-      const fetch_body_type_pass =
-        assertionResults.fetch_body_type.notFoundedEvents.length == 0 &&
-        assertionResults.fetch_body_type.eventsError.length == 0;
-      const response_body_match_pass =
-        assertionResults.response_body_match.notFoundedEvents.length == 0 &&
-        assertionResults.response_body_match.eventsError.length == 0;
-      const assertion: NTAssertion = {
-        original_reference: encodeURIComponent(reference),
-        new_reference: newReference,
-        info: {
-          last_event: monitoringSession.lastEvent,
-          test_execution_failed: monitoringSession.testFailed
-        },
-        assertions: {
-          fetch_response_pass,
-          fetch_body_type_pass,
-          response_body_match_pass,
-          image_comparison_pass: testResults
-        },
-        assertions_details: {
-          image_comparison: {
-            mismatched_pixel: assertionPixelList
-          },
-          fetch_response_match_not_found: assertionResults.fetch_response.notFoundedEvents,
-          fetch_response_compare_error: assertionResults.fetch_response.eventsError,
-          fetch_body_type_match_not_found: assertionResults.fetch_body_type.notFoundedEvents,
-          fetch_body_type_compare_error: assertionResults.fetch_body_type.eventsError,
-          request_body_match_not_found: assertionResults.response_body_match.notFoundedEvents,
-          request_body_compare_error: assertionResults.response_body_match.eventsError
-        }
-      };
       await assertionService.save(assertion);
       //**************************************************************************************************************//
       console.log('Session Ended');

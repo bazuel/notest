@@ -58,36 +58,41 @@ export interface NTAssertion {
   original_reference: string;
   new_reference: string;
   assertions: {
-    fetch_response_pass: boolean;
-    fetch_body_type_pass: boolean;
-    response_body_match_pass: boolean;
-    image_comparison_pass: boolean;
-  };
-  assertions_details: {
-    image_comparison: {
-      mismatched_pixel: number[];
+    test_execution_failed: boolean; //session-preview, cluster_runner, assertion_result_pipe
+    http: {
+      notFounded: BLHTTPResponseEvent[];
+      comparisons: NTAssertionComparison<BLHTTPResponseEvent>[];
     };
-    fetch_response_match_not_found: BLHTTPResponseEvent[];
-    fetch_body_type_match_not_found: BLHTTPResponseEvent[];
-    request_body_match_not_found: BLHTTPResponseEvent[];
-    fetch_response_compare_error: {
-      originalEvent: BLHTTPResponseEvent;
-      newEvent: BLHTTPResponseEvent;
-    }[];
-    fetch_body_type_compare_error: {
-      originalEvent: BLHTTPResponseEvent;
-      newEvent: BLHTTPResponseEvent;
-    }[];
-    request_body_compare_error: {
-      originalEvent: BLHTTPResponseEvent;
-      newEvent: BLHTTPResponseEvent;
-    }[];
+    dom: {};
+    visual: {
+      mismatchedPixel: number[];
+    };
   };
   info?: {
     last_event: BLSessionEvent;
-    test_execution_failed: boolean;
   };
 }
+
+export interface NTAssertion1<T> {
+  original_reference: string;
+  new_reference: string;
+  type: NTAssertionType;
+  name: NTAssertionName;
+  payload: NTAssertionComparison<T>;
+}
+
+export type NTAssertionName = "status" | "contentType" | "bodyRequest";
+export type NTAssertionType =
+  | "http"
+  | "visual"
+  | "runSuccessfullyFinished"
+  | "missedEvents";
+
+export type NTAssertionComparison<E> = {
+  originalEvent: E;
+  newEvent: E;
+  type: NTAssertionType;
+};
 
 export type NTComparatorStrategy<T> = (l1: T, l2: T) => boolean;
 

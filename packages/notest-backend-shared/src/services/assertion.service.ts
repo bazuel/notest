@@ -82,7 +82,7 @@ export class AssertionService extends CrudService<NTAssertion> {
       }
       await mediaService.saveScreenshot(assertionScreenshot, newReference);
     }
-    return { testResults: !testFail, assertionPixelList: assertionPixel };
+    return { testResults: !testFail, mismatchedPixel: assertionPixel };
   }
   compareSimilarList<T extends BLSessionEvent>(
     comparatorStrategy: NTComparatorStrategy<T>,
@@ -90,22 +90,25 @@ export class AssertionService extends CrudService<NTAssertion> {
     newEventList: BLSessionEvent[],
     filter: (e: BLSessionEvent) => e is T
   ) {
-    const originalRequestList = originalEventList.filter(filter);
-    const newRequestList = newEventList.filter(filter);
-    let requestMap: { [k: string]: T[] } = {};
-    for (const event of newRequestList) {
-      let key = `${event.request.method}.${event.request.url}`;
-      if (!requestMap[key]) requestMap[key] = [];
-      requestMap[key].push(event);
-    }
-    let eventsError: { originalEvent: T; newEvent: T }[] = [];
+    let eventsError: NTAssertionComparison<T>[] = [];
     let notFoundedEvents: T[] = [];
-    for (const currentEvent of originalRequestList) {
-      let key = `${currentEvent.request.method}.${currentEvent.request.url}`;
-      const similarRequest = requestMap[key]?.shift();
-      if (!similarRequest) notFoundedEvents.push(currentEvent);
-      else if (!comparatorStrategy(similarRequest, currentEvent)) {
-        eventsError.push({ originalEvent: currentEvent, newEvent: similarRequest });
+
+    const originalList = originalEventList.filter(filter);
+    const newList = newEventList.filter(filter);
+
+    let eventMap: { [k: string]: T[] } = {};
+    for (const event of newList) {
+      let key = `${event.request.method}.${event.request.url}`;
+      if (!eventMap[key]) eventMap[key] = [];
+      eventMap[key].push(event);
+    }
+
+    for (const originalEvent of originalList) {
+      let key = `${originalEvent.request.method}.${originalEvent.request.url}`;
+      const newEvent = eventMap[key]?.shift();
+      if (!newEvent) notFoundedEvents.push(originalEvent);
+      else if (!comparatorStrategy(newEvent, originalEvent)) {
+        eventsError.push({ originalEvent, newEvent, type });
       }
     }
     return { eventsError, notFoundedEvents };
