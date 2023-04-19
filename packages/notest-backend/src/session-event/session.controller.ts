@@ -134,7 +134,7 @@ export class SessionController {
     const references = await this.sessionService
       .findByUrl(url)
       .then((result) => result.map((row) => decodeURIComponent(row.reference)));
-    const sessions = await Promise.all(
+    return await Promise.all(
       references.map((ref) => {
         return {
           reference: ref,
@@ -142,7 +142,6 @@ export class SessionController {
         };
       })
     );
-    return sessions;
   }
 
   @Get('download-filtered')

@@ -1,10 +1,8 @@
 import {
   afterResponseFilter,
-  BLHTTPResponseEvent,
   BLSessionEvent,
   eventReference,
   JsonCompressor,
-  NTAssertion,
   NTClusterMessage,
   NTHttpAssertion,
   NTMissedEventsAssertion,

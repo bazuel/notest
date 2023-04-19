@@ -4,10 +4,8 @@ import {
   NTAssertionName,
   NTAssertionType,
   NTHttpAssertion,
-  NTMedia,
   NTMissedEventsAssertion,
   NTRunFinishedAssertion,
-  NTSession,
   NTVisualAssertion
 } from '@notest/common';
 @Component({

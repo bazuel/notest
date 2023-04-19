@@ -3,7 +3,6 @@ import {
   BLSessionEvent,
   NTAssertion,
   NTAssertionComparison,
-  NTAssertionType,
   NTComparatorStrategy
 } from '@notest/common';
 import { CrudService } from '../shared/services/crud.service';
