@@ -199,15 +199,23 @@ export class SessionController {
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {
+    const rerunSessionsMap = assertions.reduce(
+      (acc: { [k: string]: NTAssertion[] }, current_assertion) => {
+        if (!acc[current_assertion.new_reference]) acc[current_assertion.new_reference] = [];
+        acc[current_assertion.new_reference].push(current_assertion);
+        return acc;
+      },
+      {}
+    );
     const runHistory = await Promise.all(
-      assertions.map(async (assertion) => {
-        const session = await this.sessionService.findByField('reference', assertion.new_reference);
-        const media = await this.mediaService.findByField('reference', assertion.new_reference);
+      Object.entries(rerunSessionsMap).map(async ([new_reference, assertions]) => {
+        const session = await this.sessionService.findByField('reference', new_reference);
+        const media = await this.mediaService.findByField('reference', new_reference);
         return {
           session: session[0],
           screenshot: media.filter((m) => m.type === 'image').reverse(),
           video: media.filter((m) => m.type === 'video')[0],
-          assertion
+          assertions
         };
       })
     );
