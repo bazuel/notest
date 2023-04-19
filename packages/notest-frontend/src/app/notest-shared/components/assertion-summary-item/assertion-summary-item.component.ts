@@ -86,3 +86,6 @@ export function isHttpContentType(assertion: NTAssertion): assertion is NTHttpAs
 export function isVisualType(assertion: NTAssertion): assertion is NTVisualAssertion {
   return assertion.type === 'visual';
 }
+export function isRunSuccessfullyFinished(assertion: NTAssertion): assertion is NTVisualAssertion {
+  return assertion.type === 'runSuccessfullyFinished';
+}
