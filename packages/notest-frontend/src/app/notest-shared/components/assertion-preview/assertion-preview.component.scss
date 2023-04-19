@@ -1,10 +1,11 @@
 
 table{
+  @apply  border-l-2 border-l-nt-500;
   .thead {
     @apply sticky top-0 z-10 shadow-md bg-white;
 
     th {
-      @apply px-2 py-2 text-center items-center;
+      @apply px-2 py-2 text-center items-center font-bold;
     }
   }
 }

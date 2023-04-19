@@ -1,5 +1,3 @@
-<label class='mt-4'>{{title}}</label>
-
 <div *ngIf='httpAssertion'>
   <div *ngIf='httpAssertion.payload.errorEvents.length == 0'>
     Test Passed: it's all ok! :D
@@ -27,26 +25,25 @@
 </div>
 
 <div *ngIf='missedEventsAssertion'>
-  <ng-container *ngIf='missedEventsAssertion.payload.missedEvents.length == 0'>
-    Test Passed: it's all ok! :D
-  </ng-container>
-  <ng-container *ngIf='missedEventsAssertion.payload.missedEvents.length != 0'>
-    Test failed:<br>
-    Problems founded: {{missedEventsAssertion.payload.missedEvents.length}}<br>
-    Missed Element List:
-    <div class='overflow-auto h-48 scrollbar-sm'>
-      <table class='bo-table'>
-        <tbody>
-        <tr class='thead'>
-          <th>METHOD</th>
-          <th>URL</th>
-        </tr>
-        <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;'>
-          <td>{{httpResp.request.method}}</td>
-          <td>{{httpResp.request.url}}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </ng-container>
+  <div class='w-48'>
+    <nt-assertion-summary-item [assertionList]='[missedEventsAssertion]' type='missedEvents'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+  Missed Element List:
+  <div class='overflow-auto h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Method</th>
+        <th>Url</th>
+      </tr>
+      <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;index as i'>
+        <td>{{i + 1}}</td>
+        <td>{{httpResp.request.method}}</td>
+        <td>{{httpResp.request.url}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

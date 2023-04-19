@@ -7,7 +7,7 @@
          [class.text-green-500]='assertionSuccess'>
 </nt-icon>
 
-<div *ngIf="type != 'all'" class="flex flex-row justify-between p-2 items-center">
+<div *ngIf="type != 'all'" class="flex flex-row justify-between pt-2 items-center">
   <div class='flex flex-row text-sm text-gray-400 w-fit'>{{title}}:</div>
   <nt-icon class="{{assertionSuccess ? 'text-green-500' : 'text-red-500'}}"
            name="{{assertionSuccess ? 'success' : 'cross'}}"></nt-icon>

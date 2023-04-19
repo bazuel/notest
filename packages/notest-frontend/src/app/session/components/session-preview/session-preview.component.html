@@ -49,8 +49,8 @@
               class='w-5 h-5'
               title='Click for more informations'>
             </nt-assertion-summary-item>
-            <div *ngIf='run.showInfo' class='nt-session-info-popup'>
-              <div class='text-gray-400 w-56 p-2'>Test Results</div>
+            <div *ngIf='run.showInfo' class='nt-session-info-popup p-2'>
+              <div class='text-gray-400 w-56'>Test Results</div>
               <nt-assertion-summary-item
                 [assertionList]='run.assertions' type='runSuccessfullyFinished'
                 title='Session Run'></nt-assertion-summary-item>
