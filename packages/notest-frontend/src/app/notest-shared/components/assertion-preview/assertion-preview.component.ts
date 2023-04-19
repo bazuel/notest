@@ -5,7 +5,6 @@ import {
   NTAssertionType,
   NTHttpAssertion,
   NTMissedEventsAssertion,
-  NTRunFinishedAssertion,
   NTVisualAssertion
 } from '@notest/common';
 import {
@@ -15,6 +14,7 @@ import {
   isMissedEventsType,
   isVisualType
 } from '../assertion-summary-item/assertion-summary-item.component';
+
 @Component({
   selector: 'nt-assertion-preview',
   templateUrl: './assertion-preview.component.html',
@@ -30,29 +30,31 @@ export class AssertionPreviewComponent implements OnInit {
   @Input()
   name?: NTAssertionName;
 
-  private assertionSelected: NTAssertion = {} as NTAssertion;
-  ngOnInit(): void {}
+  httpAssertion?: NTHttpAssertion;
+  visualAssertion?: NTVisualAssertion;
+  missedEventsAssertion?: NTMissedEventsAssertion;
+
+  ngOnInit(): void {
+    this.displayAssertion(this.assertionList, this.type, this.name);
+  }
+
   displayAssertion(assertion: NTAssertion[], type: NTAssertionType, name?: NTAssertionName) {
     if (type == 'visual') {
-      const visualAssertion = assertion.find(isVisualType);
-      return visualAssertion;
+      this.visualAssertion = assertion.find(isVisualType);
     }
     if (type == 'missedEvents') {
-      const missedEvents = assertion.find(isMissedEventsType);
-      return missedEvents;
+      this.missedEventsAssertion = assertion.find(isMissedEventsType);
     }
     if (type == 'http' && name == 'status') {
-      const httpStatusEvents = assertion.find(isHttpStatusType);
-      return httpStatusEvents;
+      this.httpAssertion = assertion.find(isHttpStatusType);
     }
     if (type == 'http' && name == 'contentType') {
-      const httpContentTypeEvents = assertion.find(isHttpContentType);
-      return httpContentTypeEvents;
+      this.httpAssertion = assertion.find(isHttpContentType);
     }
     if (type == 'http' && name == 'bodyRequest') {
-      const httpBodyRequestEvents = assertion.find(isHttpBodyRequestType);
-      return httpBodyRequestEvents;
+      this.httpAssertion = assertion.find(isHttpBodyRequestType);
     }
-    return undefined;
   }
+
+  protected readonly isHttpStatusType = isHttpStatusType;
 }

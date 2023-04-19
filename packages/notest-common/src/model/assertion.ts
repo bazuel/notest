@@ -1,5 +1,6 @@
 import { Json } from "./json.type";
 import { BLHTTPResponseEvent } from "./http.event";
+import { BLSessionEvent } from "./events";
 
 export interface NTAssertion {
   original_reference: string;
@@ -9,7 +10,13 @@ export interface NTAssertion {
   payload: Json;
 }
 
-export interface NTHttpAssertion extends NTAssertion {
+export interface NTComparisonAssertion<E extends BLSessionEvent>
+  extends NTAssertion {
+  payload: { errorEvents: NTAssertionComparison<E>[] };
+}
+
+export interface NTHttpAssertion
+  extends NTComparisonAssertion<BLHTTPResponseEvent> {
   payload: { errorEvents: NTAssertionComparison<BLHTTPResponseEvent>[] };
 }
 

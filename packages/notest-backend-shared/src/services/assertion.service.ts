@@ -127,6 +127,14 @@ export class AssertionService extends CrudService<NTAssertion> {
             insert into ${sql(this.table)}
                 ${sql({ ...cleanUndefined(assert), created: new Date() })} returning *`;
   }
+
+  async countRerun(originalReference: string) {
+    const result = await this.db.query<{ count: number }>`
+        select count(distinct (original_reference, new_reference))
+        from nt_assertion
+        where original_reference = ${originalReference}`;
+    return result[0].count;
+  }
 }
 
 export const assertionService = new AssertionService(new PostgresDbService());

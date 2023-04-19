@@ -1,19 +1,52 @@
 <label class='mt-4'>{{title}}</label>
-<div *ngIf="assertionSelected.payload[0].length == 0"> Test Passed: Contents are the same for both sessions
-</div>
-<div *ngIf="assertionSelected.payload[0].length != 0">
-  Test failed: Number of different elements: {{assertionSelected.payload[0].length}}.
 
-  <div> Different Element List:
-    <div *ngFor="let httpResp of assertionSelected.payload[0]">
-      <div>
-        [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
-        Status: {{httpResp.originalEvent.status}}
+<div *ngIf='httpAssertion'>
+  <div *ngIf='httpAssertion.payload.errorEvents.length == 0'>
+    Test Passed: it's all ok! :D
+  </div>
+  <div *ngIf='httpAssertion.payload.errorEvents.length != 0'>
+    Test failed:<br>
+    Problems founded: {{httpAssertion.payload.errorEvents.length}}
+    Different Element List:
+    <div *ngFor='let httpResp of httpAssertion.payload.errorEvents;'>
+      Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
+      <div *ngIf='httpAssertion.name == "status"'>
+        [Original] Status: {{httpResp.originalEvent.status}}
+        [New] Status: {{httpResp.newEvent.status}}
       </div>
-      <div>
-        [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}
-        Status: {{httpResp.newEvent.status}}
+      <div *ngIf='httpAssertion.name == "bodyRequest"'>
+        [Original] Body: {{httpResp.originalEvent.request.body}}
+        [New] Body: {{httpResp.newEvent.request.body}}
+      </div>
+      <div *ngIf='httpAssertion.name == "contentType"'>
+        [Original] Content-Type: {{httpResp.originalEvent.request.headers["content-type"]}}
+        [New] Content-Type: {{httpResp.newEvent.request.headers["content-type"]}}
       </div>
     </div>
   </div>
+</div>
+
+<div *ngIf='missedEventsAssertion'>
+  <ng-container *ngIf='missedEventsAssertion.payload.missedEvents.length == 0'>
+    Test Passed: it's all ok! :D
+  </ng-container>
+  <ng-container *ngIf='missedEventsAssertion.payload.missedEvents.length != 0'>
+    Test failed:<br>
+    Problems founded: {{missedEventsAssertion.payload.missedEvents.length}}<br>
+    Missed Element List:
+    <div class='overflow-auto h-48 scrollbar-sm'>
+      <table class='bo-table'>
+        <tbody>
+        <tr class='thead'>
+          <th>METHOD</th>
+          <th>URL</th>
+        </tr>
+        <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;'>
+          <td>{{httpResp.request.method}}</td>
+          <td>{{httpResp.request.url}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
 </div>

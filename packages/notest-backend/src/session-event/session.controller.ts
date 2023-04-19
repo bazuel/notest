@@ -191,10 +191,7 @@ export class SessionController {
 
   @Get('get-rerun-session')
   async getRerunSession(@Query('reference') reference: string) {
-    return await this.assertionService.findByField(
-      'original_reference',
-      encodeURIComponent(reference)
-    );
+    return await this.assertionService.countRerun(encodeURIComponent(reference));
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {

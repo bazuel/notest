@@ -25,7 +25,8 @@ import { AssertionPreviewComponent } from './components/assertion-preview/assert
     VideoComponent,
     SessionPreviewPlaceholderComponent,
     ScreenshotListPlaceholderComponent,
-    AssertionSummaryItemComponent
+    AssertionSummaryItemComponent,
+    AssertionPreviewComponent
   ],
   imports: [CommonModule, SharedModule]
 })

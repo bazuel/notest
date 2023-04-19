@@ -1,0 +1,12 @@
+
+table{
+  .thead {
+    @apply sticky top-0 z-10 shadow-md bg-white;
+
+    th {
+      @apply px-2 py-2 text-center items-center;
+    }
+  }
+}
+
+

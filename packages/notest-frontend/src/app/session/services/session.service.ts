@@ -50,7 +50,7 @@ export class SessionService {
   }
 
   async getRerunSessions(reference: string) {
-    return this.http.gest<NTAssertion[]>(`/session/get-rerun-session`, { reference });
+    return this.http.gest<number>(`/session/get-rerun-session`, { reference });
   }
 
   rerunSession(
@@ -69,9 +69,9 @@ export class SessionService {
     await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
         const rerunSessions = await this.getRerunSessions(reference);
-        console.log('waiting for new session', currentSessions, rerunSessions.length);
+        console.log('waiting for new session', currentSessions, rerunSessions);
         console.log(rerunSessions);
-        if (rerunSessions.length > currentSessions) {
+        if (rerunSessions > currentSessions) {
           clearInterval(interval);
           resolve();
         }

@@ -31,6 +31,7 @@ export class AssertionSummaryItemComponent implements OnInit {
   ngOnInit(): void {
     this.assertionSuccess = this.transform(this.assertionList, this.type, this.name);
   }
+
   transform(
     assertions: NTAssertion[],
     type: NTAssertionType | 'all',
