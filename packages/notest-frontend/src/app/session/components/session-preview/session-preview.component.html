@@ -99,72 +99,75 @@
 <nt-session-preview-placeholder *ngIf='fullLoading'></nt-session-preview-placeholder>
 
 <nt-popup *ngIf='showAssertionPopup' (close)='showAssertionPopup = false'>
-  <!--  <div class='p-5 w-fit h-fit'>-->
-  <!--    <h4 class='text-xl'>Test Results</h4>-->
-  <!--    <label class='mt-4'>Original Fetch Unmatched</label>-->
-  <!--    <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_match_not_found">-->
-  <!--      Method: {{httpResp.request.method}} Path: {{httpResp.request.path.split('api')[1]}}-->
-  <!--    </div>-->
-  <!--    <label class='mt-4'>Fetch Response Status</label>-->
-  <!--    <div *ngIf="runSelected!.assertion!.assertions.http_response"> All responses of the-->
-  <!--      2 sessions are matched with the same STATUS CODE-->
-  <!--    </div>-->
-  <!--    <div *ngIf="!runSelected!.assertion!.assertions.http_response"> Original Responses-->
-  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_response_match_not_found?.length}}-->
-  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_response_compare_error?.length}}-->
-  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_compare_error">-->
-  <!--          <div>-->
-  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
-  <!--            Status: {{httpResp.originalEvent.status}}-->
-  <!--          </div>-->
-  <!--          <div>-->
-  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}-->
-  <!--            Status: {{httpResp.newEvent.status}}-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </div>-->
+    <div class='p-5 w-fit h-fit'>
+      <h4 class='text-xl'>Test Results</h4>
 
-  <!--    <label class='mt-4'>Fetch Request Body Type</label>-->
-  <!--    <div *ngIf="runSelected!.assertion!.assertions.fetch_body_type_pass"> All Body Responses of the-->
-  <!--      2 sessions are matched with the same TYPE-->
-  <!--    </div>-->
-  <!--    <div *ngIf="!runSelected!.assertion!.assertions.fetch_body_type_pass"> Original Responses-->
-  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_body_type_match_not_found!.length}}-->
-  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error?.length}}-->
-  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error">-->
-  <!--          <div>-->
-  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
-  <!--            Body Type: {{httpResp.originalEvent.response.headers['Content-type']}}-->
-  <!--          </div>-->
-  <!--          <div>-->
-  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Body-->
-  <!--            Type: {{httpResp.newEvent.response.headers['content-type']}}-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </div>-->
 
-  <!--    <label class='mt-4'>Fetch Request Body Keys</label>-->
-  <!--    <div *ngIf="runSelected!.assertion!.assertions.response_body_match_pass"> All Body Requests-->
-  <!--      of the-->
-  <!--      2 sessions are matched with the same KEYS-->
-  <!--    </div>-->
-  <!--    <div *ngIf="!runSelected!.assertion!.assertions.response_body_match_pass"> Original Responses-->
-  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.request_body_match_not_found!.length}}-->
-  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.request_body_compare_error?.length}}-->
-  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.request_body_compare_error">-->
-  <!--          <div>-->
-  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
-  <!--            Request Body: {{httpResp.originalEvent.request.body}}-->
-  <!--          </div>-->
-  <!--          <div>-->
-  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Request Body: {{httpResp.newEvent.request.body}}-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
+
+      <label class='mt-4'>Original Fetch Unmatched</label>
+      <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_match_not_found">
+        Method: {{httpResp.request.method}} Path: {{httpResp.request.path.split('api')[1]}}
+      </div>
+      <label class='mt-4'>Fetch Response Status</label>
+      <div *ngIf="runSelected!.assertion!.assertions.http_response"> All responses of the
+        2 sessions are matched with the same STATUS CODE
+      </div>
+      <div *ngIf="!runSelected!.assertion!.assertions.http_response"> Original Responses
+        Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_response_match_not_found?.length}}
+        <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_response_compare_error?.length}}
+          <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_compare_error">
+            <div>
+              [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
+              Status: {{httpResp.originalEvent.status}}
+            </div>
+            <div>
+              [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}
+              Status: {{httpResp.newEvent.status}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <label class='mt-4'>Fetch Request Body Type</label>
+      <div *ngIf="runSelected!.assertion!.assertions.fetch_body_type_pass"> All Body Responses of the
+        2 sessions are matched with the same TYPE
+      </div>
+      <div *ngIf="!runSelected!.assertion!.assertions.fetch_body_type_pass"> Original Responses
+        Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_body_type_match_not_found!.length}}
+        <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error?.length}}
+          <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error">
+            <div>
+              [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
+              Body Type: {{httpResp.originalEvent.response.headers['Content-type']}}
+            </div>
+            <div>
+              [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Body
+              Type: {{httpResp.newEvent.response.headers['content-type']}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <label class='mt-4'>Fetch Request Body Keys</label>
+      <div *ngIf="runSelected!.assertion!.assertions.response_body_match_pass"> All Body Requests
+        of the
+        2 sessions are matched with the same KEYS
+      </div>
+      <div *ngIf="!runSelected!.assertion!.assertions.response_body_match_pass"> Original Responses
+        Unmatched: {{runSelected?.assertion?.assertions_details?.request_body_match_not_found!.length}}
+        <div> Responses Error: {{runSelected?.assertion?.assertions_details?.request_body_compare_error?.length}}
+          <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.request_body_compare_error">
+            <div>
+              [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
+              Request Body: {{httpResp.originalEvent.request.body}}
+            </div>
+            <div>
+              [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Request Body: {{httpResp.newEvent.request.body}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </nt-popup>
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>

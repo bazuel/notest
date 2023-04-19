@@ -1,0 +1,19 @@
+<label class='mt-4'>{{title}}</label>
+<div *ngIf="assertionSelected.payload[0].length == 0"> Test Passed: Contents are the same for both sessions
+</div>
+<div *ngIf="assertionSelected.payload[0].length != 0">
+  Test failed: Number of different elements: {{assertionSelected.payload[0].length}}.
+
+  <div> Different Element List:
+    <div *ngFor="let httpResp of assertionSelected.payload[0]">
+      <div>
+        [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
+        Status: {{httpResp.originalEvent.status}}
+      </div>
+      <div>
+        [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}
+        Status: {{httpResp.newEvent.status}}
+      </div>
+    </div>
+  </div>
+</div>

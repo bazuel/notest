@@ -70,18 +70,18 @@ function isRunSuccessfullyFinishedType(
 ): assertion is NTRunFinishedAssertion {
   return assertion.type === 'runSuccessfullyFinished';
 }
-function isMissedEventsType(assertion: NTAssertion): assertion is NTMissedEventsAssertion {
+export function isMissedEventsType(assertion: NTAssertion): assertion is NTMissedEventsAssertion {
   return assertion.type === 'missedEvents';
 }
-function isHttpStatusType(assertion: NTAssertion): assertion is NTHttpAssertion {
+export function isHttpStatusType(assertion: NTAssertion): assertion is NTHttpAssertion {
   return assertion.type === 'http' && assertion.name === 'status';
 }
-function isHttpBodyRequestType(assertion: NTAssertion): assertion is NTHttpAssertion {
+export function isHttpBodyRequestType(assertion: NTAssertion): assertion is NTHttpAssertion {
   return assertion.type === 'http' && assertion.name === 'bodyRequest';
 }
-function isHttpContentType(assertion: NTAssertion): assertion is NTHttpAssertion {
+export function isHttpContentType(assertion: NTAssertion): assertion is NTHttpAssertion {
   return assertion.type === 'http' && assertion.name === 'contentType';
 }
-function isVisualType(assertion: NTAssertion): assertion is NTVisualAssertion {
+export function isVisualType(assertion: NTAssertion): assertion is NTVisualAssertion {
   return assertion.type === 'visual';
 }
