@@ -6,8 +6,11 @@ import {
   JsonCompressor,
   NTAssertion,
   NTClusterMessage,
-  NTComparatorStrategy,
-  NTSession
+  NTHttpAssertion,
+  NTMissedEventsAssertion,
+  NTRunFinishedAssertion,
+  NTSession,
+  NTVisualAssertion
 } from '@notest/common';
 import * as fs from 'fs';
 import { runLoginSession, runSession } from '../functions/run-new-session';
@@ -75,48 +78,82 @@ export class ClusterRunnerService {
       await sessionService.save(newEventsZipped, newSession);
 
       //**************************************************************************************************************//
+      //http status assertion
+      const httpStatusAssertion: NTHttpAssertion = { payload: {} } as any;
+      httpStatusAssertion.original_reference = encodeURIComponent(reference);
+      httpStatusAssertion.new_reference = newReference;
+      httpStatusAssertion.type = 'http';
+      httpStatusAssertion.name = 'status';
+      const status = assertionService.compareSimilarList(
+        compareStatusResponse,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter
+      );
+      httpStatusAssertion.payload.errorEvents = status.eventsError;
 
-      const assertion: NTAssertion = {} as any;
+      //http body request assertion
+      const httpBodyAssertion: NTHttpAssertion = { payload: {} } as any;
+      httpBodyAssertion.original_reference = encodeURIComponent(reference);
+      httpBodyAssertion.new_reference = newReference;
+      httpBodyAssertion.type = 'http';
+      httpBodyAssertion.name = 'bodyRequest';
+      const body = assertionService.compareSimilarList(
+        compareBodyKeys,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter
+      );
+      httpBodyAssertion.payload.errorEvents = body.eventsError;
+
+      //Http content Type assertion
+      const httpContentTypeAssertion: NTHttpAssertion = { payload: {} } as any;
+      httpContentTypeAssertion.original_reference = encodeURIComponent(reference);
+      httpContentTypeAssertion.new_reference = newReference;
+      httpContentTypeAssertion.type = 'http';
+      httpContentTypeAssertion.name = 'contentType';
+      const type = assertionService.compareSimilarList(
+        compareBodyType,
+        eventList,
+        monitoringSession.events,
+        afterResponseFilter
+      );
+      httpContentTypeAssertion.payload.errorEvents = type.eventsError;
+
+      //Visual assertion
+      const visualAssertion: NTVisualAssertion = { payload: {} } as any;
+      visualAssertion.original_reference = encodeURIComponent(reference);
+      visualAssertion.new_reference = newReference;
+      visualAssertion.type = 'visual';
       const { mismatchedPixel } = await assertionService.compareImages(
         targetList,
         reference,
         newReference
       );
 
-      assertion.assertions.visual = { ...assertion.assertions.visual, mismatchedPixel };
+      visualAssertion.payload.mismatchedPixel = mismatchedPixel;
 
-      const status = assertionService.compareSimilarList(
-        compareStatusResponse,
-        eventList,
-        monitoringSession.events,
-        afterResponseFilter,
-        'status'
-      );
-      const body = assertionService.compareSimilarList(
-        compareBodyKeys,
-        eventList,
-        monitoringSession.events,
-        afterResponseFilter,
-        'bodyRequest'
-      );
-      const type = assertionService.compareSimilarList(
-        compareBodyType,
-        eventList,
-        monitoringSession.events,
-        afterResponseFilter,
-        'contentType'
-      );
+      //Missed events assertion
+      const missedEventAssertion: NTMissedEventsAssertion = { payload: {} } as any;
+      missedEventAssertion.original_reference = encodeURIComponent(reference);
+      missedEventAssertion.new_reference = newReference;
+      missedEventAssertion.type = 'missedEvents';
+      missedEventAssertion.payload.missedEvents = status.notFoundedEvents;
 
-      if (status.notFoundedEvents.length > 0)
-        assertion.assertions.http.notFounded = status.notFoundedEvents;
-      if (type.eventsError.length > 0 || status.eventsError.length > 0 || body.eventsError)
-        assertion.assertions.http.comparisons = [
-          ...type.eventsError,
-          ...status.eventsError,
-          ...body.eventsError
-        ];
+      //Run finished assertion
+      const runFinishedAssertion: NTRunFinishedAssertion = { payload: {} } as any;
+      runFinishedAssertion.original_reference = encodeURIComponent(reference);
+      runFinishedAssertion.new_reference = newReference;
+      runFinishedAssertion.type = 'runSuccessfullyFinished';
+      runFinishedAssertion.payload.testSuccessfullyFinished = !monitoringSession.testFailed;
 
-      await assertionService.save(assertion);
+      await assertionService.save(httpStatusAssertion);
+      await assertionService.save(httpBodyAssertion);
+      await assertionService.save(httpContentTypeAssertion);
+      await assertionService.save(visualAssertion);
+      await assertionService.save(missedEventAssertion);
+      await assertionService.save(runFinishedAssertion);
+
       //**************************************************************************************************************//
       console.log('Session Ended');
     } catch (e) {

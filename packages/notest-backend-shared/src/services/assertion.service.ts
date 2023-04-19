@@ -28,24 +28,17 @@ export class AssertionService extends CrudService<NTAssertion> {
     const tableExists = await this.db.tableExists(this.table);
     if (!tableExists) {
       await this.db.query`
-                create table if not exists ${sql(this.table)}
-                (
-                    ${sql(this.id)}
-                    BIGSERIAL
-                    PRIMARY
-                    KEY,
-                    original_reference
-                    text,
-                    new_reference
-                    text,
-                    assertions
-                    jsonb,
-                    info
-                    jsonb,
-                    created
-                    TIMESTAMPTZ
-                );
-            `;
+        create table if not exists ${sql(this.table)}
+        (
+          ${sql(this.id)} BIGSERIAL PRIMARY KEY,
+          original_reference               text,
+          new_reference                    text,
+          type                             text,
+          name                             text,
+          payload                         jsonb,
+          created                    TIMESTAMPTZ
+        );
+      `;
       await this.db.query`CREATE INDEX ON ${sql(this.table)} (original_reference);`;
     }
   }
@@ -60,7 +53,12 @@ export class AssertionService extends CrudService<NTAssertion> {
       decodeURIComponent(newReference),
       'final'
     );
-    const assertionScreenshot: { name: string; data: Buffer; fired: Date }[] = [];
+    const assertionScreenshot: {
+      name: string;
+      data: Buffer;
+      fired: Date;
+      type: 'image' | 'assertion';
+    }[] = [];
     const assertionPixel: number[] = [];
     if (targetList) {
       for (let i = 0; i < targetList.length; i++) {
@@ -71,17 +69,20 @@ export class AssertionService extends CrudService<NTAssertion> {
         assertionScreenshot.push({
           name: `${i}-original`,
           data: PNGtoBuffer(origImg),
-          fired: new Date()
+          fired: new Date(),
+          type: 'assertion'
         });
         assertionScreenshot.push({
           name: `${i}-new`,
           data: PNGtoBuffer(newImg),
-          fired: new Date()
+          fired: new Date(),
+          type: 'assertion'
         });
         assertionScreenshot.push({
           name: `${i}-diff`,
           data: PNGtoBuffer(imageDiff),
-          fired: new Date()
+          fired: new Date(),
+          type: 'assertion'
         });
         if (pixelMismatch != 0) testFail = true;
         assertionPixel.push(pixelMismatch);
@@ -95,8 +96,7 @@ export class AssertionService extends CrudService<NTAssertion> {
     comparatorStrategy: NTComparatorStrategy<T>,
     originalEventList: BLSessionEvent[],
     newEventList: BLSessionEvent[],
-    filter: (e: BLSessionEvent) => e is T,
-    type: NTAssertionType
+    filter: (e: BLSessionEvent) => e is T
   ) {
     let eventsError: NTAssertionComparison<T>[] = [];
     let notFoundedEvents: T[] = [];
@@ -116,7 +116,7 @@ export class AssertionService extends CrudService<NTAssertion> {
       const newEvent = eventMap[key]?.shift();
       if (!newEvent) notFoundedEvents.push(originalEvent);
       else if (!comparatorStrategy(newEvent, originalEvent)) {
-        eventsError.push({ originalEvent, newEvent, type });
+        eventsError.push({ originalEvent, newEvent });
       }
     }
     return { eventsError, notFoundedEvents };

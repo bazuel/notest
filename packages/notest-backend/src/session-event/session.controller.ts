@@ -211,6 +211,7 @@ export class SessionController {
         };
       })
     );
+    console.log(runHistory);
     return runHistory.reverse();
   }
 }

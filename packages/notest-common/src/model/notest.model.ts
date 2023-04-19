@@ -1,9 +1,4 @@
-import {
-  BLEventName,
-  BLEventType,
-  BLHTTPResponseEvent,
-  BLSessionEvent,
-} from "./events";
+import { BLEventName, BLEventType, BLSessionEvent } from "./events";
 
 export interface NTInstrumentedEvent {
   project_name: string;
@@ -54,46 +49,6 @@ export interface NTSession {
   created?: Date | null;
 }
 
-export interface NTAssertion {
-  original_reference: string;
-  new_reference: string;
-  assertions: {
-    test_execution_failed: boolean; //session-preview, cluster_runner, assertion_result_pipe
-    http: {
-      notFounded: BLHTTPResponseEvent[];
-      comparisons: NTAssertionComparison<BLHTTPResponseEvent>[];
-    };
-    dom: {};
-    visual: {
-      mismatchedPixel: number[];
-    };
-  };
-  info?: {
-    last_event: BLSessionEvent;
-  };
-}
-
-export interface NTAssertion1<T> {
-  original_reference: string;
-  new_reference: string;
-  type: NTAssertionType;
-  name: NTAssertionName;
-  payload: NTAssertionComparison<T>;
-}
-
-export type NTAssertionName = "status" | "contentType" | "bodyRequest";
-export type NTAssertionType =
-  | "http"
-  | "visual"
-  | "runSuccessfullyFinished"
-  | "missedEvents";
-
-export type NTAssertionComparison<E> = {
-  originalEvent: E;
-  newEvent: E;
-  type: NTAssertionType;
-};
-
 export type NTComparatorStrategy<T> = (l1: T, l2: T) => boolean;
 
 export interface NTRunnerConfig {
@@ -131,7 +86,7 @@ export interface NTMedia {
   nt_media_id: number;
   reference: string;
   name: string;
-  type: "image" | "video";
+  type: "image" | "video" | "assertion";
   created: Date | null;
   start: Date | null;
 }

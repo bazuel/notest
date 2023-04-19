@@ -40,51 +40,30 @@
            (mouseleave)='setSessionHover(undefined)'>
         <div class='flex items-center gap-3'>
           <label class='my-5'>{{run.session.created | date:"dd-MM-YYYY, HH:mm"}}</label>
-          <nt-icon *ngIf='run.session.info?.internal_error' name='error'
-                   class='w-5 h-5 text-red-500'></nt-icon>
-
           <div class='relative flex items-center cursor-pointer'>
-            <nt-icon *ngIf='!run.session.info?.internal_error'
-                     name="{{(run.assertion | assertionResults) ? 'success': 'warning'}}"
-                     (click)="runSelected = run;showAssertionPopup = true"
-                     (mouseenter)="run.showInfo = true"
-                     (mouseleave)="run.showInfo = false"
-                     class="w-5 h-5"
-                     title="Click for more informations"
-                     [class.text-orange-500]='!(run.assertion | assertionResults)'
-                     [class.text-green-500]='run.assertion | assertionResults'>
-            </nt-icon>
+            <nt-assertion-summary-item
+              [assertionList]="run.assertions" type='all'
+              (click)="runSelected = run;showAssertionPopup = true"
+              (mouseenter)="run.showInfo = true"
+              (mouseleave)="run.showInfo = false"
+              class="w-5 h-5"
+              title='Click for more informations'>
+            </nt-assertion-summary-item>
             <div *ngIf='run.showInfo' class='nt-session-info-popup'>
               <div class='text-gray-400 w-56 p-2'>Test Results</div>
-              <div class="flex flex-row justify-between p-2 items-center">
-                <div class='flex flex-row text-sm text-gray-400 w-fit'>Test executed:
-                </div>
-                <nt-icon class="{{!run.assertion.info?.test_execution_failed ? 'text-green-500' : 'text-orange-500'}}"
-                         name="{{!run.assertion.info?.test_execution_failed ? 'success' : 'warning'}}"></nt-icon>
-              </div>
-              <div class="flex flex-row justify-between p-2 items-center">
-                <div class='flex flex-row text-sm text-gray-400 w-fit'>Fetch Response test:
-                </div>
-                <nt-icon class="{{run.assertion.assertions.http_response ? 'text-green-500' : 'text-red-500'}}"
-                         name="{{run.assertion.assertions.http_response ? 'success' : 'cross'}}"></nt-icon>
-              </div>
-              <div class="flex flex-row justify-between p-2 items-center">
-                <div class='flex flex-row text-sm text-gray-400 w-fit'>Fetch Body Type test:</div>
-                <nt-icon class="{{run.assertion.assertions.fetch_body_type_pass ? 'text-green-500' : 'text-red-500'}}"
-                         name="{{run.assertion.assertions.fetch_body_type_pass ? 'success' : 'cross'}}"></nt-icon>
-              </div>
-              <div class="flex flex-row justify-between p-2 items-center">
-                <div class='flex flex-row text-sm text-gray-400 w-fit'>Fetch Body test:</div>
-                <nt-icon
-                  class="{{run.assertion.assertions.response_body_match_pass ? 'text-green-500' : 'text-red-500'}}"
-                  name="{{run.assertion.assertions.response_body_match_pass ? 'success' : 'cross'}}"></nt-icon>
-              </div>
-              <div class="flex flex-row justify-between p-2 items-center">
-                <div class='flex flex-row text-sm text-gray-400 w-fit'>Visual comparison test:</div>
-                <nt-icon
-                  class="{{run.assertion.assertions.image_comparison_pass ? 'text-green-500' : 'text-red-500'}}"
-                  name="{{run.assertion.assertions.image_comparison_pass ? 'success' : 'cross'}}"></nt-icon>
-              </div>
+              <nt-assertion-summary-item
+                [assertionList]="run.assertions" type='runSuccessfullyFinished'
+                                         title='Session Run'></nt-assertion-summary-item>
+              <nt-assertion-summary-item [assertionList]="run.assertions" type='missedEvents'
+                                         title='Same HTTP Requests'></nt-assertion-summary-item>
+              <nt-assertion-summary-item [assertionList]="run.assertions" type='visual'
+                                         title='Visual Comparison'></nt-assertion-summary-item>
+              <nt-assertion-summary-item [assertionList]="run.assertions" type='http' name='status'
+                                         title='HTTP Responses Status'></nt-assertion-summary-item>
+              <nt-assertion-summary-item [assertionList]="run.assertions" type='http' name='bodyRequest'
+                                         title='HTTP Body Requests'></nt-assertion-summary-item>
+              <nt-assertion-summary-item [assertionList]="run.assertions" type='http' name='contentType'
+                                         title='HTTP Body type'></nt-assertion-summary-item>
             </div>
           </div>
 
@@ -120,72 +99,72 @@
 <nt-session-preview-placeholder *ngIf='fullLoading'></nt-session-preview-placeholder>
 
 <nt-popup *ngIf='showAssertionPopup' (close)='showAssertionPopup = false'>
-  <div class='p-5 w-fit h-fit'>
-    <h4 class='text-xl'>Test Results</h4>
-    <label class='mt-4'>Original Fetch Unmatched</label>
-    <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_match_not_found">
-      Method: {{httpResp.request.method}} Path: {{httpResp.request.path.split('api')[1]}}
-    </div>
-    <label class='mt-4'>Fetch Response Status</label>
-    <div *ngIf="runSelected!.assertion!.assertions.http_response"> All responses of the
-      2 sessions are matched with the same STATUS CODE
-    </div>
-    <div *ngIf="!runSelected!.assertion!.assertions.http_response"> Original Responses
-      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_response_match_not_found?.length}}
-      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_response_compare_error?.length}}
-        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_compare_error">
-          <div>
-            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
-            Status: {{httpResp.originalEvent.status}}
-          </div>
-          <div>
-            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}
-            Status: {{httpResp.newEvent.status}}
-          </div>
-        </div>
-      </div>
-    </div>
+  <!--  <div class='p-5 w-fit h-fit'>-->
+  <!--    <h4 class='text-xl'>Test Results</h4>-->
+  <!--    <label class='mt-4'>Original Fetch Unmatched</label>-->
+  <!--    <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_match_not_found">-->
+  <!--      Method: {{httpResp.request.method}} Path: {{httpResp.request.path.split('api')[1]}}-->
+  <!--    </div>-->
+  <!--    <label class='mt-4'>Fetch Response Status</label>-->
+  <!--    <div *ngIf="runSelected!.assertion!.assertions.http_response"> All responses of the-->
+  <!--      2 sessions are matched with the same STATUS CODE-->
+  <!--    </div>-->
+  <!--    <div *ngIf="!runSelected!.assertion!.assertions.http_response"> Original Responses-->
+  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_response_match_not_found?.length}}-->
+  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_response_compare_error?.length}}-->
+  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_response_compare_error">-->
+  <!--          <div>-->
+  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
+  <!--            Status: {{httpResp.originalEvent.status}}-->
+  <!--          </div>-->
+  <!--          <div>-->
+  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}-->
+  <!--            Status: {{httpResp.newEvent.status}}-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--    </div>-->
 
-    <label class='mt-4'>Fetch Request Body Type</label>
-    <div *ngIf="runSelected!.assertion!.assertions.fetch_body_type_pass"> All Body Responses of the
-      2 sessions are matched with the same TYPE
-    </div>
-    <div *ngIf="!runSelected!.assertion!.assertions.fetch_body_type_pass"> Original Responses
-      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_body_type_match_not_found!.length}}
-      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error?.length}}
-        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error">
-          <div>
-            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
-            Body Type: {{httpResp.originalEvent.response.headers['Content-type']}}
-          </div>
-          <div>
-            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Body
-            Type: {{httpResp.newEvent.response.headers['content-type']}}
-          </div>
-        </div>
-      </div>
-    </div>
+  <!--    <label class='mt-4'>Fetch Request Body Type</label>-->
+  <!--    <div *ngIf="runSelected!.assertion!.assertions.fetch_body_type_pass"> All Body Responses of the-->
+  <!--      2 sessions are matched with the same TYPE-->
+  <!--    </div>-->
+  <!--    <div *ngIf="!runSelected!.assertion!.assertions.fetch_body_type_pass"> Original Responses-->
+  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.fetch_body_type_match_not_found!.length}}-->
+  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error?.length}}-->
+  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.fetch_body_type_compare_error">-->
+  <!--          <div>-->
+  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
+  <!--            Body Type: {{httpResp.originalEvent.response.headers['Content-type']}}-->
+  <!--          </div>-->
+  <!--          <div>-->
+  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Body-->
+  <!--            Type: {{httpResp.newEvent.response.headers['content-type']}}-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--    </div>-->
 
-    <label class='mt-4'>Fetch Request Body Keys</label>
-    <div *ngIf="runSelected!.assertion!.assertions.response_body_match_pass"> All Body Requests
-      of the
-      2 sessions are matched with the same KEYS
-    </div>
-    <div *ngIf="!runSelected!.assertion!.assertions.response_body_match_pass"> Original Responses
-      Unmatched: {{runSelected?.assertion?.assertions_details?.request_body_match_not_found!.length}}
-      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.request_body_compare_error?.length}}
-        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.request_body_compare_error">
-          <div>
-            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
-            Request Body: {{httpResp.originalEvent.request.body}}
-          </div>
-          <div>
-            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Request Body: {{httpResp.newEvent.request.body}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!--    <label class='mt-4'>Fetch Request Body Keys</label>-->
+  <!--    <div *ngIf="runSelected!.assertion!.assertions.response_body_match_pass"> All Body Requests-->
+  <!--      of the-->
+  <!--      2 sessions are matched with the same KEYS-->
+  <!--    </div>-->
+  <!--    <div *ngIf="!runSelected!.assertion!.assertions.response_body_match_pass"> Original Responses-->
+  <!--      Unmatched: {{runSelected?.assertion?.assertions_details?.request_body_match_not_found!.length}}-->
+  <!--      <div> Responses Error: {{runSelected?.assertion?.assertions_details?.request_body_compare_error?.length}}-->
+  <!--        <div *ngFor="let httpResp of runSelected?.assertion?.assertions_details?.request_body_compare_error">-->
+  <!--          <div>-->
+  <!--            [Original] Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}-->
+  <!--            Request Body: {{httpResp.originalEvent.request.body}}-->
+  <!--          </div>-->
+  <!--          <div>-->
+  <!--            [New] Method: {{httpResp.newEvent.request.method}} Url: {{httpResp.newEvent.request.url}}  Request Body: {{httpResp.newEvent.request.body}}-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 </nt-popup>
 
 <nt-popup *ngIf='showSessionSettings' (close)='showSessionSettings = false'>

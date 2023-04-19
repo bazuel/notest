@@ -23,7 +23,7 @@ export class SessionPreviewComponent {
     session: NTSession;
     screenshot: NTMedia[];
     video: NTMedia;
-    assertion: NTAssertion;
+    assertions: NTAssertion[];
     showInfo: boolean;
   }[];
   screenshotOnHover?: NTMedia;
@@ -38,7 +38,7 @@ export class SessionPreviewComponent {
     session: NTSession;
     screenshot: NTMedia[];
     video: NTMedia;
-    assertion: NTAssertion;
+    assertions: NTAssertion[];
     showInfo: boolean;
   };
 

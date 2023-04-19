@@ -11,3 +11,4 @@ export * from "./functions/method.observer";
 export * from "./functions/throttle.util";
 export * from "./utils/raf-timer.util";
 export * from "./functions/event-filter";
+export * from "./model/assertion";
