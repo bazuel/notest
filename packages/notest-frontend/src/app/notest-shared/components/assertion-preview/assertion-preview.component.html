@@ -1,26 +1,35 @@
 <div *ngIf='httpAssertion'>
-  <div *ngIf='httpAssertion.payload.errorEvents.length == 0'>
-    Test Passed: it's all ok! :D
+  <div class='w-48'>
+    <nt-assertion-summary-item [assertionList]='[httpAssertion]' type='http' [name]="httpAssertion.name"
+                               [title]='title'></nt-assertion-summary-item>
   </div>
-  <div *ngIf='httpAssertion.payload.errorEvents.length != 0'>
-    Test failed:<br>
-    Problems founded: {{httpAssertion.payload.errorEvents.length}}
-    Different Element List:
-    <div *ngFor='let httpResp of httpAssertion.payload.errorEvents;'>
-      Method: {{httpResp.originalEvent.request.method}} Url: {{httpResp.originalEvent.request.url}}
-      <div *ngIf='httpAssertion.name == "status"'>
-        [Original] Status: {{httpResp.originalEvent.status}}
-        [New] Status: {{httpResp.newEvent.status}}
-      </div>
-      <div *ngIf='httpAssertion.name == "bodyRequest"'>
-        [Original] Body: {{httpResp.originalEvent.request.body}}
-        [New] Body: {{httpResp.newEvent.request.body}}
-      </div>
-      <div *ngIf='httpAssertion.name == "contentType"'>
-        [Original] Content-Type: {{httpResp.originalEvent.request.headers["content-type"]}}
-        [New] Content-Type: {{httpResp.newEvent.request.headers["content-type"]}}
-      </div>
-    </div>
+  <div *ngIf='httpAssertion.payload.errorEvents.length != 0' class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Method</th>
+        <th>Url</th>
+<!--        <th *ngIf="httpAssertion.name=='status'">Original Status</th>-->
+<!--        <th *ngIf="httpAssertion.name=='status'">New Status</th>-->
+<!--        <th *ngIf="httpAssertion.name=='bodyRequest'">Original Body Request</th>-->
+<!--        <th *ngIf="httpAssertion.name=='bodyRequest'">New Body Request</th>-->
+<!--        <th *ngIf="httpAssertion.name=='contentType'">Original Body Type</th>-->
+<!--        <th *ngIf="httpAssertion.name=='contentType'">New Body Type</th>-->
+      </tr>
+      <tr *ngFor='let httpResp of httpAssertion.payload.errorEvents;index as i'>
+        <td>{{i+1}}</td>
+        <td class="text-sm text-gray-400">{{httpResp.originalEvent.request.method}}</td>
+        <td><div class="text-sm text-gray-400 max-w-3xl truncate">{{httpResp.originalEvent.request.url}}</div></td>
+<!--        <td *ngIf="httpAssertion.name=='status'" class="text-sm text-gray-400">{{httpResp.originalEvent.status}}</td>-->
+<!--        <td *ngIf="httpAssertion.name=='status'" class="text-sm text-gray-400">{{httpResp.newEvent.status}}</td>-->
+<!--        <td *ngIf="httpAssertion.name=='bodyRequest'" class="text-sm text-gray-400">{{httpResp.originalEvent.request.body}}</td>-->
+<!--        <td *ngIf="httpAssertion.name=='bodyRequest'" class="text-sm text-gray-400">{{httpResp.newEvent.request.body}}</td>-->
+<!--        <td *ngIf="httpAssertion.name=='contentType'" class="text-sm text-gray-400">{{httpResp.originalEvent.request.headers["content-type"]}}</td>-->
+<!--        <td *ngIf="httpAssertion.name=='contentType'" class="text-sm text-gray-400">{{httpResp.newEvent.request.headers["content-type"]}}</td>-->
+      </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -29,9 +38,8 @@
     <nt-assertion-summary-item [assertionList]='[missedEventsAssertion]' type='missedEvents'
                                [title]='title'></nt-assertion-summary-item>
   </div>
-  Missed Element List:
-  <div class='overflow-auto h-64 scrollbar-sm'>
-    <table class='bo-table'>
+  <div *ngIf="missedEventsAssertion.payload.missedEvents.length != 0" class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table max-w-3xl'>
       <tbody>
       <tr class='thead'>
         <th>Id</th>
@@ -40,10 +48,38 @@
       </tr>
       <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;index as i'>
         <td>{{i + 1}}</td>
-        <td>{{httpResp.request.method}}</td>
-        <td>{{httpResp.request.url}}</td>
+        <td class="text-sm text-gray-400">{{httpResp.request.method}}</td>
+        <td><div class="text-sm text-gray-400 truncate">{{httpResp.request.url}}</div></td>
       </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<div *ngIf='visualAssertion'>
+  <div class='w-48'>
+    <nt-assertion-summary-item [assertionList]='[visualAssertion]' type='visual'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+  <div class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Image Similarity</th>
+      </tr>
+      <tr *ngFor='let httpResp of visualAssertion.payload.mismatchedPixel;index as i'>
+        <td>{{i + 1}}</td>
+        <td><div class="text-sm text-gray-400">{{httpResp + '%'}}</div></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="testSuccessfullyExecuted">
+  <div class='w-48'>
+    <nt-assertion-summary-item [assertionList]='[testSuccessfullyExecuted]' type='runSuccessfullyFinished'
+                               [title]='title'></nt-assertion-summary-item>
   </div>
 </div>

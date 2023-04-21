@@ -5,6 +5,7 @@ import {
   NTAssertionType,
   NTHttpAssertion,
   NTMissedEventsAssertion,
+  NTRunFinishedAssertion,
   NTVisualAssertion
 } from '@notest/common';
 import {
@@ -12,6 +13,7 @@ import {
   isHttpContentType,
   isHttpStatusType,
   isMissedEventsType,
+  isRunSuccessfullyFinishedType,
   isVisualType
 } from '../assertion-summary-item/assertion-summary-item.component';
 
@@ -33,6 +35,7 @@ export class AssertionPreviewComponent implements OnInit {
   httpAssertion?: NTHttpAssertion;
   visualAssertion?: NTVisualAssertion;
   missedEventsAssertion?: NTMissedEventsAssertion;
+  testSuccessfullyExecuted?: NTRunFinishedAssertion;
 
   ngOnInit(): void {
     this.displayAssertion(this.assertionList, this.type, this.name);
@@ -54,7 +57,8 @@ export class AssertionPreviewComponent implements OnInit {
     if (type == 'http' && name == 'bodyRequest') {
       this.httpAssertion = assertion.find(isHttpBodyRequestType);
     }
+    if (type == 'runSuccessfullyFinished') {
+      this.testSuccessfullyExecuted = assertion.find(isRunSuccessfullyFinishedType);
+    }
   }
-
-  protected readonly isHttpStatusType = isHttpStatusType;
 }

@@ -111,8 +111,9 @@ export function compareImage(image1: PNG, image2: PNG) {
   const { width, height } = image1;
   const diff = new PNG({ width, height });
   const numberOfPixels = pixelmatch(image1.data, image2.data, diff.data, width, height);
+  const similarPercent = ((width * height - numberOfPixels) * 100) / (width * height);
   console.log(`number of different pixel are: ${numberOfPixels} of ${width * height} total pixel`);
-  return { imageDiff: diff, pixelMismatch: numberOfPixels };
+  return { imageDiff: diff, pixelMismatch: Number(similarPercent.toFixed(2)) };
 }
 
 type NTScreenshot = { name: string; data: Buffer };

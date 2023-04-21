@@ -48,7 +48,7 @@ export class AssertionSummaryItemComponent implements OnInit {
     }
     if (type == 'visual' || type == 'all') {
       const visualAssertion = assertions.find(isVisualType)!;
-      results = results && visualAssertion.payload.mismatchedPixel.every((value) => value === 0);
+      results = results && visualAssertion.payload.mismatchedPixel.every((value) => value > 60);
     }
     if ((type == 'http' && name == 'status') || type == 'all') {
       const httpAssertion = assertions.find(isHttpStatusType)!;
@@ -66,7 +66,7 @@ export class AssertionSummaryItemComponent implements OnInit {
   }
 }
 
-function isRunSuccessfullyFinishedType(
+export function isRunSuccessfullyFinishedType(
   assertion: NTAssertion
 ): assertion is NTRunFinishedAssertion {
   return assertion.type === 'runSuccessfullyFinished';
