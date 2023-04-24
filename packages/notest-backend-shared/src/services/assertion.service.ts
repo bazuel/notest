@@ -122,7 +122,6 @@ export class AssertionService extends CrudService<NTAssertion> {
   }
 
   async save(assert: NTAssertion) {
-    console.log('Saving:', assert);
     return this.db.query<NTAssertion>`
             insert into ${sql(this.table)}
                 ${sql({ ...cleanUndefined(assert), created: new Date() })} returning *`;
