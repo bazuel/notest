@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { BLDomEvent, BLSessionEvent, NTAssertion, NTRunnerConfig, NTSession } from '@notest/common';
+import { BLDomEvent, BLSessionEvent, NTRunnerConfig, NTSession } from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -77,7 +77,7 @@ export class SessionService {
         }
       }, 1000);
     });
-    return this.getSessionRunHistory(reference);
+    return await this.getSessionRunHistory(reference);
   }
 
   async loadFullDom(fullDomId: string) {

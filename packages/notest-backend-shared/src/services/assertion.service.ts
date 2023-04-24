@@ -132,7 +132,8 @@ export class AssertionService extends CrudService<NTAssertion> {
     const result = await this.db.query<{ count: number }>`
         select count(distinct (original_reference, new_reference))
         from nt_assertion
-        where original_reference = ${originalReference}`;
+        where original_reference = ${originalReference} 
+        and type = 'runSuccessfullyFinished'`;
     return result[0].count;
   }
 }
