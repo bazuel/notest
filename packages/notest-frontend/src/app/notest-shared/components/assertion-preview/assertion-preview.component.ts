@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {
+  isHttpBodyRequestType,
+  isHttpContentType,
+  isHttpStatusType,
+  isMissedEventsType,
+  isRunSuccessfullyFinishedType,
+  isVisualType,
   NTAssertion,
   NTAssertionName,
   NTAssertionType,
@@ -8,14 +14,6 @@ import {
   NTRunFinishedAssertion,
   NTVisualAssertion
 } from '@notest/common';
-import {
-  isHttpBodyRequestType,
-  isHttpContentType,
-  isHttpStatusType,
-  isMissedEventsType,
-  isRunSuccessfullyFinishedType,
-  isVisualType
-} from '../assertion-summary-item/assertion-summary-item.component';
 
 @Component({
   selector: 'nt-assertion-preview',

@@ -1,12 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {
+  isHttpBodyRequestType,
+  isHttpContentType,
+  isHttpStatusType,
+  isMissedEventsType,
+  isRunSuccessfullyFinishedType,
+  isVisualType,
   NTAssertion,
   NTAssertionName,
-  NTAssertionType,
-  NTHttpAssertion,
-  NTMissedEventsAssertion,
-  NTRunFinishedAssertion,
-  NTVisualAssertion
+  NTAssertionType
 } from '@notest/common';
 @Component({
   selector: 'nt-assertion-summary-item',
@@ -64,28 +66,4 @@ export class AssertionSummaryItemComponent implements OnInit {
     }
     return results;
   }
-}
-
-export function isRunSuccessfullyFinishedType(
-  assertion: NTAssertion
-): assertion is NTRunFinishedAssertion {
-  return assertion.type === 'runSuccessfullyFinished';
-}
-export function isMissedEventsType(assertion: NTAssertion): assertion is NTMissedEventsAssertion {
-  return assertion.type === 'missedEvents';
-}
-export function isHttpStatusType(assertion: NTAssertion): assertion is NTHttpAssertion {
-  return assertion.type === 'http' && assertion.name === 'status';
-}
-export function isHttpBodyRequestType(assertion: NTAssertion): assertion is NTHttpAssertion {
-  return assertion.type === 'http' && assertion.name === 'bodyRequest';
-}
-export function isHttpContentType(assertion: NTAssertion): assertion is NTHttpAssertion {
-  return assertion.type === 'http' && assertion.name === 'contentType';
-}
-export function isVisualType(assertion: NTAssertion): assertion is NTVisualAssertion {
-  return assertion.type === 'visual';
-}
-export function isRunSuccessfullyFinished(assertion: NTAssertion): assertion is NTVisualAssertion {
-  return assertion.type === 'runSuccessfullyFinished';
 }

@@ -49,7 +49,7 @@ export class ClusterRunnerService {
         loggedStoragesAndCookie
       );
       //Save Results and Clean
-      const newReference = eventReference(monitoringSession.events[0]);
+      const newReference = eventReference(monitoringSession.events[0], Date.now());
       const newSession: Partial<NTSession> = {
         reference: newReference,
         info: {
@@ -88,7 +88,10 @@ export class ClusterRunnerService {
         monitoringSession.events,
         afterResponseFilter
       );
-      httpStatusAssertion.payload.errorEvents = status.eventsError;
+      httpStatusAssertion.payload.errorEvents = status.eventsError.map((e) => {
+        const a = new JsonCompressor();
+        return a.compressToBase64(e);
+      }) as any;
 
       //http body request assertion
       const httpBodyAssertion: NTHttpAssertion = { payload: {} } as any;
@@ -102,7 +105,10 @@ export class ClusterRunnerService {
         monitoringSession.events,
         afterResponseFilter
       );
-      httpBodyAssertion.payload.errorEvents = body.eventsError;
+      httpBodyAssertion.payload.errorEvents = body.eventsError.map((e) => {
+        const a = new JsonCompressor();
+        return a.compressToBase64(e);
+      }) as any;
 
       //Http content Type assertion
       const httpContentTypeAssertion: NTHttpAssertion = { payload: {} } as any;
@@ -116,7 +122,10 @@ export class ClusterRunnerService {
         monitoringSession.events,
         afterResponseFilter
       );
-      httpContentTypeAssertion.payload.errorEvents = type.eventsError;
+      httpContentTypeAssertion.payload.errorEvents = type.eventsError.map((e) => {
+        const a = new JsonCompressor();
+        return a.compressToBase64(e);
+      }) as any;
 
       //Visual assertion
       const visualAssertion: NTVisualAssertion = { payload: {} } as any;
@@ -136,8 +145,10 @@ export class ClusterRunnerService {
       missedEventAssertion.original_reference = encodeURIComponent(reference);
       missedEventAssertion.new_reference = newReference;
       missedEventAssertion.type = 'missedEvents';
-      missedEventAssertion.payload.missedEvents = status.notFoundedEvents;
-
+      missedEventAssertion.payload.missedEvents = status.notFoundedEvents.map((e) => {
+        const a = new JsonCompressor();
+        return a.compressToBase64(e);
+      }) as any;
       //Run finished assertion
       const runFinishedAssertion: NTRunFinishedAssertion = { payload: {} } as any;
       runFinishedAssertion.original_reference = encodeURIComponent(reference);

@@ -3,6 +3,9 @@ import { AssertionService, MediaService, SessionService } from '@notest/backend-
 import {
   BLEvent,
   BLSessionEvent,
+  isHttp,
+  isMissedEventsType,
+  JsonCompressor,
   NTAssertion,
   NTClusterMessage,
   NTSession,
@@ -195,6 +198,20 @@ export class SessionController {
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {
+    assertions.forEach((assertion) => {
+      if (isHttp(assertion)) {
+        assertion.payload.errorEvents = assertion.payload.errorEvents.map((e) => {
+          const a = new JsonCompressor();
+          return a.decompressFromBase64(e as unknown as string);
+        }) as any;
+      }
+      if (isMissedEventsType(assertion)) {
+        assertion.payload.missedEvents = assertion.payload.missedEvents.map((e) => {
+          const a = new JsonCompressor();
+          return a.decompressFromBase64(e as unknown as string);
+        }) as any;
+      }
+    });
     const rerunSessionsMap = assertions.reduce(
       (acc: { [k: string]: NTAssertion[] }, current_assertion) => {
         if (!acc[current_assertion.new_reference]) acc[current_assertion.new_reference] = [];

@@ -67,7 +67,7 @@ export class SessionPreviewComponent {
     this.sessionRunHistory.forEach((sessionRun) => sessionRun.screenshot);
     this.videoReference = this.sessionRunHistory[0].session.reference;
     if (rerunStorage.loading && rerunStorage.reference === this.reference) {
-      this.waitForSessionLoaded(rerunStorage.currentSessions);
+      await this.waitForSessionLoaded(rerunStorage.currentSessions);
     }
   }
 
