@@ -1,4 +1,4 @@
-import { BLSessionEvent, NTRunnerConfig } from '@notest/common';
+import { BLSessionEvent, NTRunnerConfig, NTScreenshot } from '@notest/common';
 import { SessionRunner } from 'notest-backend-shared';
 
 export async function runLoginSession(eventList: BLSessionEvent[], sessionDomain: string) {
@@ -71,6 +71,6 @@ type MonitoringReturnType = {
 };
 
 type ScreenshotReturnType = {
-  screenshotList: { name: string; data: Buffer; fired: Date }[];
+  screenshotList: NTScreenshot[];
   startVideoTimeStamp: Date;
 };

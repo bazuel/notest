@@ -39,7 +39,7 @@ export interface NTSession {
   info: {
     title: string;
     description: string;
-    targetList?: string[];
+    targetList?: DOMRect[];
     loginReference?: string;
     isLogin?: boolean;
     session_logged: boolean;
@@ -48,8 +48,6 @@ export interface NTSession {
   };
   created?: Date | null;
 }
-
-export type NTComparatorStrategy<T> = (l1: T, l2: T) => boolean;
 
 export interface NTRunnerConfig {
   backendType: "mock" | "full";
@@ -125,3 +123,10 @@ export interface NTUser {
   phone: string;
   created: Date;
 }
+
+export type NTScreenshot = {
+  name: string;
+  data: Buffer;
+  fired: Date;
+  type: "image" | "assertion";
+};

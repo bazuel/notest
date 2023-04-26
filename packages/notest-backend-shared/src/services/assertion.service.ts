@@ -6,12 +6,7 @@ import {
   NTComparatorStrategy
 } from '@notest/common';
 import { CrudService } from '../shared/services/crud.service';
-import {
-  compareImage,
-  cropImage,
-  cropOriginalImage,
-  PNGtoBuffer
-} from '../session-comparator/screenshot-comparator';
+import { screenshotComparator } from '../session-comparator/visual-assertion/screenshot-comparator';
 import { mediaService } from './media.service';
 
 export class AssertionService extends CrudService<NTAssertion> {
@@ -27,68 +22,29 @@ export class AssertionService extends CrudService<NTAssertion> {
     const tableExists = await this.db.tableExists(this.table);
     if (!tableExists) {
       await this.db.query`
-        create table if not exists ${sql(this.table)}
-        (
-          ${sql(this.id)} BIGSERIAL PRIMARY KEY,
-          original_reference               text,
-          new_reference                    text,
-          type                             text,
-          name                             text,
-          payload                         jsonb,
-          created                    TIMESTAMPTZ
-        );
+          create table if not exists ${sql(this.table)}
+          (
+              ${sql(this.id)}    BIGSERIAL PRIMARY KEY,
+              original_reference text,
+              new_reference      text,
+              type               text,
+              name               text,
+              payload            jsonb,
+              created            TIMESTAMPTZ
+          );
       `;
       await this.db.query`CREATE INDEX ON ${sql(this.table)} (original_reference);`;
     }
   }
 
   async compareImages(targetList: DOMRect[], reference: string, newReference: string) {
-    let testFail = false;
-    let originalFinalImage = await mediaService.getScreenshot(
-      decodeURIComponent(reference),
-      'shot'
+    const { assertionScreenshot, imagesSimilarity } = await screenshotComparator.compare(
+      reference,
+      newReference,
+      targetList
     );
-    const newFinalImage = await mediaService.getScreenshot(
-      decodeURIComponent(newReference),
-      'final'
-    );
-    const assertionScreenshot: {
-      name: string;
-      data: Buffer;
-      fired: Date;
-      type: 'image' | 'assertion';
-    }[] = [];
-    const assertionPixel: number[] = [];
-    if (targetList) {
-      for (let i = 0; i < targetList.length; i++) {
-        let rect = targetList[i];
-        let origImg = cropOriginalImage(originalFinalImage, rect);
-        let newImg = cropImage(newFinalImage, rect);
-        let { imageDiff, pixelMismatch } = compareImage(origImg, newImg);
-        assertionScreenshot.push({
-          name: `${i}-original`,
-          data: PNGtoBuffer(origImg),
-          fired: new Date(),
-          type: 'assertion'
-        });
-        assertionScreenshot.push({
-          name: `${i}-new`,
-          data: PNGtoBuffer(newImg),
-          fired: new Date(),
-          type: 'assertion'
-        });
-        assertionScreenshot.push({
-          name: `${i}-diff`,
-          data: PNGtoBuffer(imageDiff),
-          fired: new Date(),
-          type: 'assertion'
-        });
-        if (pixelMismatch != 0) testFail = true;
-        assertionPixel.push(pixelMismatch);
-      }
-      await mediaService.saveScreenshot(assertionScreenshot, newReference);
-    }
-    return { testResults: !testFail, mismatchedPixel: assertionPixel };
+    await mediaService.saveScreenshot(assertionScreenshot, newReference);
+    return { imagesSimilarity };
   }
 
   compareSimilarList<T extends BLSessionEvent>(
@@ -123,16 +79,16 @@ export class AssertionService extends CrudService<NTAssertion> {
 
   async save(assert: NTAssertion) {
     return this.db.query<NTAssertion>`
-            insert into ${sql(this.table)}
-                ${sql({ ...cleanUndefined(assert), created: new Date() })} returning *`;
+        insert into ${sql(this.table)}
+            ${sql({ ...cleanUndefined(assert), created: new Date() })} returning *`;
   }
 
   async countRerun(originalReference: string) {
     const result = await this.db.query<{ count: number }>`
         select count(distinct (original_reference, new_reference))
         from nt_assertion
-        where original_reference = ${originalReference} 
-        and type = 'runSuccessfullyFinished'`;
+        where original_reference = ${originalReference}
+          and type = 'runSuccessfullyFinished'`;
     return result[0].count;
   }
 }

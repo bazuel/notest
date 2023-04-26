@@ -11,7 +11,6 @@ import { TestGeneratorService } from './test-generator/test-generator.service';
 import { SessionController } from './session-event/session.controller';
 import { EventService } from './session-event/event.service';
 import { NotestSharedModule } from './notest-shared/notest-shared.module';
-import { ComparatorController } from './comparator/comparator.controller';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { MessagesService } from './user/messages.service';
@@ -24,7 +23,6 @@ import { MessagesService } from './user/messages.service';
     StoryController,
     TestGeneratorController,
     SessionController,
-    ComparatorController,
     UserController
   ],
   providers: [

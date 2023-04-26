@@ -59,4 +59,5 @@ export interface BLHTTPAbortEvent extends BLEvent {
   request: BLHTTPRequestEvent;
 }
 
-export interface BLHeaderEvent {}
+export interface BLHeaderEvent {
+}

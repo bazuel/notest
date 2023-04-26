@@ -198,19 +198,12 @@ export class SessionController {
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {
+    const decompress = (e) => new JsonCompressor().decompressFromBase64(e);
     assertions.forEach((assertion) => {
-      if (isHttp(assertion)) {
-        assertion.payload.errorEvents = assertion.payload.errorEvents.map((e) => {
-          const a = new JsonCompressor();
-          return a.decompressFromBase64(e as unknown as string);
-        }) as any;
-      }
-      if (isMissedEventsType(assertion)) {
-        assertion.payload.missedEvents = assertion.payload.missedEvents.map((e) => {
-          const a = new JsonCompressor();
-          return a.decompressFromBase64(e as unknown as string);
-        }) as any;
-      }
+      if (isHttp(assertion))
+        assertion.payload.errorEvents = assertion.payload.errorEvents.map(decompress);
+      if (isMissedEventsType(assertion))
+        assertion.payload.missedEvents = assertion.payload.missedEvents.map(decompress);
     });
     const rerunSessionsMap = assertions.reduce(
       (acc: { [k: string]: NTAssertion[] }, current_assertion) => {

@@ -45,3 +45,5 @@ export type NTAssertionComparison<T> = {
   originalEvent: T;
   newEvent: T;
 };
+
+export type NTComparatorStrategy<T> = (l1: T, l2: T) => boolean;

@@ -1,5 +1,10 @@
 import { StorageService } from '../shared/services/storage.service';
-import { NTMedia, pathScreenshotFromReference, pathVideoRecordFromReference } from '@notest/common';
+import {
+  NTMedia,
+  NTScreenshot,
+  pathScreenshotFromReference,
+  pathVideoRecordFromReference
+} from '@notest/common';
 import fs from 'fs';
 import { ConfigService } from '../shared/services/config.service';
 import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
@@ -32,10 +37,7 @@ export class MediaService extends CrudService<NTMedia> {
     }
   }
 
-  async saveScreenshot(
-    screenshotList: { name: string; data: Buffer; fired: Date; type?: 'image' | 'assertion' }[],
-    reference
-  ) {
+  async saveScreenshot(screenshotList: NTScreenshot[], reference) {
     console.log('Uploading screenshots ...');
     for (const screenshot of screenshotList) {
       const path = pathScreenshotFromReference(reference, screenshot.name);
@@ -51,7 +53,7 @@ export class MediaService extends CrudService<NTMedia> {
     console.log('Uploaded Screenshots');
   }
 
-  async getScreenshot(reference, name) {
+  async getScreenshot(reference: string, name: string) {
     const path = pathScreenshotFromReference(encodeURIComponent(reference), name);
     console.log('screenshot path: ', path);
     try {

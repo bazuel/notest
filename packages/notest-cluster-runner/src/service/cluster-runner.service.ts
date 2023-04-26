@@ -132,13 +132,13 @@ export class ClusterRunnerService {
       visualAssertion.original_reference = encodeURIComponent(reference);
       visualAssertion.new_reference = newReference;
       visualAssertion.type = 'visual';
-      const { mismatchedPixel } = await assertionService.compareImages(
+      const { imagesSimilarity } = await assertionService.compareImages(
         targetList,
         reference,
         newReference
       );
 
-      visualAssertion.payload.mismatchedPixel = mismatchedPixel;
+      visualAssertion.payload.mismatchedPixel = imagesSimilarity;
 
       //Missed events assertion
       const missedEventAssertion: NTMissedEventsAssertion = { payload: {} } as any;

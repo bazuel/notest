@@ -1,36 +1,27 @@
 import { BLHTTPResponseEvent } from '@notest/common';
 
 export function compareBodyType(event1: BLHTTPResponseEvent, event2: BLHTTPResponseEvent) {
-  const responseHeaderContentTypeEvent1 = event1.response.headers['content-type'];
-  const responseHeaderContentTypeEvent2 = event2.response.headers['Content-type'];
-  if (responseHeaderContentTypeEvent1.localeCompare(responseHeaderContentTypeEvent2) !== 0) {
-    //content type of request described in header are different
-    console.log(
-      'headerType Error',
-      responseHeaderContentTypeEvent1,
-      responseHeaderContentTypeEvent2
-    );
+  const contentType1 = event1.response.headers['content-type'];
+  const contentType2 = event2.response.headers['Content-type'];
+  if (contentType1.localeCompare(contentType2) !== 0) {
+    console.log('headerType Error', contentType1, contentType2);
     return false;
   }
-  const event1BodyType = getType(responseHeaderContentTypeEvent1, event1);
-  const event2BodyType = getType(responseHeaderContentTypeEvent2, event2);
+  const event1BodyType = getBodyType(contentType1, event1);
+  const event2BodyType = getBodyType(contentType2, event2);
   if (event1BodyType !== event2BodyType) {
     console.log('BodyType Error', event1BodyType, event2BodyType);
   }
-  return event1BodyType == event2BodyType;
+  return event1BodyType === event2BodyType;
 }
-function getType(contentType: string, event: BLHTTPResponseEvent) {
-  if (contentType.includes('json') && typeof event.response.body === 'string') {
-    try {
-      JSON.parse(event.response.body);
-      return 'json';
-    } catch (e) {
-      if ((event.response.body as any) instanceof Blob) {
-        return 'blob';
-      }
-      return 'string';
-    }
-  } else {
-    return contentType;
+
+function getBodyType(contentType: string, event: BLHTTPResponseEvent) {
+  try {
+    JSON.parse(event.response.body as string);
+    return 'json';
+  } catch (e) {
+    if (typeof event.response.body === 'string') return 'string';
+    if (event.response.body instanceof Blob) return 'blob';
+    return 'other';
   }
 }
