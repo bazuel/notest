@@ -4,3 +4,13 @@ export async function getCookiesFromDomain(url) {
   cookieEvent.details = await chrome.cookies.getAll({ domain: domain });
   return cookieEvent;
 }
+
+export async function cleanDomainCookies(tabId: number) {
+  const tab = await chrome.tabs.get(tabId);
+  const url = new URL(tab.url!);
+  chrome.cookies.getAll({ domain: url.hostname }, function (cookies) {
+    for (let i = 0; i < cookies.length; i++) {
+      chrome.cookies.remove({ url: url.origin + cookies[i].path, name: cookies[i].name });
+    }
+  });
+}

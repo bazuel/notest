@@ -20,7 +20,7 @@
       <tr *ngFor='let httpResp of httpAssertion.payload.errorEvents;index as i'>
         <td>{{i+1}}</td>
         <td class="text-sm text-gray-400">{{httpResp.originalEvent.request.method}}</td>
-        <td><div class="text-sm text-gray-400 max-w-3xl truncate">{{httpResp.originalEvent.request.url}}</div></td>
+        <td><div class="text-sm text-gray-400 max-w-4xl truncate">{{httpResp.originalEvent.request.url}}</div></td>
 <!--        <td *ngIf="httpAssertion.name=='status'" class="text-sm text-gray-400">{{httpResp.originalEvent.status}}</td>-->
 <!--        <td *ngIf="httpAssertion.name=='status'" class="text-sm text-gray-400">{{httpResp.newEvent.status}}</td>-->
 <!--        <td *ngIf="httpAssertion.name=='bodyRequest'" class="text-sm text-gray-400">{{httpResp.originalEvent.request.body}}</td>-->
@@ -39,7 +39,7 @@
                                [title]='title'></nt-assertion-summary-item>
   </div>
   <div *ngIf="missedEventsAssertion.payload.missedEvents.length != 0" class='overflow-auto max-h-64 scrollbar-sm'>
-    <table class='bo-table max-w-3xl'>
+    <table class='bo-table'>
       <tbody>
       <tr class='thead'>
         <th>Id</th>
@@ -49,7 +49,7 @@
       <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;index as i'>
         <td>{{i + 1}}</td>
         <td class="text-sm text-gray-400">{{httpResp.request.method}}</td>
-        <td><div class="text-sm text-gray-400 truncate">{{httpResp.request.url}}</div></td>
+        <td><div class="text-sm text-gray-400 max-w-4xl truncate">{{httpResp.request.url}}</div></td>
       </tr>
       </tbody>
     </table>

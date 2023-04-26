@@ -41,7 +41,7 @@
     openSidebar = false;
     updateSessionSaved(false);
     initSessionStore();
-    recordingService.start();
+    recordingService.start($appStore.isLoginSession);
   };
   let cancelRecording = () => {
     recording = false;

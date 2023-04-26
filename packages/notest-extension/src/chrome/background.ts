@@ -4,7 +4,7 @@ import { getCurrentTab } from './functions/current-tab.util';
 import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
 import { uploadEvents } from './functions/upload.api';
 import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
-import { getCookiesFromDomain } from './functions/cookies.util';
+import { cleanDomainCookies, getCookiesFromDomain } from './functions/cookies.util';
 import {
   addMessageListener,
   NTMessage,
@@ -66,11 +66,12 @@ async function stopSession() {
   console.log('Recording Session Terminated');
 }
 
-async function startSession() {
+async function startSession(request: { data: { 'clean-session': boolean } }) {
   events = [];
   let tabId = (await getCurrentTab()).id;
   if (tabId) {
     await setRecording(true);
+    if (request.data['clean-session']) await cleanDomainCookies(tabId);
     await chrome.tabs.reload(tabId);
     enableRecordingIcon();
     enableHeadersListeners();

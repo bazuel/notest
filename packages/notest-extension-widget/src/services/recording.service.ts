@@ -10,9 +10,9 @@ class RecordingService {
     // });
   }
 
-  start() {
+  start(cleanSession?: boolean) {
     localStorage.setItem('nt-recording', '1');
-    postMessage({ type: 'start-recording' }, '*');
+    messageService.sendMessage('start-recording', { 'clean-session': cleanSession });
   }
 
   async stop() {
@@ -22,7 +22,7 @@ class RecordingService {
 
   cancel() {
     localStorage.setItem('nt-recording', '0');
-    postMessage({ type: 'cancel-recording' }, '*');
+    messageService.sendMessage('cancel-recording', {});
   }
 
   save(sessionInfo: {
