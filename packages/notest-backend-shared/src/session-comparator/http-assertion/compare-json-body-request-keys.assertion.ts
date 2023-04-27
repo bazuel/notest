@@ -21,7 +21,6 @@ export function compareBodyKeys(event1: BLHTTPResponseEvent, event2: BLHTTPRespo
     }
     return unmatchedKeys.length == 0;
   } catch (e) {
-    console.log('Error in compareBodyKeys', e);
     return true;
   }
 }

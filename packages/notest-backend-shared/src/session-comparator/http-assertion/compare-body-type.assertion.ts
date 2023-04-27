@@ -3,7 +3,13 @@ import { BLHTTPResponseEvent } from '@notest/common';
 export function compareBodyType(event1: BLHTTPResponseEvent, event2: BLHTTPResponseEvent) {
   const contentType1 = event1.response.headers['content-type'];
   const contentType2 = event2.response.headers['Content-type'];
-  if (contentType1.localeCompare(contentType2) !== 0) {
+  if (!contentType1 && !contentType2) return true;
+  if (
+    (!contentType1 && contentType2) ||
+    (contentType1 && !contentType2) ||
+    !contentType1 ||
+    contentType1.localeCompare(contentType2) !== 0
+  ) {
     console.log('headerType Error', contentType1, contentType2);
     return false;
   }

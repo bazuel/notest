@@ -42,7 +42,7 @@ export class ClusterRunnerService {
         loggedStoragesAndCookie = await runLoginSession(loginEventList, sessionDomain);
       }
       //Execute Event List
-      const [monitoringSession, screenshotSession] = await runSession(
+      const { monitoringSession, screenshotSession } = await runSession(
         eventList,
         sessionDomain,
         backendType,

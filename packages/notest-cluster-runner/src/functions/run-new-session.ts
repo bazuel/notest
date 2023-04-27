@@ -19,10 +19,9 @@ export async function runSession(
   backendType: 'mock' | 'full',
   loginEvents: BLSessionEvent[]
 ) {
-  return await Promise.all([
-    runMonitoringSession(eventList, domain, backendType, loginEvents),
-    runScreenshotSession(eventList, domain, backendType, loginEvents)
-  ]);
+  const monitoringSession = await runMonitoringSession(eventList, domain, backendType, loginEvents);
+  const screenshotSession = await runScreenshotSession(eventList, domain, backendType, loginEvents);
+  return { monitoringSession, screenshotSession };
 }
 
 async function runMonitoringSession(

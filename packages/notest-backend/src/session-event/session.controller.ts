@@ -8,6 +8,7 @@ import {
   JsonCompressor,
   NTAssertion,
   NTClusterMessage,
+  NTScreenshot,
   NTSession,
   streamToBuffer,
   unzipJson
@@ -62,11 +63,12 @@ export class SessionController {
     console.log(shotUrl);
     const imageResponse = await fetch(shotUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
-    const screenshot = [
+    const screenshot: NTScreenshot[] = [
       {
         name: 'shot',
         data: new Buffer(imageBuffer),
-        fired: new Date()
+        fired: new Date(),
+        type: 'image'
       }
     ];
     await this.mediaService.saveScreenshot(screenshot, reference);
