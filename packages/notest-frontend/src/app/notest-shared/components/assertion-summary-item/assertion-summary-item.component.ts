@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   isHttpBodyRequestType,
   isHttpContentType,
@@ -28,10 +28,14 @@ export class AssertionSummaryItemComponent implements OnInit {
   @Input()
   assertionList!: NTAssertion[];
 
+  @Output()
+  success = new EventEmitter<boolean>();
+
   protected assertionSuccess: boolean = false;
 
   ngOnInit(): void {
     this.assertionSuccess = this.transform(this.assertionList, this.type, this.name);
+    this.success.emit(this.assertionSuccess);
   }
 
   transform(

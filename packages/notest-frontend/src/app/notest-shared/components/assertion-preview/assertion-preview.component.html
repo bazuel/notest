@@ -1,9 +1,9 @@
 <div *ngIf='httpAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item [assertionList]='[httpAssertion]' type='http' [name]='httpAssertion.name'
+    <nt-assertion-summary-item (success)="httpAssertionError=!$event" [assertionList]='[httpAssertion]' type='http' [name]='httpAssertion.name'
                                [title]='title'></nt-assertion-summary-item>
   </div>
-  <div *ngIf='httpAssertion.payload.errorEvents.length != 0' class='overflow-auto max-h-64 scrollbar-sm'>
+  <div *ngIf='httpAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
     <table class='bo-table'>
       <tbody>
       <tr class='thead'>
@@ -25,10 +25,10 @@
 
 <div *ngIf='missedEventsAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item [assertionList]='[missedEventsAssertion]' type='missedEvents'
+    <nt-assertion-summary-item (success)="missedEventsError=!$event" [assertionList]='[missedEventsAssertion]' type='missedEvents'
                                [title]='title'></nt-assertion-summary-item>
   </div>
-  <div *ngIf='missedEventsAssertion.payload.missedEvents.length != 0' class='overflow-auto max-h-64 scrollbar-sm'>
+  <div *ngIf='missedEventsError' class='overflow-auto max-h-64 scrollbar-sm'>
     <table class='bo-table'>
       <tbody>
       <tr class='thead'>
@@ -50,10 +50,10 @@
 
 <div *ngIf='visualAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item [assertionList]='[visualAssertion]' type='visual'
+    <nt-assertion-summary-item (success)="visualAssertionError=!$event" [assertionList]='[visualAssertion]' type='visual'
                                [title]='title'></nt-assertion-summary-item>
   </div>
-  <div class='overflow-auto max-h-64 scrollbar-sm'>
+  <div *ngIf='visualAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
     <table class='bo-table'>
       <tbody>
       <tr class='thead'>

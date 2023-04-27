@@ -34,6 +34,9 @@ export class AssertionPreviewComponent implements OnInit {
   visualAssertion?: NTVisualAssertion;
   missedEventsAssertion?: NTMissedEventsAssertion;
   testSuccessfullyExecuted?: NTRunFinishedAssertion;
+  visualAssertionError: boolean = false;
+  missedEventsError: boolean = false;
+  httpAssertionError: boolean = false;
 
   ngOnInit(): void {
     this.displayAssertion(this.assertionList, this.type, this.name);

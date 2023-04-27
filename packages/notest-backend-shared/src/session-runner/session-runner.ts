@@ -67,6 +67,7 @@ export class SessionRunner extends SessionExecutor {
       await this.setInitStorage(this.configuration.loginEvents);
       await injectCookie(this.context, this.configuration.loginEvents);
     } else {
+      await injectCookie(this.context, session);
       await this.setInitStorage(session);
     }
     this.page = await this.context.newPage();
