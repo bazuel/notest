@@ -10,8 +10,10 @@ export class SessionListWrappedComponent {
   protected readonly Math = Math;
   translateFactor: number = 0;
   pivot!: number;
+  rotateStep!: number;
 
   ngOnInit(): void {
     this.pivot = Math.round(this.referenceList.slice(0, 5).length / 2);
+    this.rotateStep = 15 / this.referenceList.slice(0, 5).length;
   }
 }
