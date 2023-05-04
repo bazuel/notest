@@ -16,11 +16,9 @@ export class BatteryService {
   }
 
   async saveBatteryTest(battery: NTBattery): Promise<NTBattery> {
-    return await this.http.post<NTBattery>(`/battery/create-battery`, { battery });
+    return await this.http.post<NTBattery>(`/battery/save-battery`, { battery });
   }
-  async updateBatteryTest(battery: NTBattery) {
-    return await this.http.post<NTBattery>(`/battery/update-battery`, { battery });
-  }
+
   async deleteBatteryTest(id: string) {
     await this.http.gest<NTBattery>('/battery/delete-battery', { battery_id: id });
   }

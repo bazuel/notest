@@ -100,8 +100,6 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
 
   highlight = new HighlightPipe();
 
-  constructor() {}
-
   ngOnInit() {
     if (!this.query) this.query = '';
     if (!this.selectedId) this.selectedId = '';

@@ -37,7 +37,7 @@ export class UserController {
     );
     if (found.length > 0) {
       const token = this.tokenService.generate({
-        id: this.cryptService.encode(+found[0].nt_userid),
+        id: +found[0].nt_userid,
         email: user.email,
         name: found[0].name,
         surname: found[0].surname,

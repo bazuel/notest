@@ -190,7 +190,7 @@ export class SessionController {
 
   @Get('get-battery-run-history')
   async batteryRunHistory(@Query('references') references: string[]) {
-    const assertions: [NTAssertion[]] = [[]];
+    const assertions: NTAssertion[][] = [];
     const results = [];
     for (let reference of references) {
       assertions.push(
@@ -202,6 +202,7 @@ export class SessionController {
     }
     return results;
   }
+
   @Get('login-sessions')
   async loginSessions(@Query('domain') domain: string, @UserId() userid: string) {
     const sessions = await this.sessionService.findByDomain(domain, userid);

@@ -95,3 +95,6 @@ label {
   @apply pointer-events-none opacity-25;
 }
 
+.card{
+  @apply w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer
+}

@@ -29,7 +29,7 @@ export function emailAndRoles(ctx: ExecutionContext) {
 
   const request = ctx.switchToHttp().getRequest();
   const { email, roles, id } = extractTokenData(request, tokenService);
-  return { email, roles, id: cryptService.decode(id) + '' };
+  return { email, roles, id };
 }
 
 export const UserId = createParamDecorator((data: unknown, ctx: ExecutionContext) => {

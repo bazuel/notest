@@ -1,0 +1,15 @@
+<sm-autocomplete
+  [component]="component"
+  [keysMapLabel]="keysMapLabels"
+  [showKeys]="showKeys"
+  [selected-id]="selectedId"
+  [property-id]="propertyId"
+  [menu-class]="menuClasses"
+  [query]="query"
+  (queryChanged)="searchItems($event); queryChanged.emit($event)"
+  [items]="items"
+  [property]="property"
+  [second-property]="secondProperty"
+  [third-property]="thirdProperty"
+  [placeholder]='placeholder'
+  (itemSelected)="itemSelected.emit($event)"></sm-autocomplete>

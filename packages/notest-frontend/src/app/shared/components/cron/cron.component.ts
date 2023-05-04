@@ -12,19 +12,20 @@ export class CronComponent implements OnInit {
   months: string = '*';
   daysOfWeek: string = '*';
   weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  daysOfWeekMap = this.weekdays.map((day, i) => {
-    return { number: i + 1, day };
-  });
+  daysOfWeekMap = this.weekdays.map((day, i) => ({ number: i + 1, day }));
 
   @Input()
-  scheduleTime?: string;
+  scheduleTime?: string = '';
+
   @Output()
   scheduleTimeChange = new EventEmitter<string>();
+
   ngOnInit() {
     if (this.scheduleTime) {
       this.parseScheduleTime();
     }
   }
+
   parseScheduleTime() {
     const splitDate = this.scheduleTime!.split(' ');
     this.minutes = splitDate[0];
@@ -35,13 +36,9 @@ export class CronComponent implements OnInit {
   }
 
   saveScheduleDate() {
-    console.log(this.hours);
-    if (this.hours == '') {
-      this.hours = '*';
-    }
-    this.scheduleTime = this.minutes.concat(
+    const result = this.minutes.concat(
       ' ',
-      this.hours,
+      this.hours || '*',
       ' ',
       this.daysOfMonth,
       ' ',
@@ -49,6 +46,7 @@ export class CronComponent implements OnInit {
       ' ',
       this.daysOfWeek + ''
     );
+    this.scheduleTime = result === '* * * * *' ? '' : result;
     this.scheduleTimeChange.emit(this.scheduleTime);
   }
 }

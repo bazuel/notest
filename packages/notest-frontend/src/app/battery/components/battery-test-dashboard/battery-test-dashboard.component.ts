@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NTBattery } from '@notest/common';
+import { NTBattery, NTTest } from '@notest/common';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { Router } from '@angular/router';
 import { BatteryService } from '../../services/battery.service';
@@ -17,12 +17,13 @@ export class BatteryTestDashboardComponent implements OnInit {
     private batteryService: BatteryService
   ) {}
   async ngOnInit() {
-    this.activeBatteryList = await this.batteryService.findBatteryByUserId();
+    this.activeBatteryList = await this.batteryService
+      .findBatteryByUserId()
+      .then((batteries) => batteries.filter((battery) => battery.type == 'e2e'));
   }
 
-  createNewBattery() {
-    const batteryLink = this.router.url.replace('battery-test-dashboard', 'battery-test');
-    this.router.navigateByUrl(batteryLink);
+  createNewBattery(type: NTTest) {
+    this.router.navigateByUrl(`battery/battery-test?type=${type}`);
   }
 
   redirectToBatteryTest(batteryId: string) {

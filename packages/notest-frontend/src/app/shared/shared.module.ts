@@ -18,15 +18,16 @@ import { CapsLockDirective } from './directives/caps-lock.directive';
 import { PopupComponent } from './components/popup/popup.component';
 import { IsLogged } from './services/is-logged.guard';
 import { SafeUrlPipe } from './pipes/safe-url.pipe';
-import {CatchToken} from "./services/catch-token";
-import {AutocompleteComponent} from "./components/autocomplete/autocomplete.component";
-import {ClickOutsideDirective} from "./directives/click-outside.directive";
-import {ComponentInjectorDirective} from "./directives/component-injector.directive";
-import {HighlightPipe} from "./pipes/highlight.pipe";
-import {BadgeComponent} from "./components/badge/badge.component";
-import {SwitchComponent} from "./components/switch/switch.component";
-import {ProfileImageComponent} from "./components/profile-image/profile-image.component";
+import { CatchToken } from './services/catch-token';
+import { AutocompleteComponent } from './components/autocomplete/autocomplete.component';
+import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { ComponentInjectorDirective } from './directives/component-injector.directive';
+import { HighlightPipe } from './pipes/highlight.pipe';
+import { BadgeComponent } from './components/badge/badge.component';
+import { SwitchComponent } from './components/switch/switch.component';
+import { ProfileImageComponent } from './components/profile-image/profile-image.component';
 import { CronComponent } from './components/cron/cron.component';
+import { AsyncAutocompleteComponent } from './components/async-autocomplete/async-autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { CronComponent } from './components/cron/cron.component';
     SafeUrlPipe,
     ClickOutsideDirective,
     AutocompleteComponent,
+    AsyncAutocompleteComponent,
     ComponentInjectorDirective,
     HighlightPipe,
     BadgeComponent,
@@ -59,6 +61,7 @@ import { CronComponent } from './components/cron/cron.component';
     NotificationComponent,
     SafeUrlPipe,
     AutocompleteComponent,
+    AsyncAutocompleteComponent,
     ClickOutsideDirective,
     BadgeComponent,
     SwitchComponent,

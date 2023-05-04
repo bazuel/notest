@@ -1,20 +1,20 @@
-<div class="p-4">
+<div class='p-4'>
   <h2>Session dashboard</h2>
-  <h4 class="mt-3">User Sessions</h4>
-  <div class="flex p-2 gap-4 overflow-auto scrollbar-sm">
-    <div class="h-fit w-fit p-2" *ngFor="let session of sessionList"
-         (click)="redirectToPreview(session.reference)">
+  <h4 class='mt-3'>User Sessions</h4>
+  <div class='flex p-2 gap-4 overflow-auto scrollbar-sm'>
+    <div class='h-fit w-fit p-2' *ngFor='let session of sessionList'
+         (click)='redirectToPreview(session.reference)'>
       <label>{{session.info.title}}</label>
-      <nt-screenshot class="w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer"
+      <nt-screenshot class='card'
                      [reference]=session.reference></nt-screenshot>
     </div>
   </div>
-  <h4 class="mt-5">User Login Sessions</h4>
-  <div class="flex p-2 gap-4 overflow-auto scrollbar-sm">
-    <div class="h-fit w-fit p-2" *ngFor="let session of loginSessionList"
-         (click)="redirectToPreview(session.reference)">
+  <h4 class='mt-5'>User Login Sessions</h4>
+  <div class='flex p-2 gap-4 overflow-auto scrollbar-sm'>
+    <div class='h-fit w-fit p-2' *ngFor='let session of loginSessionList'
+         (click)='redirectToPreview(session.reference)'>
       <label>{{session.info.title}}</label>
-      <nt-screenshot class="w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer"
+      <nt-screenshot class='card'
                      [reference]=session.reference></nt-screenshot>
     </div>
   </div>

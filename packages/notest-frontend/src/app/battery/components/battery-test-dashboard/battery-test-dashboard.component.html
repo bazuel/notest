@@ -1,14 +1,16 @@
-<div class="p-4">
+<div class='p-4'>
   <h2>Battery Test</h2>
-  <h4 class="mt-3">E2E</h4>
-  <div class="flex">
-    <div class="flex p-2 gap-4 overflow-auto scrollbar-sm w-5/6">
-      <div class="h-fit w-fit p-2 cursor-pointer" *ngFor="let batteryTest of activeBatteryList" (click)="redirectToBatteryTest(batteryTest.nt_batteryid!)">
+  <h4 class='mt-3'>E2E</h4>
+  <div class='flex'>
+    <div class='flex p-2 gap-4 overflow-auto scrollbar-sm w-5/6'>
+      <div class='h-fit w-fit p-2 cursor-pointer' *ngFor='let batteryTest of activeBatteryList'
+           (click)='redirectToBatteryTest(batteryTest.nt_batteryid!)'>
         <label>{{batteryTest.name}}</label>
+        <nt-screenshot class='card' [reference]='batteryTest.session_list[0]'></nt-screenshot>
       </div>
     </div>
-    <div class="w-1/6">
-      <button class="bo-button" (click)="createNewBattery()">Create a new Battery</button>
+    <div class='w-1/6'>
+      <button class='bo-button' (click)="createNewBattery('e2e')">Create a new Battery</button>
     </div>
   </div>
 </div>

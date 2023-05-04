@@ -6,6 +6,7 @@ import { NTBattery } from '@notest/common';
 import { CronService } from '../notest-shared/services/cron.service';
 import { ProducerService } from '../notest-shared/services/producer.service';
 import { ScheduledTask } from 'node-cron';
+
 @Injectable()
 export class BatteryService extends CrudService<NTBattery> implements OnModuleInit {
   protected table = 'nt_battery';
@@ -30,24 +31,24 @@ export class BatteryService extends CrudService<NTBattery> implements OnModuleIn
     const tableExists = await this.db.tableExists(this.table);
     if (!tableExists)
       await this.db.query`
-                create table if not exists ${sql(this.table)}
-                (
-                    ${sql(this.id)} BIGSERIAL PRIMARY KEY,
-                    name text,
-                    type text,
-                    userid bigint,
-                    active boolean,
-                    scheduled_time text,
-                    session_list jsonb,
-                    backend_type text,
-                    created TIMESTAMPTZ
-                );`;
+          create table if not exists ${sql(this.table)}
+          (
+              ${sql(this.id)} BIGSERIAL PRIMARY KEY,
+              name            text,
+              type            text,
+              userid          bigint,
+              active          boolean,
+              scheduled_time  text,
+              session_list    jsonb,
+              backend_type    text,
+              created         TIMESTAMPTZ
+          );`;
   }
 
   async initCronService() {
-    const batteries: NTBattery[] = await this.db.query`select * from ${sql(
-      this.table
-    )} where active=true ;`;
+    const batteries: NTBattery[] = await this.db.query`select *
+                                                       from ${sql(this.table)}
+                                                       where active = true;`;
     for (let battery of batteries) {
       let task = this.cronService.createCronJob(battery.scheduled_time, () =>
         this.runBattery(battery)
@@ -72,17 +73,18 @@ export class BatteryService extends CrudService<NTBattery> implements OnModuleIn
     }
   }
 
+  updateCronJob(battery: NTBattery) {
+    this.deleteCronJob(battery.nt_batteryid);
+    this.createCronJob(battery);
+  }
+
   private runBattery(battery: NTBattery) {
-    if (battery.session_list.length > 0) {
-      battery.session_list.forEach(async (session) => {
-        console.log('Cron Job Started');
-        await this.producerService.produceMessage({
-          reference: decodeURIComponent(session),
-          backendType: battery.backend_type
-        });
+    battery.session_list.forEach(async (session) => {
+      console.log('Cron Job Started');
+      await this.producerService.produceMessage({
+        reference: decodeURIComponent(session),
+        backendType: battery.backend_type
       });
-    } else {
-      console.log('Cron job not executed');
-    }
+    });
   }
 }
