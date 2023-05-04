@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { BLDomEvent, BLSessionEvent, NTRunnerConfig, NTSession } from '@notest/common';
+import {
+  BLDomEvent,
+  BLSessionEvent,
+  NTAssertion,
+  NTMedia,
+  NTRunnerConfig,
+  NTSession
+} from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +56,25 @@ export class SessionService {
       );
   }
 
+  async getSessionBatteryRunHistory(references: string[]) {
+    this.http
+      .gest<any[]>(`/session/get-battery-run-history`, { references })
+      .then((res) =>
+        res.sort(
+          (a, b) => new Date(b.session.created).getTime() - new Date(a.session.created).getTime()
+        )
+      );
+    return null as unknown as {
+      sessions: {
+        session: NTSession;
+        assertions: NTAssertion[];
+        screenshot: NTMedia[];
+        video: NTMedia;
+        showInfo: boolean;
+      }[];
+    }[];
+  }
+
   async getRerunSessions(reference: string) {
     return this.http.gest<number>(`/session/get-rerun-session`, { reference });
   }
@@ -58,7 +84,11 @@ export class SessionService {
     backend_type: NTRunnerConfig['backendType'],
     session_domain: string
   ) {
-    return this.http.gest(`/session/run`, { reference, backend_type, session_domain });
+    return this.http.gest(`/session/run`, {
+      reference,
+      backend_type,
+      session_domain
+    });
   }
 
   updateSessionInfo(session: NTSession) {

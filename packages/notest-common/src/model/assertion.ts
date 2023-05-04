@@ -34,12 +34,14 @@ export interface NTMissedEventsAssertion extends NTAssertion {
 export interface NTRunFinishedAssertion extends NTAssertion {
   payload: { testSuccessfullyFinished: boolean };
 }
+
 export type NTAssertionName = "status" | "contentType" | "bodyRequest";
 export type NTAssertionType =
   | "http"
   | "visual"
   | "runSuccessfullyFinished"
-  | "missedEvents";
+  | "missedEvents"
+  | "sessionBattery";
 
 export type NTAssertionComparison<T> = {
   originalEvent: T;

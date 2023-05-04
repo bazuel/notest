@@ -1,0 +1,77 @@
+<div class="p-4 flex flex-row ">
+  <div class="flex flex-row w-full justify-between">
+    <div class="flex flex-row gap-4">
+      <h1 *ngIf="sessionBattery.name.length > 0">{{sessionBattery.name}}</h1>
+      <h1 *ngIf="!(sessionBattery.name.length > 0)">Battery Test</h1>
+      <nt-switch
+        *ngIf="sessionBattery.session_list.length>0 && batterySaved"
+        [switched]='sessionBattery.active'
+        (switchedChange)='sessionBattery.active = !sessionBattery.active; updateBattery()'>Enabled
+      </nt-switch>
+    </div>
+    <div class="flex flex-row items-center">
+      <label class='text-xl my-4 mr-4'>Settings</label>
+      <div class="relative">
+        <nt-icon title="Open battery settings" name="settings" class="h-6 w-6 text-gray-500 cursor-pointer"
+                 (click)="showSettings = !showSettings"></nt-icon>
+        <div *ngIf='showSettings' class=" absolute bo-popup-content shadow-2xl rounded-lg right-0 w-fit h-fit">
+          <div class='p-3 flex flex-col gap-y-5'>
+            <div>
+              <label class='mt-4'>Name</label>
+              <p *ngIf="invalidTitle" class="text-red-800">Invalid Name</p>
+              <input class="w-48" [(ngModel)]='sessionBattery.name' [placeholder]='"Name"'/>
+            </div>
+            <div>
+              <label class='mt-4'>Schedule Date</label>
+              <p *ngIf="invalidScheduledTime" class="text-red-800"> Set a Valid Schedule Time</p>
+              <nt-cron [(scheduleTime)]="sessionBattery.scheduled_time" ></nt-cron>
+              <label class="mt-4"> Cron Expression</label>
+              <input [(ngModel)]='sessionBattery.scheduled_time' [placeholder]='"* * * * *"'/>
+            </div>
+            <div class="flex flex-row gap-2">
+              <div class="flex flex-col">
+                <label class='mt-4'>Battery sessions</label>
+                <sm-autocomplete
+                  [items]='sessionItemForAutocomplete'
+                  [property]='"title"'
+                  (itemSelected)='addSessionToBattery($event.reference);sessionSelected.push($event)'
+                  placeholder='Select User Session'>
+                </sm-autocomplete>
+              </div>
+              <div class="flex flex-col">
+                <label class='mt-4'>Select Backend Type</label>
+                <nt-switch
+                  [switched]='sessionBattery.backend_type == "full"'
+                  (switchedChange)='toggleBackend()'>mock / full
+                </nt-switch>
+              </div>
+            </div>
+
+            <div class="flex flex-col h-52 overflow-auto scrollbar-sm">
+              <div *ngFor="let session of sessionSelected" class='w-fit mt-4 items-center'>
+                <nt-badge (click)='deleteSession(session)'>
+                  {{session.title}}
+                </nt-badge>
+                <nt-screenshot class="w-64 h-28 rounded-md shadow-lg"
+                               [reference]=session.reference></nt-screenshot>
+              </div>
+            </div>
+            <div class="flex flex-row gap-2">
+              <button *ngIf="!batterySaved" class="bo-button w-14 text-center mt-2" (click)="saveBattery()">Save
+              </button>
+              <button *ngIf="batterySaved" class="bo-button w-16 text-center mt-2" (click)="updateBattery()">Save
+              </button>
+              <button *ngIf="batterySaved" class="bo-button w-16 text-center mt-2"
+                      (click)="deleteBattery()">Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+

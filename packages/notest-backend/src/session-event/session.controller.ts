@@ -188,6 +188,20 @@ export class SessionController {
     return this.getRunHistory(assertions);
   }
 
+  @Get('get-battery-run-history')
+  async batteryRunHistory(@Query('references') references: string[]) {
+    const assertions: [NTAssertion[]] = [[]];
+    const results = [];
+    for (let reference of references) {
+      assertions.push(
+        await this.assertionService.findByField('original_reference', encodeURIComponent(reference))
+      );
+    }
+    for (let assertionList of assertions) {
+      results.push(this.getRunHistory(assertionList));
+    }
+    return results;
+  }
   @Get('login-sessions')
   async loginSessions(@Query('domain') domain: string, @UserId() userid: string) {
     const sessions = await this.sessionService.findByDomain(domain, userid);

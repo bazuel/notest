@@ -31,6 +31,17 @@ export interface NTStatementInstrumenter {
   ): void;
 }
 
+export interface NTBattery {
+  nt_batteryid?: string;
+  name: string;
+  userid: number;
+  active: boolean;
+  scheduled_time: string;
+  type: NTTest;
+  session_list: string[];
+  backend_type: "full" | "mock";
+  created?: Date | null;
+}
 export interface NTSession {
   nt_sessionid?: string;
   url: string;
@@ -64,6 +75,8 @@ export type NTClusterMessage = {
   backendType: "mock" | "full";
   sessionDomain?: string;
 };
+
+export type NTTest = "e2e" | "unit";
 
 export interface NTEvent {
   nt_eventid: number;

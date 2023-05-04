@@ -19,11 +19,14 @@ const routes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule)
   },
   {
+    path: 'battery',
+    loadChildren: () => import('./battery/battery.module').then((m) => m.BatteryModule)
+  },
+  {
     path: '',
     redirectTo: 'dashboard/home',
     pathMatch: 'prefix'
   }
-
 ];
 
 @NgModule({

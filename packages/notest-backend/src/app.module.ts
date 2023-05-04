@@ -14,6 +14,8 @@ import { NotestSharedModule } from './notest-shared/notest-shared.module';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { MessagesService } from './user/messages.service';
+import { BatteryService } from './battery/battery.service';
+import { BatteryController } from './battery/battery.controller';
 
 @Module({
   imports: [SharedModule, NotestSharedModule],
@@ -23,7 +25,8 @@ import { MessagesService } from './user/messages.service';
     StoryController,
     TestGeneratorController,
     SessionController,
-    UserController
+    UserController,
+    BatteryController
   ],
   providers: [
     AppService,
@@ -32,7 +35,8 @@ import { MessagesService } from './user/messages.service';
     TestGeneratorService,
     EventService,
     UserService,
-    MessagesService
+    MessagesService,
+    BatteryService
   ]
 })
 export class AppModule {}

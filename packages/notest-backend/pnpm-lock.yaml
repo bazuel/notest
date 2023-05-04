@@ -15,6 +15,7 @@ specifiers:
   '@types/express': ^4.17.17
   '@types/jest': ^27.5.2
   '@types/node': ^16.18.12
+  '@types/node-cron': ^3.0.7
   '@types/object-hash': ^2.2.1
   '@types/supertest': ^2.0.12
   '@typescript-eslint/eslint-plugin': ^5.52.0
@@ -29,6 +30,7 @@ specifiers:
   js-sha512: ^0.8.0
   jsonwebtoken: ^9.0.0
   kafkajs: ^2.2.3
+  node-cron: ^3.0.2
   nodemailer: ^6.9.1
   object-hash: ^3.0.0
   postgres: ^3.3.3
@@ -61,6 +63,7 @@ dependencies:
   js-sha512: 0.8.0
   jsonwebtoken: 9.0.0
   kafkajs: 2.2.3
+  node-cron: 3.0.2
   nodemailer: 6.9.1
   object-hash: 3.0.0
   postgres: 3.3.3
@@ -77,6 +80,7 @@ devDependencies:
   '@types/express': 4.17.17
   '@types/jest': 27.5.2
   '@types/node': 16.18.12
+  '@types/node-cron': 3.0.7
   '@types/object-hash': 2.2.1
   '@types/supertest': 2.0.12
   '@typescript-eslint/eslint-plugin': 5.52.0_6cfvjsbua5ptj65675bqcn6oza
@@ -1997,6 +2001,10 @@ packages:
 
   /@types/mime/3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
+    dev: true
+
+  /@types/node-cron/3.0.7:
+    resolution: {integrity: sha512-9PuLtBboc/+JJ7FshmJWv769gDonTpItN0Ol5TMwclpSQNjVyB2SRxSKBcTtbSysSL5R7Oea06kTTFNciCoYwA==}
     dev: true
 
   /@types/node/16.18.12:
@@ -5040,6 +5048,13 @@ packages:
   /node-abort-controller/3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
     dev: true
+
+  /node-cron/3.0.2:
+    resolution: {integrity: sha512-iP8l0yGlNpE0e6q1o185yOApANRe47UPbLf4YxfbiNHt/RU5eBcGB/e0oudruheSf+LQeDMezqC5BVAb5wwRcQ==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      uuid: 8.3.2
+    dev: false
 
   /node-emoji/1.11.0:
     resolution: {integrity: sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==}

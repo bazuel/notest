@@ -26,6 +26,7 @@ import {HighlightPipe} from "./pipes/highlight.pipe";
 import {BadgeComponent} from "./components/badge/badge.component";
 import {SwitchComponent} from "./components/switch/switch.component";
 import {ProfileImageComponent} from "./components/profile-image/profile-image.component";
+import { CronComponent } from './components/cron/cron.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {ProfileImageComponent} from "./components/profile-image/profile-image.co
     HighlightPipe,
     BadgeComponent,
     SwitchComponent,
-    ProfileImageComponent
+    ProfileImageComponent,
+    CronComponent
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -60,7 +62,8 @@ import {ProfileImageComponent} from "./components/profile-image/profile-image.co
     ClickOutsideDirective,
     BadgeComponent,
     SwitchComponent,
-    ProfileImageComponent
+    ProfileImageComponent,
+    CronComponent
   ],
   providers: [
     HttpService,
