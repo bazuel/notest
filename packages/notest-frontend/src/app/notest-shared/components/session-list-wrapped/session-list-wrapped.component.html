@@ -1,0 +1,25 @@
+<!--<div class='relative'>-->
+<!--  <nt-screenshot-->
+<!--    *ngFor='let reference of referenceList.slice(0,5);index as i'-->
+<!--    (mouseenter)='translateFactor = 2'-->
+<!--    (mouseleave)='translateFactor = 0'-->
+<!--    [reference]='reference'-->
+<!--    style='z-index: {{i+(translateFactor*10)}};-->
+<!--     transform: rotate({{(i +1 - referenceList.slice(0,5).length + translateFactor*(i+1)/2)*(15/referenceList.slice(0,5).length)}}deg)-->
+<!--     translateX({{(i+1 - referenceList.slice(0,5).length  + translateFactor*(i+1))}}rem);-->
+<!--    '-->
+<!--    class='absolute top-2 left-2 card transition-all'></nt-screenshot>-->
+<!--</div>-->
+
+<div class='relative'>
+  <nt-screenshot
+    *ngFor='let reference of referenceList.slice(0,5);index as i'
+    (mouseenter)='translateFactor = 2'
+    (mouseleave)='translateFactor = 0'
+    [reference]='reference'
+    style='
+      z-index: {{i+(translateFactor*10)}};
+      transform: rotate({{(i +1 - pivot + + (i + 1 - pivot)*translateFactor) *(15/referenceList.slice(0,5).length)}}deg)
+                 translateX({{(i+1 - pivot  + (i + 1 - pivot)*translateFactor)}}rem);'
+    class='absolute top-2 left-2 card transition-all'></nt-screenshot>
+</div>

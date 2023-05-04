@@ -8,6 +8,7 @@ import { SessionPreviewPlaceholderComponent } from './components/placeholders/se
 import { ScreenshotListPlaceholderComponent } from './components/placeholders/session-preview/screenshot-list-placeholder.component';
 import { AssertionSummaryItemComponent } from './components/assertion-summary-item/assertion-summary-item.component';
 import { AssertionPreviewComponent } from './components/assertion-preview/assertion-preview.component';
+import { SessionListWrappedComponent } from './components/session-list-wrapped/session-list-wrapped.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AssertionPreviewComponent } from './components/assertion-preview/assert
     SessionPreviewPlaceholderComponent,
     ScreenshotListPlaceholderComponent,
     AssertionSummaryItemComponent,
-    AssertionPreviewComponent
+    AssertionPreviewComponent,
+    SessionListWrappedComponent
   ],
   exports: [
     LogoComponent,
@@ -26,7 +28,8 @@ import { AssertionPreviewComponent } from './components/assertion-preview/assert
     SessionPreviewPlaceholderComponent,
     ScreenshotListPlaceholderComponent,
     AssertionSummaryItemComponent,
-    AssertionPreviewComponent
+    AssertionPreviewComponent,
+    SessionListWrappedComponent
   ],
   imports: [CommonModule, SharedModule]
 })
