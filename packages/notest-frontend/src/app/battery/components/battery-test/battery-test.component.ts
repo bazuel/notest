@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NTBattery, NTSession, NTTest } from '@notest/common';
+import { NTBattery, NTSession, NTTest, copyToClipboard } from '@notest/common';
 import { BatteryService } from '../../services/battery.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { SessionService } from '../../../session/services/session.service';
 import { Router } from '@angular/router';
 import { TokenService } from '../../../shared/services/token.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'nt-battery-test',
@@ -71,6 +72,10 @@ export class BatteryTestComponent implements OnInit {
     this.sessionBattery.backend_type = this.sessionBattery.backend_type == 'full' ? 'mock' : 'full';
   }
 
+  getLink() {
+    return `${environment.api}/api/webhook/battery-webhook?id=${this.sessionBattery.nt_batteryid}`;
+  }
+
   async save() {
     this.invalidScheduledTime = this.sessionBattery.scheduled_time == '';
     this.invalidTitle = this.sessionBattery.name == '';
@@ -100,4 +105,7 @@ export class BatteryTestComponent implements OnInit {
     console.log('Session', session);
     this.sessionsSelected.push(session);
   }
+
+  protected readonly environment = environment;
+  protected readonly copyToClipboard = copyToClipboard;
 }

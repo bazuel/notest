@@ -31,6 +31,15 @@
           [switched]='sessionBattery.backend_type == "full"'
           (switchedChange)='toggleBackend()'>Frontend isolated
         </nt-switch>
+        <div class="flex flex-col">
+          <label class='mt-4'>Webhook API</label>
+          <div class="flex flex row gap-2">
+            <input class='nt-input' placeholder="Save to show Webhook API" value='{{sessionBattery.nt_batteryid ? getLink() : ""}}' />
+            <button *ngIf="sessionBattery.nt_batteryid" class='nt-button nt-copy-button' title='Copy webhook link' (click)='copyToClipboard(environment.api+"/api/webhook/battery-webhook?id="+sessionBattery.nt_batteryid)'>
+              <nt-icon name='copy'></nt-icon>
+            </button>
+          </div>
+        </div>
         <div class='flex flex-row items-center gap-2'>
           <div class='flex flex-col'>
             <label class='mt-4'>Battery sessions</label>
@@ -40,7 +49,6 @@
               placeholder='Select User Session'
               (itemSelected)='onSessionSelected($event)'></nt-async-autocomplete>
           </div>
-
         </div>
         <div class='flex flex-col h-52 overflow-auto scrollbar-sm'>
           <div *ngFor='let session of sessionsSelected' class='w-fit mt-4 items-center'>

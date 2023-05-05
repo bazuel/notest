@@ -78,7 +78,7 @@ export class BatteryService extends CrudService<NTBattery> implements OnModuleIn
     this.createCronJob(battery);
   }
 
-  private runBattery(battery: NTBattery) {
+  runBattery(battery: NTBattery) {
     battery.session_list.forEach(async (session) => {
       console.log('Cron Job Started');
       await this.producerService.produceMessage({

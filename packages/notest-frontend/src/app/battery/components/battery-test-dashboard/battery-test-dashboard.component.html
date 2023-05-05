@@ -1,14 +1,16 @@
-<div class='p-4'>
+<div class='p-4 h-full'>
   <h2>Battery Test</h2>
   <h4 class='mt-3'>E2E</h4>
-  <div class='flex gap-72'>
-    <div class='h-fit w-20 p-2 cursor-pointer' *ngFor='let batteryTest of activeBatteryList'
-         (click)='redirectToBatteryTest(batteryTest.nt_batteryid!)'>
-      <label>{{batteryTest.name}}</label>
-      <nt-session-list-wrapped [referenceList]='batteryTest.session_list'></nt-session-list-wrapped>
+  <div class='flex p-4'>
+    <div class="flex flex-1 flex-wrap  p-2 gap-x-72 gap-y-32">
+      <div class='h-24 w-24 p-2 cursor-pointer' *ngFor='let batteryTest of activeBatteryList'
+           (click)='redirectToBatteryTest(batteryTest.nt_batteryid!)'>
+        <label>{{batteryTest.name}}</label>
+        <nt-session-list-wrapped [referenceList]='batteryTest.session_list'></nt-session-list-wrapped>
+      </div>
     </div>
-
-    <div class='card mt-20 border-dashed border-2 flex items-center justify-center'
-         (click)="createNewBattery('e2e')"><p class='text-gray-300 text-9xl'>+</p></div>
+    <div class='card ml-5 mt-20 border-dashed border-2 flex items-center justify-center w-1/5'
+         (click)="createNewBattery('e2e')"><p class='text-gray-300 text-9xl'>+</p>
+    </div>
   </div>
 </div>

@@ -16,6 +16,7 @@ import { UserService } from './user/user.service';
 import { MessagesService } from './user/messages.service';
 import { BatteryService } from './battery/battery.service';
 import { BatteryController } from './battery/battery.controller';
+import { WebhookController } from './webhook/webhook.controller';
 
 @Module({
   imports: [SharedModule, NotestSharedModule],
@@ -26,7 +27,8 @@ import { BatteryController } from './battery/battery.controller';
     TestGeneratorController,
     SessionController,
     UserController,
-    BatteryController
+    BatteryController,
+    WebhookController
   ],
   providers: [
     AppService,
@@ -36,7 +38,8 @@ import { BatteryController } from './battery/battery.controller';
     EventService,
     UserService,
     MessagesService,
-    BatteryService
+    BatteryService,
+    WebhookController
   ]
 })
 export class AppModule {}
