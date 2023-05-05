@@ -18,10 +18,12 @@
 
   <div class="relative mt-auto">
     <div class="flex items-center bg-white p-4 personal-info">
-      <nt-profile-image *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
-      <div class="ml-2">
-        <div class="text-sm text-gray-700">{{ fullname }}</div>
-        <div class="text-xs uppercase text-gray-500">{{ role }}</div>
+      <div class="flex items-center cursor-pointer " (click)="redirectToUser()">
+        <nt-profile-image *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
+        <div class="ml-2">
+          <div class="text-sm text-gray-700">{{ fullname }}</div>
+          <div class="text-xs uppercase text-gray-500">{{ role }}</div>
+        </div>
       </div>
       <nt-icon class="ml-auto text-gray-500" name="logout" (click)="logout()"></nt-icon>
     </div>

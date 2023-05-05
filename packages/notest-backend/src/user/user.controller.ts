@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 import { CryptService } from '../shared/services/crypt.service';
 import { EmailService } from '../shared/services/email.service';
 import { TokenService } from '../shared/services/token.service';
-import { Admin } from '../shared/token.decorator';
+import { Admin, HasToken, UserId } from '../shared/token.decorator';
 import { NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
 import { ConfigService } from '../shared/services/config.service';
@@ -154,6 +154,11 @@ export class UserController {
     return user;
   }
 
+  @Get('get-user')
+  @UseGuards(HasToken)
+  async getUser(@UserId() id) {
+    return await this.find(id);
+  }
   @Get('find-by-query')
   async findByQuery(@Query('q') q: string) {
     const users = await this.userService.findUserByQuery(q);

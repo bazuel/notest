@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { UserModule } from './user/user.module';
 
 const routes: Routes = [
   {
@@ -19,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule)
   },
   {
+    path: 'user',
+    loadChildren: () => import('./user/user.module').then((m) => m.UserModule)
+  },
+  {
     path: 'battery',
     loadChildren: () => import('./battery/battery.module').then((m) => m.BatteryModule)
   },
@@ -31,7 +36,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, RouterModule.forRoot(routes), SharedModule, DashboardModule],
+  imports: [BrowserModule, RouterModule.forRoot(routes), SharedModule, DashboardModule, UserModule],
   providers: [],
   bootstrap: [AppComponent]
 })

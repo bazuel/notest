@@ -1,0 +1,30 @@
+<div class="p-4">
+  <h1>User Control Panel</h1>
+  <div class="flex gap-2 items-center">
+    <nt-icon class="h-6 w-6 text-gray-500 " name="user"></nt-icon>
+    <h3>Profile</h3>
+  </div>
+  <label class="mt-4">Name</label>
+  <div class="flex gap-4">
+    <input type="text" name="name" [(ngModel)]="user.name" />
+    <nt-profile-image [userid]="user.nt_userid" [fullname]="user.name + ' ' + user.surname"></nt-profile-image>
+  </div>
+  <label class="mt-4">Surname</label>
+  <input type="text" name="surname" [(ngModel)]="user.surname" />
+  <label class="mt-4">Telephone</label>
+  <input type="text" name="telephone" [(ngModel)]="user.phone" />
+  <label class="mt-4">E-mail</label>
+  <input type="text" name="email" [(ngModel)]="user.email" />
+  <div class="flex gap-2 items-center mt-4">
+    <nt-icon class="h-6 w-6 text-gray-500 " name="advanced"></nt-icon>
+    <h3>Advanced</h3>
+  </div>
+  <label class="mt-4">Password</label>
+  <input type="password" name="password" [(ngModel)]="password" />
+  <label class="mt-4">New Password</label>
+  <input type="password" name="newPassword" [(ngModel)]="newPassword" />
+  <div class="flex gap-2 items-center mt-4">
+    <nt-icon class="h-6 w-6 text-gray-500 " name="key"></nt-icon>
+    <h3>API Token</h3>
+  </div>
+</div>
