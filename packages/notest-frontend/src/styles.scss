@@ -91,10 +91,21 @@ label {
     @apply mr-1;
   }
 }
+.form-success {
+  @apply text-sm text-green-500;
+  &:before {
+    content: '*';
+    @apply mr-1;
+  }
+}
 .readonly  {
   @apply pointer-events-none opacity-25;
 }
 
 .card{
   @apply w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer
+}
+
+textarea{
+  @apply rounded-md;
 }

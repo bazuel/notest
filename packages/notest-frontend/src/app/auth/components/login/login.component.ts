@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   email = '';
   password = '';
-  passwordRepeated= '';
+  passwordRepeated = '';
   showForgotPasswordPopup = false;
   showResetPasswordPopup = false;
   tokenForPasswordReset = '';
@@ -68,7 +68,7 @@ export class LoginComponent implements OnInit {
   )
   async onResetPassword() {
     const result = await this.authService.resetPassword(this.tokenForPasswordReset, this.password);
-    if (result.ok) {
+    if (result) {
       const email = this.tokenService.tokenData(this.tokenForPasswordReset).email;
       console.log(`logging in as ${email}`);
       this.email = email;

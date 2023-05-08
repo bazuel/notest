@@ -1,30 +1,59 @@
-<div class="p-4">
+<div *ngIf="user" class="p-4">
   <h1>User Control Panel</h1>
   <div class="flex gap-2 items-center">
-    <nt-icon class="h-6 w-6 text-gray-500 " name="user"></nt-icon>
+    <nt-icon class="h-6 w-6 text-nt-500 " name="user"></nt-icon>
     <h3>Profile</h3>
   </div>
   <label class="mt-4">Name</label>
   <div class="flex gap-4">
-    <input type="text" name="name" [(ngModel)]="user.name" />
+    <input type="text" name="name" [(ngModel)]="user.name"/>
     <nt-profile-image [userid]="user.nt_userid" [fullname]="user.name + ' ' + user.surname"></nt-profile-image>
   </div>
   <label class="mt-4">Surname</label>
-  <input type="text" name="surname" [(ngModel)]="user.surname" />
+  <input type="text" name="surname" [(ngModel)]="user.surname"/>
   <label class="mt-4">Telephone</label>
-  <input type="text" name="telephone" [(ngModel)]="user.phone" />
+  <input type="text" name="telephone" [(ngModel)]="user.phone"/>
   <label class="mt-4">E-mail</label>
-  <input type="text" name="email" [(ngModel)]="user.email" />
+  <input type="text" name="email" [(ngModel)]="user.email"/>
   <div class="flex gap-2 items-center mt-4">
-    <nt-icon class="h-6 w-6 text-gray-500 " name="advanced"></nt-icon>
+    <nt-icon class="h-6 w-6 text-nt-500 " name="advanced"></nt-icon>
     <h3>Advanced</h3>
   </div>
-  <label class="mt-4">Password</label>
-  <input type="password" name="password" [(ngModel)]="password" />
+  <label class="mt-4">Current Password</label>
+  <input type="password" name="password"  [(ngModel)]="currentPassword"/>
+  <div class="form-error" *ngIf="!checkCurrentPass">
+    Incorrect Password
+  </div>
   <label class="mt-4">New Password</label>
-  <input type="password" name="newPassword" [(ngModel)]="newPassword" />
+  <input type="password" name="password" [(ngModel)]="newPassword"/>
+  <label class="mt-4">Repeat New Password</label>
+  <div class="flex flex-row gap-2 items-center">
+    <input type="password" name="newPassword" [(ngModel)]="newPasswordRepeated"/>
+    <nt-icon title="Change Password" class="h-6 w-6 text-nt-500 cursor-pointer" name="save"
+             [class.readonly]="newPassword !== newPasswordRepeated"
+             (click)="changePassword()">Change Password
+    </nt-icon>
+  </div>
+  <div class="form-success" *ngIf="passwordUpdated">
+    Password Successfully Updated
+  </div>
+  <div class="form-error" *ngIf="newPassword !== newPassword">
+    Password Mismatch
+  </div>
   <div class="flex gap-2 items-center mt-4">
-    <nt-icon class="h-6 w-6 text-gray-500 " name="key"></nt-icon>
+    <nt-icon class="h-6 w-6 text-nt-500 " name="key"></nt-icon>
     <h3>API Token</h3>
+  </div>
+  <label class="mt-4">Your Token</label>
+  <div class="flex flex-row gap-2 items-center">
+    <textarea disabled class="mr-2 w-1/3 h-36" type="text" [(ngModel)]="user.api_token"></textarea>
+    <nt-icon *ngIf="!user.api_token" title="Generate Api Token" class="h-8 w-8 text-nt-500 cursor-pointer " name="plus"
+             (click)="generateApiToken()"></nt-icon>
+    <div class="flex flex-col gap-2">
+      <nt-icon *ngIf="user.api_token" title="Copy Api Token" class="h-7 w-7 text-nt-500 cursor-pointer " name="copy"
+               (click)="copyToClipboard(user.api_token)"></nt-icon>
+      <nt-icon *ngIf="user.api_token" title="Delete Api Token" class="h-8 w-8 text-nt-500 cursor-pointer " name="delete"
+               (click)="deleteToken()"></nt-icon>
+    </div>
   </div>
 </div>

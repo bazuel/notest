@@ -50,6 +50,13 @@ export class UserController {
     } else throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
+  @Get('check-password')
+  async checkPassword(@Query('password') password: string, @Query('email') email: string) {
+    const found = await this.userService.findUser(email.trim().toLowerCase(), password.trim());
+    if (found.length > 0) return { ok: true };
+    return { ok: false };
+  }
+
   @Post('request-registration')
   async register(
     @Body()
@@ -208,6 +215,13 @@ export class UserController {
     return await this.userService.findById(userid).then((user) => {
       return { apiToken: user.api_token };
     });
+  }
+
+  @Get('delete-api-token')
+  @UseGuards(HasToken)
+  async deleteApiToken(@UserId() userId: string) {
+    const api_token = '';
+    await this.userService.updateUser({ nt_userid: userId, api_token });
   }
 
   @Get('get-permissions')
