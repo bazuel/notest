@@ -12,11 +12,13 @@ import {
 import { UserService } from './user.service';
 import { CryptService } from '../shared/services/crypt.service';
 import { EmailService } from '../shared/services/email.service';
-import { TokenService } from '../shared/services/token.service';
-import { Admin, HasToken, UserId } from '../shared/token.decorator';
+import { ApiTokenData, NTApiPermissionType, TokenService } from '../shared/services/token.service';
+import { UserId } from '../shared/token.decorator';
 import { NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
 import { ConfigService } from '../shared/services/config.service';
+import { HasToken, Admin } from '../shared/guards/token.guards';
+import { TimeService } from '../shared/services/time.service';
 
 @Controller('user')
 export class UserController {
@@ -26,6 +28,7 @@ export class UserController {
     private readonly cryptService: CryptService,
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
+    private timeService: TimeService,
     private readonly messagesService: MessagesService
   ) {}
 
@@ -159,6 +162,7 @@ export class UserController {
   async getUser(@UserId() id) {
     return await this.find(id);
   }
+
   @Get('find-by-query')
   async findByQuery(@Query('q') q: string) {
     const users = await this.userService.findUserByQuery(q);
@@ -181,5 +185,34 @@ export class UserController {
   async findUserByIds(@Query('ids') ids: string) {
     let users = await this.userService.findByIds(ids.split(','));
     return users.map((u) => ({ ...u, password: '' }));
+  }
+
+  @Get('generate-api-token')
+  @UseGuards(HasToken)
+  async generateApiToken(
+    @UserId() userId: string,
+    @Query('permission_type') permissionType: NTApiPermissionType
+  ) {
+    const apiToken: Partial<ApiTokenData> = {
+      id: userId,
+      api: [permissionType]
+    };
+    const api_token = this.tokenService.generateApiToken(apiToken, '1y');
+    await this.userService.updateUser({ nt_userid: userId, api_token });
+    return { api_token };
+  }
+
+  @Get('get-api-token')
+  @UseGuards(HasToken)
+  async getApiToken(@UserId() userid: string) {
+    return await this.userService.findById(userid).then((user) => {
+      return { apiToken: user.api_token };
+    });
+  }
+
+  @Get('get-permissions')
+  @UseGuards(HasToken)
+  async verifyApiToken(@Query('api-token') apiToken) {
+    return this.tokenService.verify<ApiTokenData>(apiToken).api;
   }
 }

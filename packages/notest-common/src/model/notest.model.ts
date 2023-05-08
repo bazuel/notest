@@ -135,6 +135,7 @@ export interface NTUser {
   state: string;
   phone: string;
   created: Date;
+  api_token: string;
 }
 
 export type NTScreenshot = {

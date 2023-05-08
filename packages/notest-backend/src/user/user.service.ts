@@ -33,6 +33,7 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
               roles     jsonb,
               state     text,
               phone     text,
+              token     text,
               created   TIMESTAMPTZ
           );
       `;
