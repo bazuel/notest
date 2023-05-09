@@ -16,6 +16,7 @@ export class UserComponent implements OnInit {
   newPasswordRepeated?: string;
   passwordUpdated = false;
   checkCurrentPass = true;
+  userInfoUpdated = false;
 
   constructor(
     private userService: UserService,
@@ -46,6 +47,16 @@ export class UserComponent implements OnInit {
       this.passwordUpdated = true;
       setTimeout(() => {
         this.passwordUpdated = false;
+      }, 2000);
+    }
+  }
+
+  async saveUserInformation() {
+    const user = await this.userService.saveUserInfo(this.user);
+    if (user) {
+      this.userInfoUpdated = true;
+      setTimeout(() => {
+        this.userInfoUpdated = false;
       }, 2000);
     }
   }

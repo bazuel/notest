@@ -14,7 +14,13 @@
   <label class="mt-4">Telephone</label>
   <input type="text" name="telephone" [(ngModel)]="user.phone"/>
   <label class="mt-4">E-mail</label>
-  <input type="text" name="email" [(ngModel)]="user.email"/>
+  <div class="flex flex-row gap-2 items-center">
+    <input type="text" name="email" [(ngModel)]="user.email"/>
+    <nt-icon name="save" class="h-6 w-6 text-nt-500 cursor-pointer" title="Save User Information" (click)="saveUserInformation()"></nt-icon>
+  </div>
+  <div class="form-success" *ngIf="userInfoUpdated">
+    Information saved Correctly
+  </div>
   <div class="flex gap-2 items-center mt-4">
     <nt-icon class="h-6 w-6 text-nt-500 " name="advanced"></nt-icon>
     <h3>Advanced</h3>

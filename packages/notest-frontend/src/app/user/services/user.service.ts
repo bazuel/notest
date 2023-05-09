@@ -28,7 +28,11 @@ export class UserService {
       .then((res) => res.ok);
   }
 
+  async saveUserInfo(user: NTUser): Promise<NTUser> {
+    return await this.http.post('/user/update-user', { user });
+  }
+
   async getApiToken() {
-    return await this.http.get<{ apiToken: string }>('user/get-api-token');
+    return await this.http.get<{ apiToken: string }>('/user/get-api-token');
   }
 }

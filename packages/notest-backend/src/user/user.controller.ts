@@ -97,10 +97,10 @@ export class UserController {
       await this.userService.updateUserRoles(data.nt_userid, ['EMAIL_CONFIRMED', 'USER']);
       console.log('user saved into db');
       /*const loginToken = this.tokenService.generate({
-        id: this.cryptService.encode(+data.nt_userid),
-        email: user.email,
-        roles: data.roles
-      });*/
+              id: this.cryptService.encode(+data.nt_userid),
+              email: user.email,
+              roles: data.roles
+            });*/
       res.header(
         'Location',
         `${this.configService.app_url}/auth/registration-success?token=${token}`
@@ -185,6 +185,14 @@ export class UserController {
       const result = await this.userService.createUser(user);
       return result;
     } else return await this.userService.updateUser(user);
+  }
+
+  @Post('update-user')
+  @UseGuards(HasToken)
+  async updateUser(@Body('user') user: NTUser) {
+    if (user.nt_userid) {
+      return this.userService.updateUser(user);
+    }
   }
 
   @Get('find-users-by-id')
