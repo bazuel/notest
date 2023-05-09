@@ -187,10 +187,10 @@ export class UserController {
     } else return await this.userService.updateUser(user);
   }
 
-  @Post('update-user')
+  @Post('update')
   @UseGuards(HasToken)
-  async updateUser(@Body('user') user: NTUser) {
-    if (user.nt_userid) {
+  async updateUser(@Body('user') user: NTUser, @UserId() userId: string) {
+    if (user.nt_userid == userId) {
       return this.userService.updateUser(user);
     }
   }

@@ -18,6 +18,8 @@ export class UserComponent implements OnInit {
   checkCurrentPass = true;
   userInfoUpdated = false;
 
+  copyToClipboard = copyToClipboard;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -64,6 +66,4 @@ export class UserComponent implements OnInit {
   async checkCurrentPassword() {
     return await this.userService.checkPassword(this.user.email, this.currentPassword!);
   }
-
-  protected readonly copyToClipboard = copyToClipboard;
 }

@@ -29,7 +29,7 @@ export class UserService {
   }
 
   async saveUserInfo(user: NTUser): Promise<NTUser> {
-    return await this.http.post('/user/update-user', { user });
+    return await this.http.post('/user/update', { user });
   }
 
   async getApiToken() {
