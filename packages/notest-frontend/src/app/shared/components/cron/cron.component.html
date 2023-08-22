@@ -1,0 +1,32 @@
+<div class="flex flex-row gap-2 items-center mt-0">
+  <div class="flex flex-col">
+    <label class="mt-1">Hour</label>
+    <input
+      class="w-20"
+      type="number"
+      min="0"
+      max="23"
+      [(ngModel)]="hours"
+      (ngModelChange)="saveScheduleDate()" />
+  </div>
+  <div class="flex flex-col">
+    <label class="mt-1">Day of Week</label>
+    <nt-autocomplete
+      [items]="daysOfWeekMap"
+      [property]="'day'"
+      (itemSelected)="daysOfWeek = $event.number.toString(); saveScheduleDate()"
+      (emptySelection)="daysOfWeek = '*'"
+      autofocus
+      placeholder="Leave Empty for all Days"></nt-autocomplete>
+  </div>
+</div>
+<label class="mt-4">Cron Expression</label>
+<div class="flex items-center gap-2">
+  <input
+    [title]="getNextCronJobRun(scheduleTime)"
+    name="date"
+    [(ngModel)]="scheduleTime"
+    (ngModelChange)="scheduleTimeChange.emit(this.scheduleTime)"
+    [placeholder]="'* * * * *'" />
+  <button (click)="resetScheduledTime()">Reset</button>
+</div>

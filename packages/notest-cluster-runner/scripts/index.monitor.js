@@ -1,8 +1,7 @@
 // src/utils/on.event.ts
 function on(type, fn, target = document) {
   const options = { capture: true, passive: true };
-  if (target)
-    target.addEventListener(type, fn, options);
+  if (target) target.addEventListener(type, fn, options);
   return () => target.removeEventListener(type, fn, options);
 }
 
@@ -10,8 +9,13 @@ function on(type, fn, target = document) {
 var u8 = Uint8Array;
 var u16 = Uint16Array;
 var u32 = Uint32Array;
-var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0]);
-var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0]);
+var fleb = new u8([
+  0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0
+]);
+var fdeb = new u8([
+  0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13,
+  0, 0
+]);
 var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
 var freb = function(eb, start) {
   var b = new u16(31);
@@ -21,7 +25,7 @@ var freb = function(eb, start) {
   var r = new u32(b[30]);
   for (var i2 = 1; i2 < 30; ++i2) {
     for (var j = b[i2]; j < b[i2 + 1]; ++j) {
-      r[j] = j - b[i2] << 5 | i2;
+      r[j] = ((j - b[i2]) << 5) | i2;
     }
   }
   return [b, r];
@@ -29,38 +33,33 @@ var freb = function(eb, start) {
 var _a = freb(fleb, 2);
 var fl = _a[0];
 var revfl = _a[1];
-fl[28] = 258, revfl[258] = 28;
+(fl[28] = 258), (revfl[258] = 28);
 var _b = freb(fdeb, 0);
 var fd = _b[0];
 var revfd = _b[1];
 var rev = new u16(32768);
 for (i = 0; i < 32768; ++i) {
-  x = (i & 43690) >>> 1 | (i & 21845) << 1;
-  x = (x & 52428) >>> 2 | (x & 13107) << 2;
-  x = (x & 61680) >>> 4 | (x & 3855) << 4;
-  rev[i] = ((x & 65280) >>> 8 | (x & 255) << 8) >>> 1;
+  x = ((i & 43690) >>> 1) | ((i & 21845) << 1);
+  x = ((x & 52428) >>> 2) | ((x & 13107) << 2);
+  x = ((x & 61680) >>> 4) | ((x & 3855) << 4);
+  rev[i] = (((x & 65280) >>> 8) | ((x & 255) << 8)) >>> 1;
 }
 var x;
 var i;
 var flt = new u8(288);
-for (i = 0; i < 144; ++i)
-  flt[i] = 8;
+for (i = 0; i < 144; ++i) flt[i] = 8;
 var i;
-for (i = 144; i < 256; ++i)
-  flt[i] = 9;
+for (i = 144; i < 256; ++i) flt[i] = 9;
 var i;
-for (i = 256; i < 280; ++i)
-  flt[i] = 7;
+for (i = 256; i < 280; ++i) flt[i] = 7;
 var i;
-for (i = 280; i < 288; ++i)
-  flt[i] = 8;
+for (i = 280; i < 288; ++i) flt[i] = 8;
 var i;
 var fdt = new u8(32);
-for (i = 0; i < 32; ++i)
-  fdt[i] = 5;
+for (i = 0; i < 32; ++i) fdt[i] = 5;
 var i;
 var et = /* @__PURE__ */ new u8(0);
-var td = typeof TextDecoder != "undefined" && /* @__PURE__ */ new TextDecoder();
+var td = typeof TextDecoder != 'undefined' && /* @__PURE__ */ new TextDecoder();
 var tds = 0;
 try {
   td.decode(et, { stream: true });
@@ -69,15 +68,14 @@ try {
 }
 var eventTypes = {};
 var dispatcher = (eventType, eventName) => {
-  const fullEventName = `buglink.${eventType}.${eventName}`;
+  const fullEventName = `notest.${eventType}.${eventName}`;
   eventTypes[eventType] = eventTypes[eventType] || [];
   eventTypes[eventType].push(eventName);
   let dispatcherFunction = (event) => {
     let e = event ? { ...event } : {};
     e.name = eventName;
     e.type = eventType;
-    if (!e.timestamp)
-      e.timestamp = new Date().getTime();
+    if (!e.timestamp) e.timestamp = new Date().getTime();
     document.dispatchEvent(new CustomEvent(fullEventName, { detail: e }));
     return e;
   };
@@ -85,8 +83,7 @@ var dispatcher = (eventType, eventName) => {
   dispatcherFunction.eventType = eventType;
   dispatcherFunction.on = (h) => {
     document.addEventListener(fullEventName, (c) => {
-      if (c.detail)
-        h(c.detail);
+      if (c.detail) h(c.detail);
     });
   };
   return dispatcherFunction;
@@ -94,94 +91,91 @@ var dispatcher = (eventType, eventName) => {
 var d = dispatcher;
 var events = {
   user: {
-    note: d("user", "note"),
-    report: d("user", "report")
+    note: d('user', 'note'),
+    report: d('user', 'report')
   },
   device: {
-    information: d("device", "device-information")
+    information: d('device', 'device-information')
   },
   cookie: {
-    data: d("cookie", "cookie-data")
+    data: d('cookie', 'cookie-data')
   },
   http: {
-    abort: d("http", "request-abort"),
-    error: d("http", "request-error"),
-    before_request: d("http", "before-request"),
-    before_response: d("http", "before-response"),
-    after_response: d("http", "after-response")
+    abort: d('http', 'request-abort'),
+    error: d('http', 'request-error'),
+    before_request: d('http', 'before-request'),
+    before_response: d('http', 'before-response'),
+    after_response: d('http', 'after-response')
   },
   tab: {
-    data: d("tab", "tab-data"),
-    opened: d("tab", "tab-opened"),
-    closed: d("tab", "tab-closed")
+    data: d('tab', 'tab-data'),
+    opened: d('tab', 'tab-opened'),
+    closed: d('tab', 'tab-closed')
   },
   dom: {
-    change: d("dom", "dom-change"),
-    full: d("dom", "dom-full"),
-    css_add: d("dom", "css-add"),
-    css_remove: d("dom", "css-remove"),
-    map_created: d("dom", "map-created")
+    change: d('dom', 'dom-change'),
+    full: d('dom', 'dom-full'),
+    css_add: d('dom', 'css-add'),
+    css_remove: d('dom', 'css-remove'),
+    map_created: d('dom', 'map-created')
   },
   performance: {
-    cpu: d("performance", "cpu"),
-    memory: d("performance", "memory"),
-    timing: d("performance", "timing")
+    cpu: d('performance', 'cpu'),
+    memory: d('performance', 'memory'),
+    timing: d('performance', 'timing')
   },
   devtools: {
-    open: d("devtools", "devtools-open")
+    open: d('devtools', 'devtools-open')
   },
   error: {
-    global: d("error", "global-error"),
-    promise: d("error", "global-promise")
+    global: d('error', 'global-error'),
+    promise: d('error', 'global-promise')
   },
   keyboard: {
-    up: d("keyboard", "keyup"),
-    down: d("keyboard", "keydown"),
-    input: d("keyboard", "input"),
-    value: d("keyboard", "value"),
-    checked: d("keyboard", "checked")
+    up: d('keyboard', 'keyup'),
+    down: d('keyboard', 'keydown'),
+    input: d('keyboard', 'input'),
+    value: d('keyboard', 'value'),
+    checked: d('keyboard', 'checked')
   },
   storage: {
-    session_update: d("storage", "session-update"),
-    local_update: d("storage", "local-update"),
-    session_full: d("storage", "session-full"),
-    local_full: d("storage", "local-full")
+    session_update: d('storage', 'session-update'),
+    local_update: d('storage', 'local-update'),
+    session_full: d('storage', 'session-full'),
+    local_full: d('storage', 'local-full')
   },
   media: {
-    play: d("media", "play"),
-    pause: d("media", "pause")
+    play: d('media', 'play'),
+    pause: d('media', 'pause')
   },
   page: {
-    visibility: d("page", "visibility"),
-    referrer: d("page", "referrer"),
-    network: d("page", "network"),
-    address: d("page", "address"),
-    hash: d("page", "hash")
+    visibility: d('page', 'visibility'),
+    referrer: d('page', 'referrer'),
+    network: d('page', 'network'),
+    address: d('page', 'address'),
+    hash: d('page', 'hash')
   },
   window: {
-    resize: d("window", "resize")
+    resize: d('window', 'resize')
   },
   mouse: {
-    touchmove: d("mouse", "touchmove"),
-    mousemove: d("mouse", "mousemove"),
-    mouseup: d("mouse", "mouseup"),
-    mousedown: d("mouse", "mousedown"),
-    click: d("mouse", "click"),
-    contextmenu: d("mouse", "contextmenu"),
-    dblclick: d("mouse", "dblclick"),
-    touchstart: d("mouse", "touchstart"),
-    touchend: d("mouse", "touchend"),
-    scroll: d("mouse", "scroll"),
-    elementscroll: d("mouse", "elementscroll")
+    touchmove: d('mouse', 'touchmove'),
+    mousemove: d('mouse', 'mousemove'),
+    mouseup: d('mouse', 'mouseup'),
+    mousedown: d('mouse', 'mousedown'),
+    click: d('mouse', 'click'),
+    contextmenu: d('mouse', 'contextmenu'),
+    dblclick: d('mouse', 'dblclick'),
+    touchstart: d('mouse', 'touchstart'),
+    touchend: d('mouse', 'touchend'),
+    scroll: d('mouse', 'scroll'),
+    elementscroll: d('mouse', 'elementscroll')
   },
   session: {
-    start: d("session", "session-start"),
-    useremail: d(
-      "session",
-      "user-email"
-    ),
-    userstart: d("session", "user-start"),
-    userstop: d("session", "user-stop")
+    start: d('session', 'session-start'),
+    useremail: d('session', 'user-email'),
+    userstart: d('session', 'user-start'),
+    userstop: d('session', 'user-stop')
   },
   list: (...names) => {
     return names;
@@ -191,8 +185,7 @@ var events = {
   },
   type: (...type) => {
     let ns = [];
-    for (let t of type)
-      ns.push(...eventTypes[t]);
+    for (let t of type) ns.push(...eventTypes[t]);
     return ns;
   },
   types: (...types) => {
@@ -200,13 +193,8 @@ var events = {
   }
 };
 var blevent = events;
-var activityRelatedEventNames = [
-  "dom-full",
-  ...blevent.type("mouse"),
-  "keydown",
-  "keyup",
-  "note"
-];
+var activityRelatedEventNames = ['dom-full', ...blevent.type('mouse'), 'keydown', 'keyup', 'note'];
+
 function throttle(func, wait) {
   let timeout;
   let previous = 0;
@@ -231,16 +219,20 @@ function throttle(func, wait) {
     }
   };
 }
+
 var RequestAnimationFrameTimer = class {
   reqAniFrameId = 0;
   baseRafTime = 0;
   end = false;
+
   constructor() {
     this.resetTimer();
   }
+
   stop() {
     this.end = true;
   }
+
   start(callback) {
     this.end = false;
     let lastTime = 0;
@@ -249,11 +241,11 @@ var RequestAnimationFrameTimer = class {
       callback(t - lastTime, timeFromBase);
       lastTime = t;
       cancelAnimationFrame(this.reqAniFrameId);
-      if (!this.end)
-        this.reqAniFrameId = requestAnimationFrame(internalCallback);
+      if (!this.end) this.reqAniFrameId = requestAnimationFrame(internalCallback);
     };
     this.reqAniFrameId = requestAnimationFrame(internalCallback);
   }
+
   resetTimer() {
     const x2 = requestAnimationFrame((t) => {
       this.baseRafTime = t;
@@ -265,15 +257,14 @@ var RequestAnimationFrameTimer = class {
 // src/model/dispatched.events.ts
 var eventTypes2 = {};
 var dispatcher2 = (eventType, eventName) => {
-  const fullEventName = `buglink.${eventType}.${eventName}`;
+  const fullEventName = `notest.${eventType}.${eventName}`;
   eventTypes2[eventType] = eventTypes2[eventType] || [];
   eventTypes2[eventType].push(eventName);
   let dispatcherFunction = (event) => {
     let e = event ? { ...event } : {};
     e.name = eventName;
     e.type = eventType;
-    if (!e.timestamp)
-      e.timestamp = new Date().getTime();
+    if (!e.timestamp) e.timestamp = new Date().getTime();
     document.dispatchEvent(new CustomEvent(fullEventName, { detail: e }));
     return e;
   };
@@ -281,8 +272,7 @@ var dispatcher2 = (eventType, eventName) => {
   dispatcherFunction.eventType = eventType;
   dispatcherFunction.on = (h) => {
     document.addEventListener(fullEventName, (c) => {
-      if (c.detail)
-        h(c.detail);
+      if (c.detail) h(c.detail);
     });
   };
   return dispatcherFunction;
@@ -290,95 +280,92 @@ var dispatcher2 = (eventType, eventName) => {
 var d2 = dispatcher2;
 var events2 = {
   user: {
-    note: d2("user", "note"),
-    report: d2("user", "report")
+    note: d2('user', 'note'),
+    report: d2('user', 'report')
   },
   device: {
-    information: d2("device", "device-information")
+    information: d2('device', 'device-information')
   },
   cookie: {
-    data: d2("cookie", "cookie-data")
+    data: d2('cookie', 'cookie-data')
   },
   http: {
-    abort: d2("http", "request-abort"),
-    error: d2("http", "request-error"),
-    before_request: d2("http", "before-request"),
-    before_response: d2("http", "before-response"),
-    after_response: d2("http", "after-response")
+    abort: d2('http', 'request-abort'),
+    error: d2('http', 'request-error'),
+    before_request: d2('http', 'before-request'),
+    before_response: d2('http', 'before-response'),
+    after_response: d2('http', 'after-response')
   },
   tab: {
-    data: d2("tab", "tab-data"),
-    opened: d2("tab", "tab-opened"),
-    closed: d2("tab", "tab-closed")
+    data: d2('tab', 'tab-data'),
+    opened: d2('tab', 'tab-opened'),
+    closed: d2('tab', 'tab-closed')
   },
   dom: {
-    change: d2("dom", "dom-change"),
-    full: d2("dom", "dom-full"),
-    css_add: d2("dom", "css-add"),
-    css_remove: d2("dom", "css-remove"),
-    map_created: d2("dom", "map-created")
+    change: d2('dom', 'dom-change'),
+    full: d2('dom', 'dom-full'),
+    css_add: d2('dom', 'css-add'),
+    css_remove: d2('dom', 'css-remove'),
+    map_created: d2('dom', 'map-created')
   },
   performance: {
-    cpu: d2("performance", "cpu"),
-    memory: d2("performance", "memory"),
-    timing: d2("performance", "timing")
+    cpu: d2('performance', 'cpu'),
+    memory: d2('performance', 'memory'),
+    timing: d2('performance', 'timing')
   },
   devtools: {
-    open: d2("devtools", "devtools-open")
+    open: d2('devtools', 'devtools-open')
   },
   error: {
-    global: d2("error", "global-error"),
-    promise: d2("error", "global-promise")
+    global: d2('error', 'global-error'),
+    promise: d2('error', 'global-promise')
   },
   keyboard: {
-    up: d2("keyboard", "keyup"),
-    down: d2("keyboard", "keydown"),
-    input: d2("keyboard", "input"),
-    value: d2("keyboard", "value"),
-    checked: d2("keyboard", "checked")
+    up: d2('keyboard', 'keyup'),
+    down: d2('keyboard', 'keydown'),
+    input: d2('keyboard', 'input'),
+    value: d2('keyboard', 'value'),
+    checked: d2('keyboard', 'checked')
   },
   storage: {
-    session_update: d2("storage", "session-update"),
-    local_update: d2("storage", "local-update"),
-    session_full: d2("storage", "session-full"),
-    local_full: d2("storage", "local-full")
+    session_update: d2('storage', 'session-update'),
+    local_update: d2('storage', 'local-update'),
+    session_full: d2('storage', 'session-full'),
+    local_full: d2('storage', 'local-full')
   },
   media: {
-    play: d2("media", "play"),
-    pause: d2("media", "pause")
+    play: d2('media', 'play'),
+    pause: d2('media', 'pause')
   },
   page: {
-    visibility: d2("page", "visibility"),
-    referrer: d2("page", "referrer"),
-    network: d2("page", "network"),
-    address: d2("page", "address"),
-    hash: d2("page", "hash")
+    visibility: d2('page', 'visibility'),
+    referrer: d2('page', 'referrer'),
+    network: d2('page', 'network'),
+    address: d2('page', 'address'),
+    hash: d2('page', 'hash')
   },
   window: {
-    resize: d2("window", "resize")
+    resize: d2('window', 'resize')
   },
   mouse: {
-    touchmove: d2("mouse", "touchmove"),
-    mousemove: d2("mouse", "mousemove"),
-    mouseup: d2("mouse", "mouseup"),
-    mousedown: d2("mouse", "mousedown"),
-    click: d2("mouse", "click"),
-    contextmenu: d2("mouse", "contextmenu"),
-    dblclick: d2("mouse", "dblclick"),
-    touchstart: d2("mouse", "touchstart"),
-    touchend: d2("mouse", "touchend"),
-    scroll: d2("mouse", "scroll"),
-    elementscroll: d2("mouse", "elementscroll"),
-    wheel: d2("mouse", "wheel")
+    touchmove: d2('mouse', 'touchmove'),
+    mousemove: d2('mouse', 'mousemove'),
+    mouseup: d2('mouse', 'mouseup'),
+    mousedown: d2('mouse', 'mousedown'),
+    click: d2('mouse', 'click'),
+    contextmenu: d2('mouse', 'contextmenu'),
+    dblclick: d2('mouse', 'dblclick'),
+    touchstart: d2('mouse', 'touchstart'),
+    touchend: d2('mouse', 'touchend'),
+    scroll: d2('mouse', 'scroll'),
+    elementscroll: d2('mouse', 'elementscroll'),
+    wheel: d2('mouse', 'wheel')
   },
   session: {
-    start: d2("session", "session-start"),
-    useremail: d2(
-      "session",
-      "user-email"
-    ),
-    userstart: d2("session", "user-start"),
-    userstop: d2("session", "user-stop")
+    start: d2('session', 'session-start'),
+    useremail: d2('session', 'user-email'),
+    userstart: d2('session', 'user-start'),
+    userstop: d2('session', 'user-stop')
   },
   list: (...names) => {
     return names;
@@ -388,8 +375,7 @@ var events2 = {
   },
   type: (...type) => {
     let ns = [];
-    for (let t of type)
-      ns.push(...eventTypes2[t]);
+    for (let t of type) ns.push(...eventTypes2[t]);
     return ns;
   },
   types: (...types) => {
@@ -398,17 +384,18 @@ var events2 = {
 };
 var blevent2 = events2;
 var activityRelatedEventNames2 = [
-  "dom-full",
-  ...blevent2.type("mouse"),
-  "keydown",
-  "keyup",
-  "note"
+  'dom-full',
+  ...blevent2.type('mouse'),
+  'keydown',
+  'keyup',
+  'note'
 ];
 
 // src/monitors/mouse.monitor.ts
 var MouseMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
     function mouseEventMapper(evt, processBoundingRect = true) {
       const { target, currentTarget } = evt;
@@ -436,24 +423,23 @@ var MouseMonitor = class {
       }
       return data;
     }
+
     const updatePosition = throttle((evt) => {
       let data = mouseEventMapper(evt, false);
-      data.name = !!evt.changedTouches ? "touchmove" : "mousemove";
-      if (data.name == blevent2.name("touchmove"))
-        blevent2.mouse.touchmove(data);
-      else
-        blevent2.mouse.mousemove(data);
+      data.name = !!evt.changedTouches ? 'touchmove' : 'mousemove';
+      if (data.name == blevent2.name('touchmove')) blevent2.mouse.touchmove(data);
+      else blevent2.mouse.mousemove(data);
     }, 50);
-    const handlers = [on("mousemove", updatePosition), on("touchmove", updatePosition)];
+    const handlers = [on('mousemove', updatePosition), on('touchmove', updatePosition)];
     let restoreOriginals = [...handlers];
     let events3 = blevent2.list(
-      "mouseup",
-      "mousedown",
-      "click",
-      "contextmenu",
-      "dblclick",
-      "touchstart",
-      "touchend"
+      'mouseup',
+      'mousedown',
+      'click',
+      'contextmenu',
+      'dblclick',
+      'touchstart',
+      'touchend'
     );
     for (let e of events3) {
       restoreOriginals.push(
@@ -469,6 +455,7 @@ var MouseMonitor = class {
       });
     };
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -477,8 +464,9 @@ var MouseMonitor = class {
 // src/monitors/cookie.monitor.ts
 var CookieMonitor = class {
   interval;
+
   enable() {
-    let lastCookies = "";
+    let lastCookies = '';
     this.interval = setInterval(() => {
       if (document.cookie != lastCookies) {
         lastCookies = document.cookie;
@@ -486,6 +474,7 @@ var CookieMonitor = class {
       }
     }, 1e3);
   }
+
   disable() {
     clearInterval(this.interval);
   }
@@ -495,6 +484,7 @@ var CookieMonitor = class {
 var InputMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
     const inputs = /* @__PURE__ */ new Map();
     const checked = /* @__PURE__ */ new Map();
@@ -512,12 +502,12 @@ var InputMonitor = class {
     const eventHandler = (event) => {
       const { target } = event;
       const { type, name } = target;
-      if (type === "checkbox") {
+      if (type === 'checkbox') {
         blevent2.keyboard.checked({
           target: target ?? void 0,
           checked: target?.checked
         });
-      } else if (type === "radio") {
+      } else if (type === 'radio') {
         if (name)
           document.querySelectorAll(`input[type="radio"][name="${name}"]`).forEach((el) => {
             if (el && el !== target) {
@@ -527,22 +517,21 @@ var InputMonitor = class {
               });
             }
           });
-        if (target)
-          checked.set(target, { target, checked: target?.checked });
+        if (target) checked.set(target, { target, checked: target?.checked });
       } else {
         let text = target?.value;
-        if (target)
-          inputs.set(target, { target, value: text });
+        if (target) inputs.set(target, { target, value: text });
       }
     };
-    let i2 = on("input", eventHandler);
-    let c = on("change", eventHandler);
+    let i2 = on('input', eventHandler);
+    let c = on('change', eventHandler);
     this.disableMonitoring = () => {
       c();
       i2();
       raf.stop();
     };
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -554,16 +543,18 @@ function observeProperty(target, key, propertyDescriptor, restore) {
   Object.defineProperty(
     target,
     key,
-    restore ? propertyDescriptor : {
-      set(value) {
-        setTimeout(() => {
-          propertyDescriptor.set.call(this, value);
-        }, 0);
-        if (original && original.set) {
-          original.set.call(this, value);
+    restore
+      ? propertyDescriptor
+      : {
+        set(value) {
+          setTimeout(() => {
+            propertyDescriptor.set.call(this, value);
+          }, 0);
+          if (original && original.set) {
+            original.set.call(this, value);
+          }
         }
       }
-    }
   );
   return () => observeProperty(target, key, original || {}, true);
 }
@@ -572,6 +563,7 @@ function observeProperty(target, key, propertyDescriptor, restore) {
 var InputValueMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
     let values = /* @__PURE__ */ new Map();
     let checked = /* @__PURE__ */ new Map();
@@ -588,21 +580,19 @@ var InputValueMonitor = class {
     });
     const valueSetter = {
       set() {
-        if (this)
-          values.set(this, { target: this, value: this.value });
+        if (this) values.set(this, { target: this, value: this.value });
       }
     };
     const checkedSetter = {
       set() {
-        if (this)
-          checked.set(this, { target: this, checked: this.checked });
+        if (this) checked.set(this, { target: this, checked: this.checked });
       }
     };
     let restoreOriginals = [
-      ...[HTMLInputElement, HTMLSelectElement, HTMLTextAreaElement].map(
-        (e) => observeProperty(e.prototype, "value", valueSetter)
+      ...[HTMLInputElement, HTMLSelectElement, HTMLTextAreaElement].map((e) =>
+        observeProperty(e.prototype, 'value', valueSetter)
       ),
-      observeProperty(HTMLInputElement.prototype, "checked", checkedSetter)
+      observeProperty(HTMLInputElement.prototype, 'checked', checkedSetter)
     ];
     this.disableMonitoring = () => {
       restoreOriginals.forEach((restore) => {
@@ -611,6 +601,7 @@ var InputValueMonitor = class {
       raf.stop();
     };
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -620,21 +611,24 @@ var InputValueMonitor = class {
 var KeyboardMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
     let k = [];
     let ev = (e) => ({
       key: e.key,
       code: e.code,
       locale: e.locale,
-      modifier: e.ctrlKey ? "ctrl" : e.altKey ? "alt" : e.shiftKey ? "shift" : "none",
+      modifier: e.ctrlKey ? 'ctrl' : e.altKey ? 'alt' : e.shiftKey ? 'shift' : 'none',
       target: e.target
     });
-    k.push(on("keyup", (e) => e.code && blevent2.keyboard.up(ev(e))));
-    k.push(on("keydown", (e) => e.code && blevent2.keyboard.down(ev(e))));
-    this.disableMonitoring = () => k.forEach((restore) => {
-      restore();
-    });
+    k.push(on('keyup', (e) => e.code && blevent2.keyboard.up(ev(e))));
+    k.push(on('keydown', (e) => e.code && blevent2.keyboard.down(ev(e))));
+    this.disableMonitoring = () =>
+      k.forEach((restore) => {
+        restore();
+      });
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -665,8 +659,7 @@ function observeMethod(target, method, newMethod) {
         return options.beforeReturn(rv);
       } catch (e) {
         options.onError(e);
-        if (!options.skipThrow)
-          throw e;
+        if (!options.skipThrow) throw e;
       }
     }
   };
@@ -680,9 +673,10 @@ function observeMethod(target, method, newMethod) {
 var PageMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
-    let pageHash = "";
-    let pageAddress = "";
+    let pageHash = '';
+    let pageAddress = '';
     let prevVisibility = false;
     let vch = (_) => {
       if (prevVisibility != !document.hidden) {
@@ -708,30 +702,31 @@ var PageMonitor = class {
     const nch_offline = (_) => {
       blevent2.page.network({ online: false });
     };
-    document.addEventListener("visibilitychange", vch);
-    window.addEventListener("hashchange", hch);
-    window.addEventListener("offline", nch_offline);
-    window.addEventListener("online", nch_online);
-    const restorePushState = observeMethod(window.history, "pushState", (_) => {
+    document.addEventListener('visibilitychange', vch);
+    window.addEventListener('hashchange', hch);
+    window.addEventListener('offline', nch_offline);
+    window.addEventListener('online', nch_online);
+    const restorePushState = observeMethod(window.history, 'pushState', (_) => {
       ach();
     });
-    const restoreReplaceState = observeMethod(window.history, "replaceState", (_) => {
+    const restoreReplaceState = observeMethod(window.history, 'replaceState', (_) => {
       ach();
     });
-    window.addEventListener("popstate", ach);
+    window.addEventListener('popstate', ach);
     const visibilityCheck = setInterval(vch, 1e3);
     this.disableMonitoring = () => {
-      window.removeEventListener("hashchange", hch);
-      document.removeEventListener("visibilitychange", vch);
-      window.removeEventListener("online", nch_online);
-      window.removeEventListener("offline", nch_offline);
-      window.removeEventListener("popstate", ach);
+      window.removeEventListener('hashchange', hch);
+      document.removeEventListener('visibilitychange', vch);
+      window.removeEventListener('online', nch_online);
+      window.removeEventListener('offline', nch_offline);
+      window.removeEventListener('popstate', ach);
       restorePushState();
       restoreReplaceState();
       clearInterval(visibilityCheck);
     };
     blevent2.page.referrer({ referrer: document.referrer, url: document.URL });
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -741,12 +736,14 @@ var PageMonitor = class {
 var ScrollMonitor = class {
   disableScroll = () => {
   };
+
   enable() {
     const updatePosition = throttle((evt) => {
       this.manageScrollEvent(evt);
     }, 5);
-    this.disableScroll = on("scroll", updatePosition);
+    this.disableScroll = on('scroll', updatePosition);
   }
+
   manageScrollEvent(evt) {
     const scrollEl = evt.target;
     let x2 = scrollEl.scrollLeft;
@@ -761,11 +758,10 @@ var ScrollMonitor = class {
       target: evt.target,
       currentTarget: evt.currentTarget
     };
-    if (evt.target === document)
-      blevent2.mouse.scroll(data);
-    else
-      blevent2.mouse.elementscroll(data);
+    if (evt.target === document) blevent2.mouse.scroll(data);
+    else blevent2.mouse.elementscroll(data);
   }
+
   disable() {
     this.disableScroll();
   }
@@ -776,8 +772,10 @@ var StorageMonitor = class {
   constructor(options = { intervalTimeForFullEvent: -1 }) {
     this.options = options;
   }
+
   disableMonitoring = () => {
   };
+
   serializeStorage(storage) {
     const ls = {};
     for (let i2 = 0; i2 < storage.length; i2++) {
@@ -787,10 +785,12 @@ var StorageMonitor = class {
     }
     return { storage: ls };
   }
+
   fireFullEvents() {
     blevent2.storage.session_full(this.serializeStorage(sessionStorage));
     blevent2.storage.local_full(this.serializeStorage(localStorage));
   }
+
   enable() {
     this.fireFullEvents();
     let full;
@@ -803,19 +803,17 @@ var StorageMonitor = class {
       if (e.key) {
         let v = {};
         v[e.key] = e.newValue;
-        if (e.storageArea === localStorage)
-          blevent2.storage.local_update({ storage: v });
-        else
-          blevent2.storage.session_update({ storage: v });
+        if (e.storageArea === localStorage) blevent2.storage.local_update({ storage: v });
+        else blevent2.storage.session_update({ storage: v });
       }
     };
-    window.addEventListener("storage", el);
+    window.addEventListener('storage', el);
     this.disableMonitoring = () => {
-      window.removeEventListener("storage", el);
-      if (full)
-        clearInterval(full);
+      window.removeEventListener('storage', el);
+      if (full) clearInterval(full);
     };
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -825,13 +823,24 @@ var StorageMonitor = class {
 var WindowResizeMonitor = class {
   disableMonitoring = () => {
   };
+
   enable() {
     function getWindowHeight() {
-      return window.innerHeight || document.documentElement && document.documentElement.clientHeight || document.body && document.body.clientHeight;
+      return (
+        window.innerHeight ||
+        (document.documentElement && document.documentElement.clientHeight) ||
+        (document.body && document.body.clientHeight)
+      );
     }
+
     function getWindowWidth() {
-      return window.innerWidth || document.documentElement && document.documentElement.clientWidth || document.body && document.body.clientWidth;
+      return (
+        window.innerWidth ||
+        (document.documentElement && document.documentElement.clientWidth) ||
+        (document.body && document.body.clientWidth)
+      );
     }
+
     const updateDimension = throttle(() => {
       const height = getWindowHeight();
       const width = getWindowWidth();
@@ -841,8 +850,9 @@ var WindowResizeMonitor = class {
       });
     }, 200);
     updateDimension();
-    this.disableMonitoring = on("resize", updateDimension, window);
+    this.disableMonitoring = on('resize', updateDimension, window);
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -851,10 +861,8 @@ var WindowResizeMonitor = class {
 // src/utils/selector-finder.util.ts
 var ElementSelectorFinder = class {
   findUniqueSelector(element) {
-    if (!element)
-      throw new Error("Element input is mandatory");
-    if (!element.ownerDocument)
-      throw new Error("Element should be part of a document");
+    if (!element) throw new Error('Element input is mandatory');
+    if (!element.ownerDocument) throw new Error('Element should be part of a document');
     let selector = flatSelector(element) + nthChild(element);
     let foundElements = element.ownerDocument.querySelectorAll(selector);
     while (foundElements.length > 1 && element.parentElement) {
@@ -866,13 +874,16 @@ var ElementSelectorFinder = class {
     return selector;
   }
 };
+
 function nthChild(element) {
-  let nthSelector = "";
+  let nthSelector = '';
   const parent = element.parentNode;
   if (parent) {
     let elementSelector = flatSelector(element);
     let children = Array.from(parent.children);
-    const brothersHavingSameSelectorCount = children.map((c) => flatSelector(c)).filter((s) => s == elementSelector);
+    const brothersHavingSameSelectorCount = children
+      .map((c) => flatSelector(c))
+      .filter((s) => s == elementSelector);
     if (brothersHavingSameSelectorCount.length > 1) {
       let elementChildIndex = Array.from(parent.children).indexOf(element) + 1;
       nthSelector = `:nth-child(${elementChildIndex})`;
@@ -880,156 +891,171 @@ function nthChild(element) {
   }
   return nthSelector;
 }
-function attributes(element, attributesWhiteList = ["name", " value", "title", "for", "type"]) {
+
+function attributes(element, attributesWhiteList = ['name', ' value', 'title', 'for', 'type']) {
   const attributesSelector = [];
   const { attributes: attributes2 } = element;
   for (let a of Array.from(attributes2)) {
     if (attributesWhiteList.indexOf(a.nodeName.toLowerCase()) > -1) {
-      attributesSelector.push(`[${a.nodeName.toLowerCase()}${a.value ? `="${a.value}"` : ""}]`);
+      attributesSelector.push(`[${a.nodeName.toLowerCase()}${a.value ? `="${a.value}"` : ''}]`);
     }
   }
-  return attributesSelector.join("");
+  return attributesSelector.join('');
 }
+
 function flatSelector(element) {
   return tag(element) + id(element) + attributes(element) + classes(element);
 }
+
 function classes(element) {
   let classSelectorList = [];
-  if (element.hasAttribute("class")) {
+  if (element.hasAttribute('class')) {
     try {
       const classList = Array.from(element.classList);
-      classSelectorList = classList.filter(
-        (item) => !/^[a-z_-][a-z\d_-]*$/i.test(item) ? null : item
+      classSelectorList = classList.filter((item) =>
+        !/^[a-z_-][a-z\d_-]*$/i.test(item) ? null : item
       );
     } catch (e) {
-      let className = element.getAttribute("class") ?? "";
-      className = className.trim().replace(/\s+/g, " ");
-      classSelectorList = className.split(" ");
+      let className = element.getAttribute('class') ?? '';
+      className = className.trim().replace(/\s+/g, ' ');
+      classSelectorList = className.split(' ');
     }
   }
-  return classSelectorList.map((c) => "." + c).join("");
+  return classSelectorList.map((c) => '.' + c).join('');
 }
+
 function id(element) {
-  const id2 = element.getAttribute("id");
-  if (id2 !== null && id2 !== "") {
-    return id2.match(/(?:^\d|:)/) ? `[id="${id2}"]` : "#" + id2;
+  const id2 = element.getAttribute('id');
+  if (id2 !== null && id2 !== '') {
+    return id2.match(/(?:^\d|:)/) ? `[id="${id2}"]` : '#' + id2;
   }
-  return "";
+  return '';
 }
+
 function tag(element) {
-  return element.tagName.toLowerCase().replace(/:/g, "\\:");
+  return element.tagName.toLowerCase().replace(/:/g, '\\:');
 }
 
 // src/utils/fetch.hook.ts
 function buildFetchHook() {
   const support = {
-    searchParams: "URLSearchParams" in self,
-    iterable: "Symbol" in self && "iterator" in Symbol,
-    blob: "FileReader" in self && "Blob" in self && function() {
-      try {
-        new Blob();
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }(),
-    formData: "FormData" in self,
-    arrayBuffer: "ArrayBuffer" in self
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob:
+      'FileReader' in self &&
+      'Blob' in self &&
+      (function() {
+        try {
+          new Blob();
+          return true;
+        } catch (e) {
+          return false;
+        }
+      })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
   };
+
   function parseHeaders(rawHeaders) {
     let headers = new Headers();
-    let preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
+    let preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
     preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
-      let parts = line.split(":");
+      let parts = line.split(':');
       let key = parts.shift().trim();
       if (key) {
-        let value = parts.join(":").trim();
+        let value = parts.join(':').trim();
         headers.append(key, value);
       }
     });
     return headers;
   }
+
   function fetch(input, init) {
     return new Promise(async function(resolve, reject) {
       const inputIsRequest = input instanceof Request;
       let request = inputIsRequest ? input : new Request(input, init);
       if (request.signal && request.signal.aborted) {
-        return reject(new DOMException("Aborted", "AbortError"));
+        return reject(new DOMException('Aborted', 'AbortError'));
       }
       let xhr = new XMLHttpRequest();
+
       function abortXhr() {
         xhr.abort();
       }
+
       xhr.onload = function() {
         let options = {
           status: xhr.status,
           statusText: xhr.statusText,
-          headers: parseHeaders(xhr.getAllResponseHeaders() || "")
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
         };
-        options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
-        let body2 = "response" in xhr ? xhr.response : xhr.responseText;
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
+        let body2 = 'response' in xhr ? xhr.response : xhr.responseText;
         setTimeout(function() {
           let rs = new Response(body2, options);
-          Object.defineProperty(rs, "url", { value: request.url });
+          Object.defineProperty(rs, 'url', { value: request.url });
           resolve(rs);
         }, 0);
       };
       xhr.onerror = function() {
         setTimeout(function() {
-          reject(new TypeError("Network request failed"));
+          reject(new TypeError('Network request failed'));
         }, 0);
       };
       xhr.ontimeout = function() {
         setTimeout(function() {
-          reject(new TypeError("Network request failed"));
+          reject(new TypeError('Network request failed'));
         }, 0);
       };
       xhr.onabort = function() {
         setTimeout(function() {
-          reject(new DOMException("Aborted", "AbortError"));
+          reject(new DOMException('Aborted', 'AbortError'));
         }, 0);
       };
+
       function fixUrl(url) {
         try {
-          return url === "" && self.location.href ? self.location.href : url;
+          return url === '' && self.location.href ? self.location.href : url;
         } catch (e) {
           return url;
         }
       }
+
       xhr.open(request.method, fixUrl(request.url), true);
-      if (request.credentials === "include") {
+      if (request.credentials === 'include') {
         xhr.withCredentials = true;
-      } else if (request.credentials === "omit") {
+      } else if (request.credentials === 'omit') {
         xhr.withCredentials = false;
       }
-      if ("responseType" in xhr) {
+      if ('responseType' in xhr) {
         if (support.blob) {
-          xhr.responseType = "blob";
-        } else if (support.arrayBuffer && (request.headers?.get("Content-Type") ?? "").indexOf(
-          "application/octet-stream"
-        ) !== -1) {
-          xhr.responseType = "arraybuffer";
+          xhr.responseType = 'blob';
+        } else if (
+          support.arrayBuffer &&
+          (request.headers?.get('Content-Type') ?? '').indexOf('application/octet-stream') !== -1
+        ) {
+          xhr.responseType = 'arraybuffer';
         }
       }
       request.headers.forEach(function(value, name) {
-        const skipIfFormData = init && init.body instanceof FormData && name.toLowerCase() == "content-type";
-        if (!skipIfFormData)
-          xhr.setRequestHeader(name, value);
+        const skipIfFormData =
+          init && init.body instanceof FormData && name.toLowerCase() == 'content-type';
+        if (!skipIfFormData) xhr.setRequestHeader(name, value);
       });
       if (request.signal) {
-        request.signal.addEventListener("abort", abortXhr);
+        request.signal.addEventListener('abort', abortXhr);
         xhr.onreadystatechange = function() {
           if (xhr.readyState === 4) {
-            request.signal.removeEventListener("abort", abortXhr);
+            request.signal.removeEventListener('abort', abortXhr);
           }
         };
       }
       let body = init?.body ?? void 0;
-      if (inputIsRequest)
-        body = await input.blob();
+      if (inputIsRequest) body = await input.blob();
       xhr.send(body);
     });
   }
+
   fetch.polyfill = true;
   return {
     fetch
@@ -1041,6 +1067,7 @@ var HttpMonitor = class {
   enabled = false;
   native;
   fetch = self.fetch;
+
   constructor() {
     this.native = {
       fetch: self.fetch,
@@ -1052,30 +1079,32 @@ var HttpMonitor = class {
       }
     };
   }
+
   enable() {
     let { fetch } = buildFetchHook();
     window.fetch = fetch;
     enableXhrHook();
     this.enabled = true;
   }
+
   disable() {
     self.fetch = this.native.fetch;
     XMLHttpRequest.prototype.open = this.native.xhr.open;
   }
 };
+
 function enableXhrHook() {
   const origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-    let baseUrl = "";
-    if (url.indexOf("http") != 0) {
-      baseUrl = window.location.protocol + "//" + window.location.hostname;
-      if (!url.startsWith("/"))
-        baseUrl += "/";
+    let baseUrl = '';
+    if (url.indexOf('http') != 0) {
+      baseUrl = window.location.protocol + '//' + window.location.hostname;
+      if (!url.startsWith('/')) baseUrl += '/';
     }
     let xhr = this;
     xhr.blhandlers = {};
     let requestData = {
-      name: "before-request",
+      name: 'before-request',
       target: xhr,
       method,
       url: baseUrl + url,
@@ -1115,7 +1144,7 @@ function enableXhrHook() {
       let originalCallback = xhr.onreadystatechange;
       xhr.onreadystatechange = function(...rargs) {
         const responseData = {
-          name: "before-response",
+          name: 'before-response',
           target: xhr,
           arguments: rargs,
           originalCallback,
@@ -1130,54 +1159,57 @@ function enableXhrHook() {
               responseData.originalCallback.bind(xhr)(...responseData.arguments);
             xhr.readyStateManaged = true;
           } catch (_err) {
-            if (!xhr.readyStateManaged)
-              throw _err;
+            if (!xhr.readyStateManaged) throw _err;
           }
         }
       };
       requestData.handlers = xhr.blhandlers;
       blevent2.http.before_request(requestData);
-      if (!requestData.abort)
-        origSend.call(xhr, body);
+      if (!requestData.abort) origSend.call(xhr, body);
     };
-    xhr.addEventListener("error", function() {
+    xhr.addEventListener('error', function() {
       let e = {
         request: requestData,
-        name: "request-error",
+        name: 'request-error',
         target: xhr,
         timestamp: new Date().getTime()
       };
       blevent2.http.error(e);
     });
-    xhr.addEventListener("abort", function() {
+    xhr.addEventListener('abort', function() {
       let e = {
         request: requestData,
-        name: "request-abort",
+        name: 'request-abort',
         target: xhr,
         timestamp: new Date().getTime()
       };
       blevent2.http.abort(e);
     });
-    xhr.addEventListener("load", function() {
+    xhr.addEventListener('load', function() {
       xhr.httpData.response.timestamp = new Date().getTime();
       const headers = {};
-      xhr.getAllResponseHeaders().trim().split(/[\r\n]+/).map((value) => value.split(/: /)).forEach((keyValue) => {
-        try {
-          headers[keyValue[0].trim()] = keyValue[1].trim();
-        } catch (he) {
-        }
-      });
+      xhr
+        .getAllResponseHeaders()
+        .trim()
+        .split(/[\r\n]+/)
+        .map((value) => value.split(/: /))
+        .forEach((keyValue) => {
+          try {
+            headers[keyValue[0].trim()] = keyValue[1].trim();
+          } catch (he) {
+          }
+        });
       xhr.httpData.response.headers = headers;
       xhr.httpData.response.status = xhr.status;
       xhr.httpData.response.target = xhr;
       xhr.httpData.response.request = requestData;
-      xhr.httpData.response.name = "after-response";
-      if (xhr.responseType == "" || xhr.responseType == "text") {
+      xhr.httpData.response.name = 'after-response';
+      if (xhr.responseType == '' || xhr.responseType == 'text') {
         xhr.httpData.response.body = xhr.responseText;
         blevent2.http.after_response(xhr.httpData.response);
-      } else if (xhr.responseType == "blob") {
+      } else if (xhr.responseType == 'blob') {
         let reader = new FileReader();
-        reader.addEventListener("loadend", (e) => {
+        reader.addEventListener('loadend', (e) => {
           const text = e.srcElement.result;
           xhr.httpData.response.body = text;
           blevent2.http.after_response(xhr.httpData.response);
@@ -1192,7 +1224,7 @@ function enableXhrHook() {
       let useCapture = args[2];
       let newHandler = (...hargs) => {
         const responseData = {
-          name: "before-response",
+          name: 'before-response',
           target: xhr,
           arguments: hargs,
           originalCallback: handler,
@@ -1203,8 +1235,7 @@ function enableXhrHook() {
         blevent2.http.before_response(responseData);
         if (!responseData.abort) {
           handler.bind(xhr)(...hargs);
-          if (event == "readystatechange")
-            xhr.readyStateManaged = true;
+          if (event == 'readystatechange') xhr.readyStateManaged = true;
         }
       };
       xhr.blhandlers[event] = xhr.blhandlers[event] || [];
@@ -1223,6 +1254,7 @@ function getElementAttributes(element) {
   }
   return attributes2;
 }
+
 async function getElementRect(element) {
   return new Promise((resolve) => {
     const rect = element.getBoundingClientRect();
@@ -1249,8 +1281,10 @@ var DomFrameMutationsMonitor = class {
       frameMutations.push(...mutations);
     });
   }
+
   timer;
   mo;
+
   observe(n) {
     this.mo.observe(n, {
       attributes: true,
@@ -1261,12 +1295,13 @@ var DomFrameMutationsMonitor = class {
       subtree: true
     });
   }
+
   disable() {
     try {
       this.mo.disconnect();
       this.timer.stop();
     } catch (e) {
-      console.log("Probably the observer was not started using observe()", e);
+      console.log('Probably the observer was not started using observe()', e);
     }
   }
 };
@@ -1276,116 +1311,119 @@ var CssAbsoluteUrlTransformer = class {
   URL_IN_CSS_REF = /url\((?:'([^']*)'|"([^"]*)"|([^)]*))\)/gm;
   RELATIVE_PATH = /^(?!www\.|(?:http|ftp)s?:\/\/|[A-Za-z]:\\|\/\/).*/;
   DATA_URI = /^(data:)([\w\/\+\-]+);(charset=[\w-]+|base64).*,(.*)/i;
+
   transform(cssText, href) {
-    return (cssText || "").replace(
-      this.URL_IN_CSS_REF,
-      (origin, path1, path2, path3) => {
-        const filePath = path1 || path2 || path3;
-        if (!filePath) {
-          return origin;
-        } else if (!this.RELATIVE_PATH.test(filePath)) {
-          return `url('${filePath}')`;
-        } else if (this.DATA_URI.test(filePath)) {
-          let u = `url(${filePath})`;
-          if (filePath.indexOf('\\"') >= 0)
-            u = `url('${filePath}')`;
-          else if (filePath.indexOf("\\'") >= 0)
-            u = `url("${filePath}")`;
-          else if (filePath.indexOf("'") >= 0)
-            u = `url("${filePath}")`;
-          else if (filePath.indexOf('"') >= 0)
-            u = `url('${filePath}')`;
-          return u;
-        } else if (filePath[0] === "/") {
-          return `url('${this.extractOrigin(href) + filePath}')`;
-        }
-        const stack = href.split("/");
-        const parts = filePath.split("/");
-        stack.pop();
-        for (const part of parts) {
-          if (part === ".") {
-            continue;
-          } else if (part === "..") {
-            stack.pop();
-          } else {
-            stack.push(part);
-          }
-        }
-        return `url('${stack.join("/")}')`;
+    return (cssText || '').replace(this.URL_IN_CSS_REF, (origin, path1, path2, path3) => {
+      const filePath = path1 || path2 || path3;
+      if (!filePath) {
+        return origin;
+      } else if (!this.RELATIVE_PATH.test(filePath)) {
+        return `url('${filePath}')`;
+      } else if (this.DATA_URI.test(filePath)) {
+        let u = `url(${filePath})`;
+        if (filePath.indexOf('\\"') >= 0) u = `url('${filePath}')`;
+        else if (filePath.indexOf('\\\'') >= 0) u = `url("${filePath}")`;
+        else if (filePath.indexOf('\'') >= 0) u = `url("${filePath}")`;
+        else if (filePath.indexOf('"') >= 0) u = `url('${filePath}')`;
+        return u;
+      } else if (filePath[0] === '/') {
+        return `url('${this.extractOrigin(href) + filePath}')`;
       }
-    );
+      const stack = href.split('/');
+      const parts = filePath.split('/');
+      stack.pop();
+      for (const part of parts) {
+        if (part === '.') {
+          continue;
+        } else if (part === '..') {
+          stack.pop();
+        } else {
+          stack.push(part);
+        }
+      }
+      return `url('${stack.join('/')}')`;
+    });
   }
+
   proxyUrls(cssText, proxyBasePath) {
-    return (cssText || "").replace(
-      this.URL_IN_CSS_REF,
-      (_, path1, path2, path3) => {
-        const filePath = path1 || path2 || path3;
-        if (!this.RELATIVE_PATH.test(filePath)) {
-          return `url('${proxyBasePath + filePath}')`;
-        } else
-          return `url('${filePath}')`;
-      }
-    );
+    return (cssText || '').replace(this.URL_IN_CSS_REF, (_, path1, path2, path3) => {
+      const filePath = path1 || path2 || path3;
+      if (!this.RELATIVE_PATH.test(filePath)) {
+        return `url('${proxyBasePath + filePath}')`;
+      } else return `url('${filePath}')`;
+    });
   }
+
   extractOrigin(url) {
     let origin;
-    if (url.indexOf("//") > -1) {
-      origin = url.split("/").slice(0, 3).join("/");
+    if (url.indexOf('//') > -1) {
+      origin = url.split('/').slice(0, 3).join('/');
     } else {
-      origin = url.split("/")[0];
+      origin = url.split('/')[0];
     }
-    origin = origin.split("?")[0];
+    origin = origin.split('?')[0];
     return origin;
   }
 };
 
 // src/dom/serializer/serializer.utils.ts
 var DOMSerializerHelper = class {
-  letterNumbers = RegExp("[^a-z1-9]");
-  a = document.createElement("a");
+  letterNumbers = RegExp('[^a-z1-9]');
+  a = document.createElement('a');
+
   tagName(t) {
     const processedTagName = t.toLowerCase().trim();
-    return this.letterNumbers.test(processedTagName.replace(/-/g, "")) ? "div" : processedTagName;
+    return this.letterNumbers.test(processedTagName.replace(/-/g, '')) ? 'div' : processedTagName;
   }
+
   getAbsoluteUrl(url) {
     this.a.href = url;
     return this.a.href;
   }
+
   getAbsoluteSrcset(attributeValue) {
-    if (attributeValue.trim() === "") {
+    if (attributeValue.trim() === '') {
       return attributeValue;
     }
+
     function matchAll(regExp, str) {
       const matches = [];
+
       function replacementFunc(all, first) {
         matches.push(first);
       }
+
       str.replace(regExp, replacementFunc);
       return matches;
     }
+
     let allSrcSets = matchAll(/[^"\'=\s]+\S[^,]+/g, attributeValue);
-    return allSrcSets.map((x2) => {
-      let v = x2[0] || "";
-      if (v.startsWith(","))
-        v = v.substr(1);
-      return v;
-    }).map((srcItem) => {
-      const trimmedSrcItem = srcItem.trimLeft().trimRight();
-      const urlAndSize = trimmedSrcItem.split(" ").filter((x2) => x2);
-      let value = "";
-      if (urlAndSize.length === 2) {
-        const absUrl = this.getAbsoluteUrl(urlAndSize[0]);
-        value = `${absUrl} ${urlAndSize[1]}`;
-      } else if (urlAndSize.length === 1) {
-        const absUrl = this.getAbsoluteUrl(urlAndSize[0]);
-        value = `${absUrl}`;
-      }
-      return value;
-    }).join(",");
+    return allSrcSets
+      .map((x2) => {
+        let v = x2[0] || '';
+        if (v.startsWith(',')) v = v.substr(1);
+        return v;
+      })
+      .map((srcItem) => {
+        const trimmedSrcItem = srcItem.trimLeft().trimRight();
+        const urlAndSize = trimmedSrcItem.split(' ').filter((x2) => x2);
+        let value = '';
+        if (urlAndSize.length === 2) {
+          const absUrl = this.getAbsoluteUrl(urlAndSize[0]);
+          value = `${absUrl} ${urlAndSize[1]}`;
+        } else if (urlAndSize.length === 1) {
+          const absUrl = this.getAbsoluteUrl(urlAndSize[0]);
+          value = `${absUrl}`;
+        }
+        return value;
+      })
+      .join(',');
   }
+
   getAbsoluteUrlsStylesheet(cssText, href = location.href) {
-    return new CssAbsoluteUrlTransformer().transform(cssText ?? "", href);
+    return new CssAbsoluteUrlTransformer().transform(cssText ?? '', href);
   }
+
   getElementAttributes(n) {
     let element = n;
     let attributes2 = {};
@@ -1394,42 +1432,47 @@ var DOMSerializerHelper = class {
     }
     return attributes2;
   }
+
   serializeAttribute(name, value) {
-    if (name === "src" || name === "href" && value) {
+    if (name === 'src' || (name === 'href' && value)) {
       return this.getAbsoluteUrl(value);
-    } else if (name === "srcset" && value) {
+    } else if (name === 'srcset' && value) {
       return this.getAbsoluteSrcset(value);
-    } else if (name === "style" && value) {
+    } else if (name === 'style' && value) {
       return this.getAbsoluteUrlsStylesheet(value);
     } else {
       return value;
     }
   }
+
   nodeElementTagAttributes(n) {
     let attributes2 = this.getElementAttributes(n);
     let element = n;
-    const tag2 = element instanceof DocumentFragment ? "#document-fragment" : this.tagName(element.tagName);
+    const tag2 =
+      element instanceof DocumentFragment ? '#document-fragment' : this.tagName(element.tagName);
     return { element, tag: tag2, attributes: attributes2 };
   }
 };
 
 // src/dom/serializer/style-attribute.serializer.ts
 var StyleAttributeSerializer = class {
-  serialize(target, oldValue = "") {
+  serialize(target, oldValue = '') {
     const styles = {};
-    const tempEl = document.createElement("span");
-    tempEl.setAttribute("style", oldValue);
+    const tempEl = document.createElement('span');
+    tempEl.setAttribute('style', oldValue);
     for (let i2 = 0; i2 < target.style.length; i2++) {
       let s = target.style[i2];
-      if (target.style.getPropertyValue(s) != tempEl.style.getPropertyValue(s) || target.style.getPropertyPriority(s) != tempEl.style.getPropertyPriority(s)) {
+      if (
+        target.style.getPropertyValue(s) != tempEl.style.getPropertyValue(s) ||
+        target.style.getPropertyPriority(s) != tempEl.style.getPropertyPriority(s)
+      ) {
         styles[s] = target.style.getPropertyValue(s);
-        if (target.style.getPropertyPriority(s))
-          styles[s] += " !important";
+        if (target.style.getPropertyPriority(s)) styles[s] += ' !important';
       }
     }
     for (let i2 = 0; i2 < tempEl.style.length; i2++) {
       let s = tempEl.style[i2];
-      if (target.style.getPropertyValue(s) === "" || !target.style.getPropertyValue(s)) {
+      if (target.style.getPropertyValue(s) === '' || !target.style.getPropertyValue(s)) {
         styles[s] = null;
       }
     }
@@ -1444,6 +1487,7 @@ var MutationSerializer = class {
     this.elIdGenerator = elIdGenerator;
     this.serializer = serializer;
   }
+
   serialize(mutations) {
     const elementAttributesMap = /* @__PURE__ */ new Map();
     const elementStylesMap = /* @__PURE__ */ new Map();
@@ -1458,15 +1502,15 @@ var MutationSerializer = class {
     };
     let eventMutations = [];
     for (let m of mutations) {
-      if (m.type == "attributes" && m.attributeName) {
+      if (m.type == 'attributes' && m.attributeName) {
         const target = m.target;
         const attributeValue = target.getAttribute(m.attributeName);
-        if (m.attributeName == "style" && attributeValue && attributeValue.length > 100) {
+        if (m.attributeName == 'style' && attributeValue && attributeValue.length > 100) {
           if (!elementStylesMap.has(target)) {
-            let styles2 = new StyleAttributeSerializer().serialize(target, m.oldValue ?? "");
+            let styles2 = new StyleAttributeSerializer().serialize(target, m.oldValue ?? '');
             elementStylesMap.set(target, {
               styles: styles2,
-              oldValue: m.oldValue ?? "",
+              oldValue: m.oldValue ?? '',
               timestamp: m.timestamp
             });
           }
@@ -1486,10 +1530,10 @@ var MutationSerializer = class {
           prevAttributes[attrName] = value;
           elementAttributesMap.get(target).timestamp = m.timestamp;
         }
-      } else if (m.type == "characterData") {
-        const value = m.target.textContent ?? "";
+      } else if (m.type == 'characterData') {
+        const value = m.target.textContent ?? '';
         elementTextMap.set(m.target, { text: value, timestamp: m.timestamp });
-      } else if (m.type == "childList") {
+      } else if (m.type == 'childList') {
         m.addedNodes.forEach((c) => {
           eventMutations.push(this.generateAddEvent(c, m.target, m.timestamp));
         });
@@ -1512,47 +1556,51 @@ var MutationSerializer = class {
     });
     return eventMutations;
   }
+
   generateAddEvent(n, parent, timestamp) {
-    let serialized = this.serializer.serialize(
-      n
-    );
+    let serialized = this.serializer.serialize(n);
     serialized.after = this.elId(n.nextSibling);
     serialized.before = this.elId(n.previousSibling);
     serialized.parent = this.elId(parent);
-    return { ...serialized, timestamp, name: "mutation-add" };
+    return { ...serialized, timestamp, name: 'mutation-add' };
   }
+
   generateAttributeMutationEvent(a, attributes2, timestamp) {
     return {
-      name: "mutation-attribute",
+      name: 'mutation-attribute',
       attributes: attributes2,
       id: this.elId(a),
       timestamp
     };
   }
+
   generateStyleAttributeMutationEvent(a, styles, timestamp) {
     return {
-      name: "mutation-style",
+      name: 'mutation-style',
       styles,
       id: this.elId(a),
       timestamp
     };
   }
+
   generateTextMutationEvent(t, value, timestamp) {
     return {
-      name: "mutation-text",
+      name: 'mutation-text',
       text: value,
       id: this.elId(t),
       timestamp
     };
   }
+
   generateRemoveEvent(c, parent, timestamp) {
     return {
-      name: "mutation-remove",
+      name: 'mutation-remove',
       parent: this.elId(parent),
       id: this.elId(c),
       timestamp
     };
   }
+
   elId(n) {
     return this.elIdGenerator.id(n);
   }
@@ -1564,12 +1612,13 @@ var ElidGenerator = class {
     this.elementsMap = elementsMap;
     this.lastId = lastId;
   }
+
   get lastGeneratedId() {
     return this.lastId;
   }
+
   id(t) {
-    if (!t)
-      return void 0;
+    if (!t) return void 0;
     else {
       if (!this.elementsMap.has(t)) {
         this.lastId++;
@@ -1578,6 +1627,7 @@ var ElidGenerator = class {
       return this.elementsMap.get(t);
     }
   }
+
   updateLastId(maxId) {
     this.lastId = maxId;
   }
@@ -1588,48 +1638,51 @@ var WebComponentDomSerializer = class {
   constructor(elementDomSerializer) {
     this.elementDomSerializer = elementDomSerializer;
   }
+
   serialize(n) {
     let dsh = new DOMSerializerHelper();
     let { element, tag: tag2, attributes: attributes2 } = dsh.nodeElementTagAttributes(n);
     let w = n;
     const serialize = (c) => this.elementDomSerializer.serialize(c);
     let children = [];
-    let shadowStyle = "";
-    let shadowMode = "open";
+    let shadowStyle = '';
+    let shadowMode = 'open';
     let shadowChildren = [];
     let shadow = null;
     let shadowRoot = element.shadowRoot || w._closed_mode_shadowRoot;
     let isDocumentFragment = () => {
       try {
-        return shadowRoot.$$OwnerKey$$ || shadowRoot.constructor.prototype.nodeName == "#document-fragment";
+        return (
+          shadowRoot.$$OwnerKey$$ ||
+          shadowRoot.constructor.prototype.nodeName == '#document-fragment'
+        );
       } catch (e) {
         return false;
       }
     };
     if (shadowRoot) {
       try {
-        let innerStyle = [...shadowRoot.adoptedStyleSheets[0].rules].map((r) => {
-          let css = dsh.getAbsoluteUrlsStylesheet(r.cssText);
-          return css;
-        }).join("");
+        let innerStyle = [...shadowRoot.adoptedStyleSheets[0].rules]
+          .map((r) => {
+            let css = dsh.getAbsoluteUrlsStylesheet(r.cssText);
+            return css;
+          })
+          .join('');
         shadowStyle = innerStyle;
       } catch (e) {
       }
       shadowMode = shadowRoot.mode;
-      for (let c of shadowRoot.childNodes)
-        shadowChildren.push(serialize(c));
+      for (let c of shadowRoot.childNodes) shadowChildren.push(serialize(c));
       shadow = {
         children: shadowChildren,
         mode: shadowMode,
-        shadowType: isDocumentFragment() ? "document-fragment" : "shadow-dom",
+        shadowType: isDocumentFragment() ? 'document-fragment' : 'shadow-dom',
         style: shadowStyle
       };
     }
-    for (let c of w.childNodes)
-      children.push(serialize(c));
-    if (isDocumentFragment())
-      shadow.documentFragment = serialize(element.shadowRoot);
-    return { children, tag: tag2, attributes: attributes2, shadow, type: "web-component" };
+    for (let c of w.childNodes) children.push(serialize(c));
+    if (isDocumentFragment()) shadow.documentFragment = serialize(element.shadowRoot);
+    return { children, tag: tag2, attributes: attributes2, shadow, type: 'web-component' };
   }
 };
 
@@ -1638,24 +1691,24 @@ var TextDomSerializer = class {
   serialize(n) {
     let doms = new DOMSerializerHelper();
     const parentTagName = n.parentNode && n.parentNode.tagName;
-    let textContent = n.textContent ?? "";
-    const isStyle = parentTagName === "STYLE" ? true : void 0;
+    let textContent = n.textContent ?? '';
+    const isStyle = parentTagName === 'STYLE' ? true : void 0;
     if (isStyle && textContent) {
       return {
-        type: "css-text",
+        type: 'css-text',
         css: doms.getAbsoluteUrlsStylesheet(textContent)
       };
     }
-    if (parentTagName === "SCRIPT") {
+    if (parentTagName === 'SCRIPT') {
       return {
-        type: "script-text",
-        script: textContent.replace(/\n/g, "\n\\\\")
+        type: 'script-text',
+        script: textContent.replace(/\n/g, '\n\\\\')
       };
     }
-    let type = "text";
+    let type = 'text';
     return {
       type,
-      text: textContent || ""
+      text: textContent || ''
     };
   }
 };
@@ -1665,46 +1718,50 @@ var StylesheetDomSerializer = class {
   serialize(n) {
     let dsh = new DOMSerializerHelper();
     let { tag: tag2, attributes: attributes2 } = dsh.nodeElementTagAttributes(n);
-    let css = "";
-    if (tag2 === "link") {
+    let css = '';
+    if (tag2 === 'link') {
       return this.serializeLink(n, attributes2, dsh);
-    } else if (tag2 === "style" && n.sheet && !(n.innerText || n.textContent || "").trim().length) {
+    } else if (tag2 === 'style' && n.sheet && !(n.innerText || n.textContent || '').trim().length) {
       const cssText = getCssRulesString(n.sheet);
       if (cssText) {
         css = dsh.getAbsoluteUrlsStylesheet(cssText, location.href);
       }
-      return { type: "style", tag: "style", attributes: attributes2, css };
+      return { type: 'style', tag: 'style', attributes: attributes2, css };
     } else {
-      return { type: tag2, tag: "style", attributes: attributes2, css };
+      return { type: tag2, tag: 'style', attributes: attributes2, css };
     }
   }
+
   serializeLink(n, attributes2, dsh) {
     const stylesheet = Array.from(document.styleSheets).find((s) => {
       return s.href === n.href;
     });
-    let css = "";
+    let css = '';
     const cssText = getCssRulesString(stylesheet);
     if (cssText) {
       delete attributes2.rel;
       delete attributes2.href;
       css = dsh.getAbsoluteUrlsStylesheet(cssText, stylesheet.href);
     }
-    return { type: "link-stylesheet", tag: "link", attributes: attributes2, css };
+    return { type: 'link-stylesheet', tag: 'link', attributes: attributes2, css };
   }
 };
+
 function getCssRulesString(s) {
   try {
     const rules = s.rules || s.cssRules;
-    return rules ? Array.from(rules).reduce((prev, cur) => prev + getCssRuleString(cur), "") : null;
+    return rules ? Array.from(rules).reduce((prev, cur) => prev + getCssRuleString(cur), '') : null;
   } catch (error) {
     return null;
   }
 }
+
 function isCSSImportRule(rule) {
-  return "styleSheet" in rule;
+  return 'styleSheet' in rule;
 }
+
 function getCssRuleString(rule) {
-  return isCSSImportRule(rule) ? getCssRulesString(rule.styleSheet) || "" : rule.cssText;
+  return isCSSImportRule(rule) ? getCssRulesString(rule.styleSheet) || '' : rule.cssText;
 }
 
 // src/dom/serializer/media.serializer.ts
@@ -1712,7 +1769,7 @@ var MediaDomSerializer = class {
   serialize(n) {
     let dsh = new DOMSerializerHelper();
     let { tag: tag2, attributes: attributes2 } = dsh.nodeElementTagAttributes(n);
-    let state = n.paused ? "pause" : "play";
+    let state = n.paused ? 'pause' : 'play';
     return { type: tag2, tag: tag2, attributes: attributes2, state };
   }
 };
@@ -1722,22 +1779,21 @@ var FormDomSerializer = class {
   serialize(n) {
     let dsh = new DOMSerializerHelper();
     let { tag: tag2, attributes: attributes2 } = dsh.nodeElementTagAttributes(n);
-    if (tag2 === "input" || tag2 === "textarea" || tag2 === "select") {
+    if (tag2 === 'input' || tag2 === 'textarea' || tag2 === 'select') {
       const value = n.value;
-      if (attributes2["type"] !== "radio" && attributes2["type"] !== "checkbox" && value) {
-        attributes2["value"] = value;
+      if (attributes2['type'] !== 'radio' && attributes2['type'] !== 'checkbox' && value) {
+        attributes2['value'] = value;
       } else if (n.checked) {
-        attributes2["checked"] = n.checked + "";
+        attributes2['checked'] = n.checked + '';
       }
       return { type: tag2, tag: tag2, attributes: attributes2 };
-    } else if (tag2 === "option") {
+    } else if (tag2 === 'option') {
       const selectValue = n.parentElement;
-      if (attributes2["value"] === selectValue.value) {
-        attributes2["selected"] = n.selected + "";
+      if (attributes2['value'] === selectValue.value) {
+        attributes2['selected'] = n.selected + '';
       }
-      return { type: "option", tag: tag2, attributes: attributes2 };
-    } else
-      return { type: tag2, tag: tag2, attributes: attributes2 };
+      return { type: 'option', tag: tag2, attributes: attributes2 };
+    } else return { type: tag2, tag: tag2, attributes: attributes2 };
   }
 };
 
@@ -1747,7 +1803,7 @@ var CanvasDomSerializer = class {
     let dsh = new DOMSerializerHelper();
     let attributes2 = dsh.getElementAttributes(n);
     let dataUrl = n.toDataURL();
-    return { type: "canvas", tag: "canvas", dataUrl, attributes: attributes2 };
+    return { type: 'canvas', tag: 'canvas', dataUrl, attributes: attributes2 };
   }
 };
 
@@ -1757,9 +1813,11 @@ var ElementSerializer = class {
     this.onNodeSerialized = onNodeSerialized;
     this.win = win;
   }
+
   serialize(n) {
     let serialized;
-    let isWebComponent = n.nodeName && n.nodeName.includes("-") && n.nodeName != "#document-fragment";
+    let isWebComponent =
+      n.nodeName && n.nodeName.includes('-') && n.nodeName != '#document-fragment';
     if (isWebComponent) {
       serialized = new WebComponentDomSerializer(this).serialize(n);
     } else {
@@ -1772,15 +1830,15 @@ var ElementSerializer = class {
       serializedNode.children = children;
       serialized = serializedNode;
     }
-    if (this.onNodeSerialized)
-      this.onNodeSerialized(n, serialized);
+    if (this.onNodeSerialized) this.onNodeSerialized(n, serialized);
     return serialized;
   }
+
   serializeSingle(n) {
     switch (n.nodeType) {
       case n.DOCUMENT_NODE:
         return {
-          type: "document",
+          type: 'document',
           href: this.win.location.href,
           width: this.win.innerWidth,
           height: this.win.innerHeight,
@@ -1788,7 +1846,7 @@ var ElementSerializer = class {
         };
       case n.DOCUMENT_TYPE_NODE:
         return {
-          type: "doc-type",
+          type: 'doc-type',
           name: n.name,
           publicId: n.publicId,
           systemId: n.systemId
@@ -1797,31 +1855,31 @@ var ElementSerializer = class {
         return new TextDomSerializer().serialize(n);
       case n.CDATA_SECTION_NODE:
         return {
-          type: "cdata",
-          textContent: ""
+          type: 'cdata',
+          textContent: ''
         };
       case n.COMMENT_NODE:
         return {
-          type: "comment",
-          textContent: n.textContent || ""
+          type: 'comment',
+          textContent: n.textContent || ''
         };
       default:
         return this.serializeElement(n);
     }
   }
+
   serializeElement(n) {
     let dsh = new DOMSerializerHelper();
     let { element, tag: tag2, attributes: attributes2 } = dsh.nodeElementTagAttributes(n);
     let scroll = { x: element.scrollTop, y: element.scrollLeft };
     let json = { type: tag2, tag: tag2, scroll };
-    if (tag2 === "link" || tag2 === "style") {
+    if (tag2 === 'link' || tag2 === 'style') {
       json = { ...json, ...new StylesheetDomSerializer().serialize(n) };
-    } else if (tag2 === "audio" || tag2 === "video") {
+    } else if (tag2 === 'audio' || tag2 === 'video') {
       json = { ...json, ...new MediaDomSerializer().serialize(n) };
-    } else if (tag2 === "input" || tag2 === "textarea" || tag2 === "select" || tag2 === "option")
+    } else if (tag2 === 'input' || tag2 === 'textarea' || tag2 === 'select' || tag2 === 'option')
       json = { ...json, ...new FormDomSerializer().serialize(n) };
-    else if (tag2 === "canvas")
-      json = { ...json, ...new CanvasDomSerializer().serialize(n) };
+    else if (tag2 === 'canvas') json = { ...json, ...new CanvasDomSerializer().serialize(n) };
     else
       json = {
         ...json,
@@ -1829,7 +1887,7 @@ var ElementSerializer = class {
         tag: tag2,
         attributes: attributes2
       };
-    if (json.tag == "img") {
+    if (json.tag == 'img') {
       let img = n;
       if (img.width && img.height) {
         json.width = img.width;
@@ -1850,9 +1908,11 @@ var DomMonitor = class {
   constructor(options = { intervalTimeForFullEvent: -1 }) {
     this.options = options;
   }
+
   mutationObserver;
   fullEventFireIntervalId;
   elementsMap = /* @__PURE__ */ new Map();
+
   enable() {
     this.mutationObserver = new DomFrameMutationsMonitor((frameMutations) => {
       let mutations = new MutationSerializer(this.elementsMap, elid, serializer).serialize(
@@ -1861,8 +1921,8 @@ var DomMonitor = class {
       let e = {
         mutations,
         timestamp: new Date().getTime(),
-        type: "dom",
-        name: "dom-change"
+        type: 'dom',
+        name: 'dom-change'
       };
       blevent2.dom.change(e);
     });
@@ -1881,29 +1941,30 @@ var DomMonitor = class {
       }, this.options.intervalTimeForFullEvent);
     this.fireFullDomEvent(serializer);
     this.mutationObserver.observe(document);
-    let webComponents = [...document.querySelectorAll("*")].filter(
-      (x2) => x2.tagName.indexOf("-") >= 0
+    let webComponents = [...document.querySelectorAll('*')].filter(
+      (x2) => x2.tagName.indexOf('-') >= 0
     );
     const pageHasWebComponents = webComponents.length > 0;
     if (pageHasWebComponents) {
       for (let w of webComponents) {
         let sr = w.shadowRoot || w._closed_mode_shadowRoot;
-        if (sr)
-          this.mutationObserver.observe(sr);
+        if (sr) this.mutationObserver.observe(sr);
       }
     }
   }
+
   disable() {
     this.mutationObserver.disable();
-    if (this.fullEventFireIntervalId)
-      clearInterval(this.fullEventFireIntervalId);
+    if (this.fullEventFireIntervalId) clearInterval(this.fullEventFireIntervalId);
   }
+
   fireFullDomEvent(serializer) {
     let snapshot = serializer.serialize(document);
     const fullEvent = { full: snapshot };
     blevent2.dom.full(fullEvent);
     return snapshot;
   }
+
   takeDomScreenshot() {
     return this.fireFullDomEvent(new ElementSerializer());
   }
@@ -1913,22 +1974,20 @@ var DomMonitor = class {
 var CssMonitor = class {
   insertOriginal;
   removeOriginal;
+
   enable() {
     this.insertOriginal = observeMethod(
       CSSStyleSheet.prototype,
-      "insertRule",
+      'insertRule',
       function(rule, index) {
         blevent2.dom.css_add({ rule, target: this.ownerNode, index });
       }
     );
-    this.removeOriginal = observeMethod(
-      CSSStyleSheet.prototype,
-      "deleteRule",
-      function(index) {
-        blevent2.dom.css_remove({ target: this.ownerNode, index });
-      }
-    );
+    this.removeOriginal = observeMethod(CSSStyleSheet.prototype, 'deleteRule', function(index) {
+      blevent2.dom.css_remove({ target: this.ownerNode, index });
+    });
   }
+
   disable() {
     this.insertOriginal();
     this.removeOriginal();
@@ -1938,12 +1997,13 @@ var CssMonitor = class {
 // src/dom/media.monitor.ts
 var MediaMonitor = class {
   disableMonitoring;
+
   enable() {
     const handlers = [
-      on("play", (e) => {
+      on('play', (e) => {
         blevent2.media.play({ target: e.target });
       }),
-      on("pause", (e) => {
+      on('pause', (e) => {
         blevent2.media.pause({ target: e.target });
       })
     ];
@@ -1951,6 +2011,7 @@ var MediaMonitor = class {
       handlers.forEach((h) => h());
     };
   }
+
   disable() {
     this.disableMonitoring();
   }
@@ -1972,12 +2033,14 @@ var ForceWebComponentsSerializationPatch = class {
 var WheelMonitor = class {
   disableWheel = () => {
   };
+
   enable() {
     const updatePosition = throttle((evt) => {
       this.manageWheelEvent(evt);
     }, 5);
-    this.disableWheel = on("wheel", updatePosition);
+    this.disableWheel = on('wheel', updatePosition);
   }
+
   manageWheelEvent(evt) {
     let deltaX = evt.deltaX;
     let deltaY = evt.deltaY;
@@ -1989,6 +2052,7 @@ var WheelMonitor = class {
     };
     blevent2.mouse.wheel(data);
   }
+
   disable() {
     this.disableWheel();
   }
@@ -2000,14 +2064,15 @@ function targetToSelectors(e) {
     try {
       return new ElementSelectorFinder().findUniqueSelector(e2);
     } catch {
-      return "";
+      return '';
     }
   };
-  const targetSelector = e.target ? selector(e.target) : "";
-  const currentTargetSelector = e.currentTarget ? selector(e.currentTarget) : "";
+  const targetSelector = e.target ? selector(e.target) : '';
+  const currentTargetSelector = e.currentTarget ? selector(e.currentTarget) : '';
   const { target, currentTarget, ...evt } = e;
   return { ...evt, targetSelector, currentTargetSelector };
 }
+
 new ForceWebComponentsSerializationPatch().apply();
 var SessionMonitor = class {
   sendTo;
@@ -2025,10 +2090,12 @@ var SessionMonitor = class {
   ];
   delayedMonitors = [new DomMonitor(), new CssMonitor(), new MediaMonitor()];
   httpMonitor = new HttpMonitor();
+
   constructor(sendTo) {
     this.sendTo = sendTo;
     this.setupDispatchers();
   }
+
   enable() {
     this.httpMonitor.enable();
     this.monitors.forEach((m) => m.enable());
@@ -2036,11 +2103,13 @@ var SessionMonitor = class {
       this.delayedMonitors.forEach((m) => m.enable());
     }, 1e3);
   }
+
   disable() {
     this.httpMonitor.disable();
     this.monitors.forEach((m) => m.disable());
     this.delayedMonitors.forEach((m) => m.disable());
   }
+
   setupDispatchers() {
     const sendEventWithTargetToExtension = (event) => this.sendTo(targetToSelectors(event));
     const sendEventWithSerializedTargetToExtension = async (event) => {
@@ -2053,15 +2122,13 @@ var SessionMonitor = class {
           rect,
           attributes: attributes2,
           tag: event.target.tagName,
-          innerText: event.target.innerText ?? ""
+          innerText: event.target.innerText ?? ''
         }
       });
     };
     Object.keys(blevent2.mouse).forEach((me) => {
-      if (me != "scroll")
-        blevent2.mouse[me].on(sendEventWithSerializedTargetToExtension);
-      else
-        blevent2.mouse[me].on(sendEventWithTargetToExtension);
+      if (me != 'scroll') blevent2.mouse[me].on(sendEventWithSerializedTargetToExtension);
+      else blevent2.mouse[me].on(sendEventWithTargetToExtension);
     });
     blevent2.media.play.on(sendEventWithSerializedTargetToExtension);
     blevent2.media.pause.on(sendEventWithSerializedTargetToExtension);

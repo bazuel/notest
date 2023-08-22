@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NTInstrumentedEvent } from '@notest/common';
-import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
 import { CrudService } from '../shared/services/crud.service';
+import { PostgresDbService, sql } from '@notest/backend-shared';
 
 @Injectable()
 export class InstrumentedEventService extends CrudService<NTInstrumentedEvent> {

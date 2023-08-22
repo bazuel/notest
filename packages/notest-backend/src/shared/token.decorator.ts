@@ -1,16 +1,9 @@
-import {
-  CanActivate,
-  createParamDecorator,
-  ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable
-} from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { TokenService } from './services/token.service';
 import { findInjectedService } from './functions/find-injected-service.function';
 import { CryptService } from './services/crypt.service';
 
-function extractTokenData(request, tokenService: TokenService) {
+export function extractTokenData(request, tokenService: TokenService) {
   const tokenData = tokenService.checkAuthorized<{ tenant: string }>(request);
   if (!tokenData.email)
     throw new HttpException(
@@ -18,6 +11,10 @@ function extractTokenData(request, tokenService: TokenService) {
       HttpStatus.FORBIDDEN
     );
   return tokenData;
+}
+
+export function extractApiTokenData(request, tokenService: TokenService) {
+  return tokenService.checkAuthorized<{ tenant: string }>(request);
 }
 
 let tokenService: TokenService;
@@ -29,7 +26,7 @@ export function emailAndRoles(ctx: ExecutionContext) {
 
   const request = ctx.switchToHttp().getRequest();
   const { email, roles, id } = extractTokenData(request, tokenService);
-  return { email, roles, id: cryptService.decode(id) + '' };
+  return { email, roles, id };
 }
 
 export const UserId = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
@@ -47,19 +44,3 @@ export const UserIdIfHasToken = createParamDecorator((data: unknown, ctx: Execut
 export const Token = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   return emailAndRoles(ctx);
 });
-
-@Injectable()
-export class Admin implements CanActivate {
-  canActivate(ctx: ExecutionContext): boolean | Promise<boolean> {
-    const { roles } = emailAndRoles(ctx);
-    return roles.indexOf('ADMIN') >= 0;
-  }
-}
-
-@Injectable()
-export class HasToken implements CanActivate {
-  canActivate(ctx: ExecutionContext): boolean | Promise<boolean> {
-    const { roles } = emailAndRoles(ctx);
-    return roles.length > 0;
-  }
-}

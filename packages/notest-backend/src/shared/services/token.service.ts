@@ -1,16 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { globalConfig } from '@notest/backend-shared';
 
 const jwt = require('jsonwebtoken');
 
-export class TokenData {
-  id: any;
-  created: string;
+interface TokenBaseData {
+  id: string;
+  created: Date;
+  exp: number;
+}
+
+export interface TokenData extends TokenBaseData {
   email: string;
   tenant?: string;
-  exp: number;
   iat: number;
   roles?: string[];
 }
+
+export interface ApiTokenData extends TokenBaseData {
+  api?: NTApiPermissionType[];
+}
+
+export type NTApiPermissionType = 'ALL';
 
 export interface GenericRequest {
   headers: { [header: string]: string };
@@ -25,6 +35,10 @@ export class TokenService {
     return jwt.sign({ created: new Date(), roles: [], ...body }, password || this.masterPassword, {
       expiresIn
     });
+  }
+
+  generateApiToken<X = ApiTokenData>(body: Partial<X>, expiresIn = '1y'): string {
+    return jwt.sign({ created: new Date(), ...body }, this.masterPassword, { expiresIn });
   }
 
   verify<X = TokenData>(token: string, password = ''): X & TokenData {
@@ -61,3 +75,5 @@ export class TokenService {
     return token.roles || [];
   }
 }
+
+export const tokenService = new TokenService(globalConfig.master_password);

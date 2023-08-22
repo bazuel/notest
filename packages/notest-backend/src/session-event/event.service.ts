@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { TimeService } from '../shared/services/time.service';
-import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
+import { PostgresDbService, sql } from '@notest/backend-shared';
 import { CrudService } from '../shared/services/crud.service';
 import { BLSessionEvent, NTEvent } from '@notest/common';
 

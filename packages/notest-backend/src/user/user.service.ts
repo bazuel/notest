@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { like, paginated, PostgresDbService, sql } from '../shared/services/postgres-db.service';
+import { like, paginated, PostgresDbService, sql } from '@notest/backend-shared';
 import { CryptService } from '../shared/services/crypt.service';
 import { CrudService } from '../shared/services/crud.service';
 import { NTUser } from '@notest/common';
@@ -33,6 +33,8 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
               roles     jsonb,
               state     text,
               phone     text,
+              domains   jsonb,
+              api_token     text,
               created   TIMESTAMPTZ
           );
       `;

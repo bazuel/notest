@@ -1,0 +1,13 @@
+<nt-icon
+  *ngIf="type == 'all'"
+  name="{{ assertionSuccess ? 'success' : 'warning' }}"
+  class="w-5 h-5"
+  [class.text-orange-500]="!assertionSuccess"
+  [class.text-green-500]="assertionSuccess"></nt-icon>
+
+<div *ngIf="type != 'all'" class="flex flex-row justify-between pt-2 items-center">
+  <div class="flex flex-row text-sm text-gray-400 w-fit">{{ title }}:</div>
+  <nt-icon
+    class="{{ assertionSuccess ? 'text-green-500' : 'text-red-500' }}"
+    name="{{ assertionSuccess ? 'success' : 'cross' }}"></nt-icon>
+</div>

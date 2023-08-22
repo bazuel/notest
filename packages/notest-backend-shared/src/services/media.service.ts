@@ -1,8 +1,13 @@
-import { StorageService } from '../shared/services/storage.service';
-import { NTMedia, pathScreenshotFromReference, pathVideoRecordFromReference } from '@notest/common';
+import { StorageService } from '../shared/services/storage.service.interface';
+import { storageService } from '../shared/services/storage.service';
+import {
+  NTMedia,
+  NTScreenshot,
+  pathScreenshotFromReference,
+  pathVideoRecordFromReference
+} from '@notest/common';
 import fs from 'fs';
-import { ConfigService } from '../shared/services/config.service';
-import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
+import { db, PostgresDbService, sql } from '../shared/services/postgres-db.service';
 import { CrudService } from '../shared/services/crud.service';
 
 export class MediaService extends CrudService<NTMedia> {
@@ -32,14 +37,14 @@ export class MediaService extends CrudService<NTMedia> {
     }
   }
 
-  async saveScreenshot(screenshotList: { name: string; data: Buffer; fired: Date }[], reference) {
+  async saveScreenshot(screenshotList: NTScreenshot[], reference) {
     console.log('Uploading screenshots ...');
     for (const screenshot of screenshotList) {
       const path = pathScreenshotFromReference(reference, screenshot.name);
       const imageMetaData: NTMedia = {
         name: screenshot.name,
         reference: reference,
-        type: 'image',
+        type: screenshot.type ? screenshot.type : 'image',
         start: screenshot.fired
       } as NTMedia;
       await this.create(imageMetaData);
@@ -48,7 +53,7 @@ export class MediaService extends CrudService<NTMedia> {
     console.log('Uploaded Screenshots');
   }
 
-  async getScreenshot(reference, name) {
+  async getScreenshot(reference: string, name: string) {
     const path = pathScreenshotFromReference(encodeURIComponent(reference), name);
     console.log('screenshot path: ', path);
     try {
@@ -87,7 +92,4 @@ export class MediaService extends CrudService<NTMedia> {
   }
 }
 
-export const mediaService = new MediaService(
-  new StorageService(new ConfigService()),
-  new PostgresDbService()
-);
+export const mediaService = new MediaService(storageService, db);

@@ -1,8 +1,8 @@
-import { Json } from './json.type';
-import { BLEvent } from './events';
+import { Json } from "./json.type";
+import { BLEvent, BLSessionEvent } from "./events";
 
 export interface BLHTTPRequestEvent extends BLEvent {
-  name: 'before-request';
+  name: "before-request";
   abort: boolean;
   originalCallback?: Function;
   path: string;
@@ -19,7 +19,7 @@ export interface BLHTTPRequestEvent extends BLEvent {
 }
 
 export interface BLHTTPBeforeResponseEvent extends BLEvent {
-  name: 'before-response';
+  name: "before-response";
   target: XMLHttpRequest;
   arguments: any[];
   abort: boolean;
@@ -28,8 +28,8 @@ export interface BLHTTPBeforeResponseEvent extends BLEvent {
   timestamp: number;
 }
 
-export interface BLHTTPResponseEvent extends BLEvent {
-  name: 'after-response';
+export interface BLHTTPResponseEvent extends BLSessionEvent {
+  name: "after-response";
   target: XMLHttpRequest;
   arguments: any[];
   headers: { [name: string]: string };
@@ -42,23 +42,22 @@ export interface BLHTTPResponseEvent extends BLEvent {
     headers: { [name: string]: string };
     status: number;
     timestamp: number;
-  }
+  };
 }
 
 export interface BLHTTPErrorEvent extends BLEvent {
-  name: 'request-error';
+  name: "request-error";
   target: XMLHttpRequest;
   timestamp: number;
   request: BLHTTPRequestEvent;
 }
 
 export interface BLHTTPAbortEvent extends BLEvent {
-  name: 'request-abort';
+  name: "request-abort";
   target: XMLHttpRequest;
   timestamp: number;
   request: BLHTTPRequestEvent;
 }
 
 export interface BLHeaderEvent {
-
 }

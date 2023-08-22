@@ -1,0 +1,124 @@
+<div *ngIf="sessionBattery" class="p-4 flex flex-row w-full items-center justify-between">
+  <div class="flex flex-row items-center gap-4">
+    <h1>{{ sessionBattery.name || 'Battery Test' }}</h1>
+    <nt-switch
+      *ngIf="sessionBattery.session_list.length > 0 && sessionBattery.nt_batteryid"
+      [(switched)]="sessionBattery.active"
+      (switchedChange)="save()">
+      Enabled
+    </nt-switch>
+    <div class="relative h-6">
+      <nt-icon
+        title="Show Cron Job Info"
+        name="info"
+        class="h-6 w-6 text-gray-500 cursor-pointer"
+        (click)="showCronJobInfo = !showCronJobInfo"></nt-icon>
+      <div *ngIf="showCronJobInfo" class="absolute z-50 shadow-lg rounded-md w-fit">
+        <div class="flex flex-col gap-4 text-gray-500 mb-4 p-4">
+          <h2>Cron Job Info</h2>
+          <div *ngIf="sessionBattery.active" class="flex items-center gap-2">
+            <div>Status: Active</div>
+            <nt-icon name="success" class="text-green-500"></nt-icon>
+          </div>
+          <div *ngIf="!sessionBattery.active" class="flex items-center gap-2">
+            <div>Status: Inactive</div>
+            <nt-icon name="error" class="text-red-500"></nt-icon>
+          </div>
+          <div>
+            {{ getNextCronJobRun(sessionBattery.scheduled_time) }}
+          </div>
+          <h4>Sessions to run:</h4>
+          <div class="flex flex-row gap-2">
+            <div *ngFor="let sessionSelected of sessionSelectedForNewRun">
+              <label>{{ sessionSelected.info.title }}</label>
+              <nt-screenshot
+                class="card"
+                [reference]="sessionSelected.reference"
+                (click)="redirectToSession(sessionSelected.reference)"></nt-screenshot>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-row items-center gap-2">
+    <div class="flex items-center gap-2">
+      <label class="mt-0">Search Run List:</label>
+      <nt-autocomplete
+        [items]="sessionBatteryTimestamps"
+        [component]="batteryCompleteItem"
+        [filterCallBack]="autocompleteFilter"
+        (itemSelected)="redirectToBatteryRun($event)"
+        placeholder="DD-MM-AAAA"></nt-autocomplete>
+    </div>
+    <label class="text-xl my-4 mr-4">Settings</label>
+    <div class="relative">
+      <nt-icon
+        title="Open battery settings"
+        name="settings"
+        class="h-6 w-6 text-gray-500 cursor-pointer"
+        (click)="showSettings = !showSettings"></nt-icon>
+      <nt-battery-test-settings-panel
+        *ngIf="showSettings"
+        [(sessionBattery)]="sessionBattery"
+        (emitSessionSelected)="sessionSelectedForNewRun = $event"
+        (saveBattery)="save(); showSettings = false"></nt-battery-test-settings-panel>
+    </div>
+  </div>
+</div>
+<div *ngIf="sessionsBatteryRun.length > 0" class="px-4">
+  <h2 class="mb-1">Battery Run Info</h2>
+  <div class="flex gap-10 py-2 overflow-auto scrollbar-sm">
+    <div class="flex flex-col gap-4" *ngFor="let session of sessionsBatteryRun">
+      <div class="flex gap-4 items-center">
+        <h3>{{ session.title }}</h3>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="all"
+          title="Summary test results"
+          class="w-5 h-5"></nt-assertion-summary-item>
+      </div>
+      <div class="text-gray-400">
+        Execution Date:
+        {{
+          +this.sessionsBatteryRun[0].assertions[0].run_timestamp!
+            | formatDate : 'DD-MM-YYYY, HH:mm'
+        }}
+      </div>
+      <nt-screenshot
+        class="card"
+        [reference]="session.reference"
+        (click)="redirectToSession(session.reference)"></nt-screenshot>
+      <div class="p-5 flex flex-col gap-5 rounded-md shadow-lg">
+        <div class="text-gray-400">Test Results</div>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="runSuccessfullyFinished"
+          title="Session Run"></nt-assertion-summary-item>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="missedEvents"
+          title="Same HTTP Requests"></nt-assertion-summary-item>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="visual"
+          title="Visual Comparison"></nt-assertion-summary-item>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="http"
+          name="status"
+          title="HTTP Responses Status"></nt-assertion-summary-item>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="http"
+          name="bodyRequest"
+          title="HTTP Body Requests"></nt-assertion-summary-item>
+        <nt-assertion-summary-item
+          [assertionList]="session.assertions"
+          type="http"
+          name="contentType"
+          title="HTTP Body type"></nt-assertion-summary-item>
+      </div>
+    </div>
+  </div>
+</div>

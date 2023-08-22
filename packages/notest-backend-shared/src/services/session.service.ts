@@ -1,9 +1,9 @@
 import { CrudService } from '../shared/services/crud.service';
-import { PostgresDbService, sql } from '../shared/services/postgres-db.service';
-import { StorageService } from '../shared/services/storage.service';
+import { db, PostgresDbService, sql } from '../shared/services/postgres-db.service';
+import { storageService } from '../shared/services/storage.service';
+import { StorageService } from '../shared/services/storage.service.interface';
 import { BLSessionEvent, NTSession, pathSessionFromReference, unzipJson } from '@notest/common';
 import { TimeService } from '../shared/services/time.service';
-import { ConfigService } from '../shared/services/config.service';
 
 export class SessionService extends CrudService<NTSession> {
   protected table = 'nt_session';
@@ -55,6 +55,11 @@ export class SessionService extends CrudService<NTSession> {
     return this.read(decodeURIComponent(session[0].info.loginReference));
   }
 
+  async getTargetListFromReference(reference: string) {
+    const session = await this.findByField('reference', encodeURIComponent(reference));
+    return session[0].info.targetList;
+  }
+
   async findByUrl(url: string) {
     return await this.findByField('url', url);
   }
@@ -69,8 +74,4 @@ export class SessionService extends CrudService<NTSession> {
   }
 }
 
-export const sessionService = new SessionService(
-  new TimeService(),
-  new PostgresDbService(),
-  new StorageService(new ConfigService())
-);
+export const sessionService = new SessionService(new TimeService(), db, storageService);

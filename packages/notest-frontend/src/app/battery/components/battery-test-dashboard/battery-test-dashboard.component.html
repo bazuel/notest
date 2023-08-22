@@ -1,0 +1,23 @@
+<div class="p-4 h-full">
+  <h2>Battery Test</h2>
+  <div class="flex flex-col p-4">
+    <div class="flex gap-2 items-center">
+      <h4>E2E</h4>
+      <nt-icon
+        title="Create New Battery Test"
+        class="h6 w-6 cursor-pointer text-bop"
+        name="plus"
+        (click)="createNewBattery('e2e')"></nt-icon>
+    </div>
+    <div class="flex flex-1 flex-wrap p-2 gap-x-72 gap-y-32">
+      <div
+        class="h-24 w-24 p-2 cursor-pointer"
+        *ngFor="let batteryTest of activeBatteryList"
+        (click)="redirectToBatteryTest(batteryTest.nt_batteryid!)">
+        <label class="mb-2">{{ batteryTest.name }}</label>
+        <nt-session-list-wrapped
+          [referenceList]="batteryTest.session_list"></nt-session-list-wrapped>
+      </div>
+    </div>
+  </div>
+</div>

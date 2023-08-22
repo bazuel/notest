@@ -19,6 +19,7 @@ specifiers:
   '@types/codemirror': ^5.60.6
   '@types/jasmine': ~4.3.1
   codemirror: ^6.0.1
+  cron-parser: ^4.8.1
   dayjs: ^1.11.7
   jasmine-core: ~4.5.0
   karma: ~6.4.1
@@ -50,6 +51,7 @@ dependencies:
   '@notest/common': link:../notest-common
   '@types/codemirror': 5.60.6
   codemirror: 6.0.1
+  cron-parser: 4.8.1
   dayjs: 1.11.7
   rxjs: 7.5.7
   sass: 1.57.1
@@ -3279,6 +3281,13 @@ packages:
       pretty-bytes: 5.6.0
     dev: true
 
+  /cron-parser/4.8.1:
+    resolution: {integrity: sha512-jbokKWGcyU4gl6jAfX97E1gDpY12DJ1cLJZmoDzaAln/shZ+S3KBFBuA2Q6WeUN4gJf/8klnV1EfvhA2lK5IRQ==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      luxon: 3.3.0
+    dev: false
+
   /cross-spawn/7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
@@ -4768,6 +4777,11 @@ packages:
     resolution: {integrity: sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==}
     engines: {node: '>=12'}
     dev: true
+
+  /luxon/3.3.0:
+    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /magic-string/0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}

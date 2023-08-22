@@ -10,6 +10,7 @@ import {
   sessionService,
   SessionService
 } from '@notest/backend-shared';
+import { CronService } from './services/cron.service';
 
 @Module({
   imports: [SharedModule],
@@ -18,8 +19,9 @@ import {
     { provide: MediaService, useValue: mediaService },
     { provide: AssertionService, useValue: assertionService },
     { provide: SessionService, useValue: sessionService },
-    ProducerService
+    ProducerService,
+    CronService
   ],
-  exports: [MediaService, ProducerService, SessionService, AssertionService]
+  exports: [MediaService, ProducerService, SessionService, AssertionService, CronService]
 })
 export class NotestSharedModule {}

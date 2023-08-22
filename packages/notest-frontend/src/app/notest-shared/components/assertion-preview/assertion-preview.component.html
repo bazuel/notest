@@ -1,0 +1,79 @@
+<div *ngIf='httpAssertion'>
+  <div class='w-48'>
+    <nt-assertion-summary-item (success)="httpAssertionError=!$event" [assertionList]='[httpAssertion]' type='http' [name]='httpAssertion.name'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+  <div *ngIf='httpAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Method</th>
+        <th>Url</th>
+      </tr>
+      <tr *ngFor='let httpResp of httpAssertion.payload.errorEvents;index as i'>
+        <td>{{i + 1}}</td>
+        <td class='text-sm text-gray-400'>{{httpResp.originalEvent.request.method}}</td>
+        <td>
+          <div class='text-sm text-gray-400 max-w-4xl truncate'>{{httpResp.originalEvent.request.url}}</div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf='missedEventsAssertion'>
+  <div class='w-48'>
+    <nt-assertion-summary-item (success)="missedEventsError=!$event" [assertionList]='[missedEventsAssertion]' type='missedEvents'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+  <div *ngIf='missedEventsError' class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Method</th>
+        <th>Url</th>
+      </tr>
+      <tr *ngFor='let httpResp of missedEventsAssertion.payload.missedEvents;index as i'>
+        <td>{{i + 1}}</td>
+        <td class='text-sm text-gray-400'>{{httpResp.request.method}}</td>
+        <td>
+          <div class='text-sm text-gray-400 max-w-4xl truncate'>{{httpResp.request.url}}</div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf='visualAssertion'>
+  <div class='w-48'>
+    <nt-assertion-summary-item (success)="visualAssertionError=!$event" [assertionList]='[visualAssertion]' type='visual'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+  <div *ngIf='visualAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
+    <table class='bo-table'>
+      <tbody>
+      <tr class='thead'>
+        <th>Id</th>
+        <th>Image Similarity</th>
+      </tr>
+      <tr *ngFor='let httpResp of visualAssertion.payload.mismatchedPixel;index as i'>
+        <td>{{i + 1}}</td>
+        <td>
+          <div class='text-sm text-gray-400'>{{httpResp + '%'}}</div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf='testSuccessfullyExecuted'>
+  <div class='w-48'>
+    <nt-assertion-summary-item [assertionList]='[testSuccessfullyExecuted]' type='runSuccessfullyFinished'
+                               [title]='title'></nt-assertion-summary-item>
+  </div>
+</div>

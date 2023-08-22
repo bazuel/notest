@@ -12,11 +12,12 @@ import {
 import { UserService } from './user.service';
 import { CryptService } from '../shared/services/crypt.service';
 import { EmailService } from '../shared/services/email.service';
-import { TokenService } from '../shared/services/token.service';
-import { Admin } from '../shared/token.decorator';
+import { ApiTokenData, NTApiPermissionType, TokenService } from '../shared/services/token.service';
+import { UserId } from '../shared/token.decorator';
 import { NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
-import { ConfigService } from '../shared/services/config.service';
+import { HasToken, Admin } from '../shared/guards/token.guards';
+import { ConfigService } from '@notest/backend-shared';
 
 @Controller('user')
 export class UserController {
@@ -37,7 +38,7 @@ export class UserController {
     );
     if (found.length > 0) {
       const token = this.tokenService.generate({
-        id: this.cryptService.encode(+found[0].nt_userid),
+        id: +found[0].nt_userid,
         email: user.email,
         name: found[0].name,
         surname: found[0].surname,
@@ -45,6 +46,13 @@ export class UserController {
       });
       return { token };
     } else throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  }
+
+  @Get('check-password')
+  async checkPassword(@Query('password') password: string, @Query('email') email: string) {
+    const found = await this.userService.findUser(email.trim().toLowerCase(), password.trim());
+    if (found.length > 0) return { ok: true };
+    return { ok: false };
   }
 
   @Post('request-registration')
@@ -87,10 +95,10 @@ export class UserController {
       await this.userService.updateUserRoles(data.nt_userid, ['EMAIL_CONFIRMED', 'USER']);
       console.log('user saved into db');
       /*const loginToken = this.tokenService.generate({
-        id: this.cryptService.encode(+data.nt_userid),
-        email: user.email,
-        roles: data.roles
-      });*/
+              id: this.cryptService.encode(+data.nt_userid),
+              email: user.email,
+              roles: data.roles
+            });*/
       res.header(
         'Location',
         `${this.configService.app_url}/auth/registration-success?token=${token}`
@@ -154,6 +162,12 @@ export class UserController {
     return user;
   }
 
+  @Get('get-user')
+  @UseGuards(HasToken)
+  async getUser(@UserId() id) {
+    return await this.find(id);
+  }
+
   @Get('find-by-query')
   async findByQuery(@Query('q') q: string) {
     const users = await this.userService.findUserByQuery(q);
@@ -171,10 +185,54 @@ export class UserController {
     } else return await this.userService.updateUser(user);
   }
 
+  @Post('update')
+  @UseGuards(HasToken)
+  async updateUser(@Body('user') user: NTUser, @UserId() userId: string) {
+    if (user.nt_userid == userId) {
+      return this.userService.updateUser(user);
+    }
+  }
+
   @Get('find-users-by-id')
   @UseGuards(Admin)
   async findUserByIds(@Query('ids') ids: string) {
     let users = await this.userService.findByIds(ids.split(','));
     return users.map((u) => ({ ...u, password: '' }));
+  }
+
+  @Get('generate-api-token')
+  @UseGuards(HasToken)
+  async generateApiToken(
+    @UserId() userId: string,
+    @Query('permission_type') permissionType: NTApiPermissionType
+  ) {
+    const apiToken: Partial<ApiTokenData> = {
+      id: userId,
+      api: [permissionType]
+    };
+    const api_token = this.tokenService.generateApiToken(apiToken, '1y');
+    await this.userService.updateUser({ nt_userid: userId, api_token });
+    return { api_token };
+  }
+
+  @Get('get-api-token')
+  @UseGuards(HasToken)
+  async getApiToken(@UserId() userid: string) {
+    return await this.userService.findById(userid).then((user) => {
+      return { apiToken: user.api_token };
+    });
+  }
+
+  @Get('delete-api-token')
+  @UseGuards(HasToken)
+  async deleteApiToken(@UserId() userId: string) {
+    const api_token = '';
+    await this.userService.updateUser({ nt_userid: userId, api_token });
+  }
+
+  @Get('get-permissions')
+  @UseGuards(HasToken)
+  async verifyApiToken(@Query('api-token') apiToken) {
+    return this.tokenService.verify<ApiTokenData>(apiToken).api;
   }
 }

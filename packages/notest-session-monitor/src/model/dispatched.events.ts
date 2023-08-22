@@ -32,7 +32,8 @@ import {
   BLPerformanceMemoryEvent,
   BLPerformanceTimingEvent,
   BLScrollEvent,
-  BLStorageEvent, BLWheelEvent,
+  BLStorageEvent,
+  BLWheelEvent,
   BLWindowResizeEvent
 } from '@notest/common';
 
@@ -47,7 +48,7 @@ const dispatcher = <T extends BLEvent>(
   eventType: BLEventType,
   eventName: BLEventName
 ): Dispatcher<T> => {
-  const fullEventName: string = `buglink.${eventType}.${eventName}`;
+  const fullEventName: string = `notest.${eventType}.${eventName}`;
   eventTypes[eventType] = eventTypes[eventType] || [];
   eventTypes[eventType].push(eventName);
   let dispatcherFunction = (event?: T) => {

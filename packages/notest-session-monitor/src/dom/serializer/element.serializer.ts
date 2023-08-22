@@ -6,7 +6,7 @@ import { StylesheetDomSerializer } from './stylesheet.serializer';
 import { MediaDomSerializer } from './media.serializer';
 import { FormDomSerializer } from './form.serializer';
 import { CanvasDomSerializer } from './canvas.serializer';
-import { DOMJson } from '../../model/dom.event';
+import { DOMJson } from '@notest/common';
 
 export class ElementSerializer implements DomSerializer {
   constructor(public onNodeSerialized?: (node: Node, json) => void, private win = window) {}

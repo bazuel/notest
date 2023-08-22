@@ -1,62 +1,80 @@
-<div class="bo-section shadow-2xl">
-  <div class="my-2">
-    <nt-logo>Login</nt-logo>
+<div class='bo-section shadow-2xl'>
+  <div class='my-2 flex justify-between items-center'>
+    <nt-logo></nt-logo>
+    <nt-icon name='settings' class='text-gray-500'
+             (click)='showCustomBackendPopup = true;updateBackendInfo()'></nt-icon>
   </div>
 
   <label>E-mail</label>
-  <input type="email" name="email" [(ngModel)]="email" (keyup.enter)="doLogin()" />
+  <input type='email' name='email' [(ngModel)]='email' (keyup.enter)='doLogin()' />
 
-  <div (capsLock)="capsOn = $event">
-    <label class="mt-4">Password</label>
-    <input type="password" name="password" [(ngModel)]="password" (keyup.enter)="doLogin()" />
+  <div (capsLock)='capsOn = $event'>
+    <label class='mt-4'>Password</label>
+    <input type='password' name='password' [(ngModel)]='password' (keyup.enter)='doLogin()' />
   </div>
-  <div class="mt-2 text-sm text-yellow-500" *ngIf="capsOn">Caps Lock enabled</div>
+  <div class='mt-2 text-sm text-yellow-500' *ngIf='capsOn'>Caps Lock enabled</div>
 
-  <div class="mt-2 text-right text-xs">
-    <a (click)="showForgotPasswordPopup = true">Forgot password?</a>
-  </div>
-
-  <div class="flex justify-between">
-  <div class="mt-6">
-    <button class="bo-button" (click)="redirectToSignUp()">SIGN-UP</button>
+  <div class='mt-2 text-right text-xs'>
+    <a (click)='showForgotPasswordPopup = true'>Forgot password?</a>
   </div>
 
-  <div class="mt-6">
-    <button class="bo-button" (click)="doLogin()">LOGIN</button>
-  </div>
+  <div class='flex justify-between mt-6'>
+    <button (click)='redirectToSignUp()'>SIGN-UP</button>
+    <button (click)='doLogin()'>LOGIN</button>
   </div>
 </div>
 
-<nt-popup *ngIf="showForgotPasswordPopup" [closeClickOutside]="false" (close)="showForgotPasswordPopup = false">
-  <div class="p-4">
+<nt-popup *ngIf='showForgotPasswordPopup' [closeClickOutside]='false' (close)='showForgotPasswordPopup = false'>
+  <div class='p-4'>
     <h2>Reset password</h2>
-    <label class="text-gray-400">Please insert your email:</label>
+    <label class='text-gray-400'>Please insert your email:</label>
 
-    <input type="email" [(ngModel)]="email" class="w-full" />
+    <input type='email' [(ngModel)]='email' class='w-full' />
 
-    <div class="mt-4 flex justify-end">
-      <button (click)="onForgotPassword()" class="bo-button" type="button">
+    <div class='mt-4 flex justify-end'>
+      <button (click)='onForgotPassword()' class='bo-button' type='button'>
         Reset Password
       </button>
     </div>
   </div>
 </nt-popup>
 
-<nt-popup *ngIf="showResetPasswordPopup" [closeClickOutside]="false" (close)="showResetPasswordPopup = false">
-  <div class="p-4">
+<nt-popup *ngIf='showResetPasswordPopup' [closeClickOutside]='false' (close)='showResetPasswordPopup = false'>
+  <div class='p-4'>
     <h2>Reset password</h2>
-    <label class="text-gray-400">New password</label>
-    <input type="password" [(ngModel)]="password" class="w-full" />
+    <label class='text-gray-400'>New password</label>
+    <input type='password' [(ngModel)]='password' class='w-full' />
 
-    <label class="text-gray-400">Confirm new password</label>
-    <input type="password" [(ngModel)]="passwordRepeated" class="w-full" />
-    <div class="form-error" *ngIf="password !== passwordRepeated">
+    <label class='text-gray-400'>Confirm new password</label>
+    <input type='password' [(ngModel)]='passwordRepeated' class='w-full' />
+    <div class='form-error' *ngIf='password !== passwordRepeated'>
       Password Mismatch
     </div>
-    <div [class.readonly]="password === '' || password !== passwordRepeated" class="mt-4 flex justify-end">
-      <button (click)="onResetPassword()" class="bo-button" type="button">
+    <div [class.readonly]="password === '' || password !== passwordRepeated" class='mt-4 flex justify-end'>
+      <button (click)='onResetPassword()' class='bo-button' type='button'>
         Change Password
       </button>
     </div>
+  </div>
+</nt-popup>
+
+<nt-popup *ngIf='showCustomBackendPopup' (close)='showCustomBackendPopup = false'>
+  <div class='p-4 w-96 flex flex-col gap-y-5'>
+    <div class='bo-popup-close' (click)='showCustomBackendPopup = false'></div>
+    <h3>Backend Settings</h3>
+    <nt-switch
+      class='w-fit'
+      [(switched)]='backendIsCustom'
+      (switchedChange)='onCustomBackendUrlChange($event)'>
+      On premise
+    </nt-switch>
+
+    <div *ngIf='backendIsCustom' class='flex justify-between items-center'>
+      <input
+        [(ngModel)]='customBackendUrl'
+        placeholder='https://...' />
+      <button (click)='httpService.setCustomBackendUrl(customBackendUrl);showCustomBackendPopup = false'>Save</button>
+    </div>
+
   </div>
 </nt-popup>

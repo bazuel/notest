@@ -67,6 +67,7 @@ export class SessionRunner extends SessionExecutor {
       await this.setInitStorage(this.configuration.loginEvents);
       await injectCookie(this.context, this.configuration.loginEvents);
     } else {
+      await injectCookie(this.context, session);
       await this.setInitStorage(session);
     }
     this.page = await this.context.newPage();
@@ -99,8 +100,9 @@ export class SessionRunner extends SessionExecutor {
     }
     if (actionWhitelist[this.configuration.backendType].includes(event.name)) {
       let timeout = this.lastEvent ? event.timestamp - this.lastEvent.timestamp : 0;
-      if (timeout < 5) timeout = 200;
+      if (timeout < 5 && event.name == 'input') timeout = 200;
       await this.page.waitForTimeout(timeout);
+      console.log('TIMEOUT', timeout);
       this.lastEvent = event;
       if (this.configuration.backendType == 'mock')
         this.mockService.actualTimestamp = event.timestamp;

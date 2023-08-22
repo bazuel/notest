@@ -5,6 +5,7 @@ import { TokenService } from '../../../shared/services/token.service';
 import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 import { ShowNotification } from '../../../shared/components/notification/notification.component';
 import { Router } from '@angular/router';
+import { HttpService } from '../../../shared/services/http.service';
 
 @Component({
   selector: 'nt-login',
@@ -14,20 +15,24 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   email = '';
   password = '';
-  passwordRepeated= '';
+  passwordRepeated = '';
   showForgotPasswordPopup = false;
   showResetPasswordPopup = false;
+  showCustomBackendPopup = false;
+  customBackendUrl = '';
   tokenForPasswordReset = '';
   capsOn = false;
+  backendIsCustom = false;
 
   constructor(
     private authService: AuthService,
     private urlParamsService: UrlParamsService,
     private tokenService: TokenService,
-    private router: Router
+    private router: Router,
+    protected httpService: HttpService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const token = this.urlParamsService.get('token');
     const forgotPassword = this.urlParamsService.get('forgot-password');
     if (token) {
@@ -37,15 +42,23 @@ export class LoginComponent implements OnInit {
     if (forgotPassword) {
       this.showForgotPasswordPopup = true;
     }
+    this.updateBackendInfo();
   }
 
   @ShowFullScreenLoading()
   @ShowNotification(
     'Login effettuato',
-    'Non è stato possibile effettuare il login. Controlla le tue credenziali'
+    'Non è stato possibile effettuare il login. Controlla le tue credenziali o <b>il server utilizzato</b>'
   )
   async doLogin() {
-    const loginToken = (await this.authService.login(this.email, this.password)).token;
+    let loginToken;
+    await this.authService
+      .login(this.email, this.password)
+      .then((res) => (loginToken = res.token))
+      .catch((e) => {
+        this.showCustomBackendPopup = true;
+        throw e;
+      });
     this.tokenService.set(loginToken);
     const lastUrl = sessionStorage.getItem('last_url');
     window.location.href = lastUrl ?? '/';
@@ -68,7 +81,7 @@ export class LoginComponent implements OnInit {
   )
   async onResetPassword() {
     const result = await this.authService.resetPassword(this.tokenForPasswordReset, this.password);
-    if (result.ok) {
+    if (result) {
       const email = this.tokenService.tokenData(this.tokenForPasswordReset).email;
       console.log(`logging in as ${email}`);
       this.email = email;
@@ -78,7 +91,17 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  async onCustomBackendUrlChange(switched: boolean) {
+    if (switched) this.customBackendUrl = await this.httpService.getCustomBackendUrl();
+    else this.httpService.setCustomBackendUrl('');
+  }
+
   async redirectToSignUp() {
     await this.router.navigateByUrl('/auth/registration');
+  }
+
+  async updateBackendInfo() {
+    this.backendIsCustom = await this.httpService.backendIsCustom();
+    if (this.backendIsCustom) this.customBackendUrl = await this.httpService.getCustomBackendUrl();
   }
 }

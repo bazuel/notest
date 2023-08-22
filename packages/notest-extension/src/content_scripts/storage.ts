@@ -19,10 +19,8 @@ function sendStorage(key: string, id: string) {
   });
 }
 
-export function getStorage(key: string) {
+export function getStorage(key: string): Promise<string | undefined> {
   return new Promise((resolve) => {
-    chrome.storage.local.get(key, (data) => {
-      resolve(data[key]);
-    });
+    chrome.storage.local.get(key, (data) => resolve(data[key]));
   });
 }

@@ -31,6 +31,17 @@ export interface NTStatementInstrumenter {
   ): void;
 }
 
+export interface NTBattery {
+  nt_batteryid?: string;
+  name: string;
+  userid: number;
+  active: boolean;
+  scheduled_time: string;
+  type: NTTest;
+  session_list: string[];
+  backend_type: "full" | "mock";
+  created?: Date | null;
+}
 export interface NTSession {
   nt_sessionid?: string;
   url: string;
@@ -39,7 +50,7 @@ export interface NTSession {
   info: {
     title: string;
     description: string;
-    targetList?: string[];
+    targetList?: DOMRect[];
     loginReference?: string;
     isLogin?: boolean;
     session_logged: boolean;
@@ -47,15 +58,6 @@ export interface NTSession {
     backend_type: NTRunnerConfig["backendType"];
   };
   created?: Date | null;
-}
-
-export interface NTAssertion {
-  original_reference: string;
-  new_reference: string;
-  info?: {
-    last_event: BLSessionEvent;
-    test_failed: boolean;
-  };
 }
 
 export interface NTRunnerConfig {
@@ -72,7 +74,11 @@ export type NTClusterMessage = {
   reference: string;
   backendType: "mock" | "full";
   sessionDomain?: string;
+  batteryId?: string;
+  runTimestamp?: number;
 };
+
+export type NTTest = "e2e" | "unit";
 
 export interface NTEvent {
   nt_eventid: number;
@@ -93,7 +99,7 @@ export interface NTMedia {
   nt_media_id: number;
   reference: string;
   name: string;
-  type: "image" | "video";
+  type: "image" | "video" | "assertion";
   created: Date | null;
   start: Date | null;
 }
@@ -130,5 +136,14 @@ export interface NTUser {
   roles: string[];
   state: string;
   phone: string;
+  domains?: string[];
   created: Date;
+  api_token: string;
 }
+
+export type NTScreenshot = {
+  name: string;
+  data: Buffer;
+  fired: Date;
+  type: "image" | "assertion";
+};

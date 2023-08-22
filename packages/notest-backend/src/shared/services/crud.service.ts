@@ -1,4 +1,4 @@
-import { like, paginated, PostgresDbService, sql } from './postgres-db.service';
+import { like, paginated, PostgresDbService, sql } from '@notest/backend-shared';
 
 export class CrudService<T> {
   protected table = 'nt_';

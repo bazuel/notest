@@ -29,7 +29,7 @@ export class MockService {
   }
 
   async setupMock() {
-    //await this.setupMockCookie(this.session);
+    await this.setupMockCookie(this.session);
     this.actualTimestamp = this.session[0].timestamp;
     await this.exposeFunctions();
     await this.mockDate();
@@ -75,7 +75,7 @@ export class MockService {
       ) {
         let response = {} as any;
         let responseMap = requestMap[`${request.method()}.${request.url()}`];
-        if(responseMap.length > 1){
+        if (responseMap.length > 1) {
           response = responseMap.shift();
         } else {
           response = responseMap[0];
@@ -97,10 +97,10 @@ export class MockService {
     await this.context.exposeFunction('controlMock', () => this.mockedState);
     await this.context.exposeFunction('getActualMockedTimestamp', () => this._actualTimestamp);
     await this.context.exposeFunction('setMockDateTrue', () => (this.mockedState.date = true));
-    // await this.context.exposeFunction(
-    //   'setMockStorageTrue',
-    //   () => (this.mockedState.storage = true)
-    // );
+    await this.context.exposeFunction(
+      'setMockStorageTrue',
+      () => (this.mockedState.storage = true)
+    );
   }
 
   set actualTimestamp(value: number) {

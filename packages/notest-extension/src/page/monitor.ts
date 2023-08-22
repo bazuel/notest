@@ -11,9 +11,13 @@ let sessionMonitor = new SessionMonitor(sendToExtension);
 addMessageListener((event) => {
   if (event.type == 'start-monitoring') {
     sessionMonitor.enable();
-    getScreenshotFromFullDom();
     addMessageListener((event) => {
-      if (event.type == 'stop-recording' || event.type == 'cancel-recording') {
+      if (event.type == 'stop-recording') {
+        sessionMonitor.disable();
+        sendShot();
+        sendMessage({ type: 'stop-recording-response', data: event.data });
+      }
+      if (event.type == 'cancel-recording') {
         sessionMonitor.disable();
       }
     });
@@ -25,11 +29,7 @@ export function takeFullDomShot() {
   return domMonitor.takeDomScreenshot();
 }
 
-function getScreenshotFromFullDom() {
-  addEventListener('load', () => setTimeout(sendShot, 2000), { once: true });
-}
-
-const sendShot = async () => {
+const sendShot = () => {
   const fullDom = takeFullDomShot();
   const domSessionEvent: BLSessionEvent = {
     name: 'dom-full',

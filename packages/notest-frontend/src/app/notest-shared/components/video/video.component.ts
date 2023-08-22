@@ -34,7 +34,9 @@ export class VideoComponent implements OnInit, OnChanges {
   async ngOnChanges() {}
 
   private async loadVideo() {
-    this.src = this.httpService.url(`/media/video-download?name=video&reference=${this.reference}`);
+    this.src = await this.httpService.url(
+      `/media/video-download?name=video&reference=${this.reference}`
+    );
     this.mediaService.getVideoSource(this.reference, this.name ?? 'video').then((res) => {
       this.srcBuffered = res;
     });

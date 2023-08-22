@@ -1,10 +1,10 @@
-import "dayjs/locale/it";
-import dayjs from "dayjs";
-import { messageService } from "../../services/message.service";
+import 'dayjs/locale/it';
+import dayjs from 'dayjs';
+import { storageService } from './storage.service';
 
 export class TokenService {
-  static TOKEN = "NOTEST_TOKEN";
-  static TOKEN_TEMP = "NOTEST_TOKEN_TEMP";
+  static TOKEN = 'NOTEST_TOKEN';
+  static TOKEN_TEMP = 'NOTEST_TOKEN_TEMP';
 
   get temporaryToken() {
     return localStorage.getItem(TokenService.TOKEN_TEMP);
@@ -18,33 +18,20 @@ export class TokenService {
   }
 
   async getToken() {
-    const response = await messageService.sendMessage<{ value: string }>(
-      "get-storage",
-      { key: TokenService.TOKEN },
-      true
-    );
-    console.log("get token response");
-    return response.value;
+    return await storageService.getLocal(TokenService.TOKEN);
   }
 
   set token(value: string) {
-    messageService.sendMessage("set-storage", {
-      key: TokenService.TOKEN,
-      value,
-    });
+    storageService.setLocal(TokenService.TOKEN, value);
   }
 
   setTemporaryToken(token: string) {
-    localStorage.setItem(
-      TokenService.TOKEN_TEMP,
-      localStorage.getItem(TokenService.TOKEN)!
-    );
+    localStorage.setItem(TokenService.TOKEN_TEMP, localStorage.getItem(TokenService.TOKEN)!);
     sessionStorage.setItem(TokenService.TOKEN, token);
   }
 
   restoreTemporaryToken(input) {
-    if (!localStorage.getItem(TokenService.TOKEN_TEMP))
-      throw new Error("Token not available");
+    if (!localStorage.getItem(TokenService.TOKEN_TEMP)) throw new Error('Token not available');
     this.token = localStorage.getItem(TokenService.TOKEN_TEMP);
     localStorage.removeItem(TokenService.TOKEN_TEMP);
     sessionStorage.removeItem(TokenService.TOKEN);
@@ -66,16 +53,14 @@ export class TokenService {
   }
 
   async impersonatedBy() {
-    let impersonating = "";
+    let impersonating = '';
     if (localStorage.getItem(TokenService.TOKEN_TEMP))
-      impersonating = (
-        await this.tokenData(localStorage.getItem(TokenService.TOKEN_TEMP)!)
-      )?.sub;
+      impersonating = (await this.tokenData(localStorage.getItem(TokenService.TOKEN_TEMP)!))?.sub;
     return impersonating;
   }
 
   logout() {
-    this.token = "";
+    this.token = '';
   }
 
   login(token: string) {
@@ -97,7 +82,7 @@ export class TokenService {
 
   async tokenData(token?: string) {
     const t = token ?? (await this.getToken());
-    const tdata = t ? JSON.parse(atob(t!.split(".")[1])) : null;
+    const tdata = t ? JSON.parse(atob(t!.split('.')[1])) : null;
     return tdata;
   }
 
