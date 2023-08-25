@@ -14,7 +14,6 @@ export class BatteryController {
 
   @Get('find-by-userid')
   async getBatteryByUserid(@UserId() userId: number) {
-    console.log('userId', userId)
     return await this.batteryService.findByField('userid', userId);
   }
 
