@@ -29,7 +29,7 @@ export class PostgresDbService {
   }
 
   async query<T>(q: TemplateStringsArray, ...params: any[]) {
-    const res = await sql(q, ...params);
+    const res = await sql(q, ...params)
     return (res || []) as unknown as T[];
   }
 
