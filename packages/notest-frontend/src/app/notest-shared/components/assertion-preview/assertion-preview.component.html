@@ -1,6 +1,7 @@
 <div *ngIf='httpAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item (success)="httpAssertionError=!$event" [assertionList]='[httpAssertion]' type='http' [name]='httpAssertion.name'
+    <nt-assertion-summary-item (success)="httpAssertionError=!$event" [assertionList]='[httpAssertion]' type='http'
+                               [name]='httpAssertion.name'
                                [title]='title'></nt-assertion-summary-item>
   </div>
   <div *ngIf='httpAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
@@ -25,7 +26,8 @@
 
 <div *ngIf='missedEventsAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item (success)="missedEventsError=!$event" [assertionList]='[missedEventsAssertion]' type='missedEvents'
+    <nt-assertion-summary-item (success)="missedEventsError=!$event" [assertionList]='[missedEventsAssertion]'
+                               type='missedEvents'
                                [title]='title'></nt-assertion-summary-item>
   </div>
   <div *ngIf='missedEventsError' class='overflow-auto max-h-64 scrollbar-sm'>
@@ -50,17 +52,19 @@
 
 <div *ngIf='visualAssertion'>
   <div class='w-48'>
-    <nt-assertion-summary-item (success)="visualAssertionError=!$event" [assertionList]='[visualAssertion]' type='visual'
+    <nt-assertion-summary-item (success)="visualAssertionError=!$event" [assertionList]='[visualAssertion]'
+                               type='visual'
                                [title]='title'></nt-assertion-summary-item>
   </div>
-  <div *ngIf='visualAssertionError' class='overflow-auto max-h-64 scrollbar-sm'>
+  <div *ngIf='visualAssertionError' class='overflow-auto max-h-64 scrollbar-sm flex items-center gap-2'>
     <table class='bo-table'>
       <tbody>
       <tr class='thead'>
         <th>Id</th>
         <th>Image Similarity</th>
       </tr>
-      <tr *ngFor='let httpResp of visualAssertion.payload.mismatchedPixel;index as i'>
+      <tr *ngFor='let httpResp of visualAssertion.payload.mismatchedPixel;index as i'
+          (mouseenter)="visualAssertionOnHover = i" (mouseleave)="visualAssertionOnHover = undefined">
         <td>{{i + 1}}</td>
         <td>
           <div class='text-sm text-gray-400'>{{httpResp + '%'}}</div>
@@ -68,6 +72,12 @@
       </tr>
       </tbody>
     </table>
+    <div *ngIf="visualAssertionOnHover != undefined" class="flex items-center gap-2">
+      <nt-screenshot class="visual-assertion-card" [reference]="visualAssertion.new_reference"
+                     [name]="visualAssertionOnHover+'-original'"></nt-screenshot>
+      <nt-screenshot class="visual-assertion-card" [reference]="visualAssertion.new_reference"
+                     [name]="visualAssertionOnHover+ '-new'"></nt-screenshot>
+    </div>
   </div>
 </div>
 

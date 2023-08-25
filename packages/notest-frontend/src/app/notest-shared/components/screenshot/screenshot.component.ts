@@ -3,22 +3,8 @@ import { MediaService } from '../../services/media.service';
 
 @Component({
   selector: 'nt-screenshot',
-  template: `
-    <div #screenshot class="flex items-center justify-center overflow-hidden">
-      <img *ngIf="imgSrc" [src]="imgSrc | safeUrl" alt="" />
-      <div *ngIf="!imgSrc" class="bo-loading h-full w-full"></div>
-    </div>
-  `,
-  styles: [
-    `
-      :host {
-        @apply flex items-center justify-center;
-        &.screenshot-sm {
-          @apply scale-50;
-        }
-      }
-    `
-  ]
+  templateUrl: './screenshot.component.html',
+  styleUrls: ['./screenshot.component.scss']
 })
 export class ScreenshotComponent implements OnInit {
   @Input()
