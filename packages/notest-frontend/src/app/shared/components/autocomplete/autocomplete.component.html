@@ -23,7 +23,7 @@
     (blur)="checkifEmptyAndEmit(); blur.emit()"
     (focus)="queryInput.select(); setPopupPosition()" />
 
-  <div [hidden]="!show" class="autocomplete-popup" #popup>
+  <div [hidden]="!show" class="autocomplete-popup scrollbar-sm" #popup>
     <div
       *ngFor="let i of itemsToShow; let ix = index"
       class="hover:bg-gray-100 {{ menuClasses }}"

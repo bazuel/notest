@@ -1,5 +1,5 @@
-import {loggedWritable} from "../shared/utils/store.util";
-import {tokenService} from "../shared/services/token.service";
+import { loggedWritable } from '../shared/utils/store.util';
+import { tokenService } from '../shared/services/token.service';
 
 export interface AppStateStore extends NTSettings {
   logged: boolean;
@@ -7,53 +7,60 @@ export interface AppStateStore extends NTSettings {
 
 export let appStore = loggedWritable<AppStateStore>({
   ...getSettings(),
-  logged: false,
+  logged: false
 });
 
 initAppStore();
 
 async function initAppStore() {
-  appStore.update({logged: await tokenService.logged()});
+  appStore.update({ logged: await tokenService.logged() });
 }
 
 export function updateRecButtonOnScreen(recButtonOnScreen: boolean) {
   const settingsData = getSettings();
   settingsData.recButtonOnScreen = recButtonOnScreen;
-  appStore.update({recButtonOnScreen});
+  appStore.update({ recButtonOnScreen });
   setSettings(settingsData);
 }
 
-export function updateSidebarState(sidebarState: "start" | "end") {
+export function updateSidebarState(sidebarState: 'start' | 'end') {
   const settingsData = getSettings();
   settingsData.sidebarState = sidebarState;
-  appStore.update({sidebarState});
+  appStore.update({ sidebarState });
   setSettings(settingsData);
 }
 
 export function updateLogged(logged: boolean) {
-  appStore.update({logged});
+  appStore.update({ logged });
+}
+
+export function updateIsLoginSession(isLoginSession: boolean) {
+  const settingsData = getSettings();
+  settingsData.isLoginSession = isLoginSession;
+  appStore.update({ isLoginSession });
+  setSettings(settingsData);
 }
 
 export function updateSessionSaved(sessionSaved: boolean) {
   const settingsData = getSettings();
-  settingsData.sessionSaved = sessionSaved
-  appStore.update({sessionSaved});
+  settingsData.sessionSaved = sessionSaved;
+  appStore.update({ sessionSaved });
   setSettings(settingsData);
 }
 
 function setSettings(settings: NTSettings) {
   if (settings) {
-    localStorage.setItem("nt-settings", JSON.stringify(settings));
+    localStorage.setItem('nt-settings', JSON.stringify(settings));
   }
 }
 
 function getSettings(): NTSettings {
-  return JSON.parse(localStorage.getItem("nt-settings") || "{}");
+  return JSON.parse(localStorage.getItem('nt-settings') || '{}');
 }
 
 type NTSettings = {
   recButtonOnScreen: boolean;
   isLoginSession: boolean;
-  sidebarState: "start" | "end";
+  sidebarState: 'start' | 'end';
   sessionSaved: boolean;
 };

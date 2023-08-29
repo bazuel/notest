@@ -2,12 +2,12 @@
   import Icon from '../shared/components/icon.svelte';
   import Sidebar from './Sidebar.svelte';
   import Highlighter from '../shared/components/highlighter.svelte';
-  import { recordingService } from '../services/recording.service';
+  import { extensionService } from '../services/extension.service';
   import { beforeUpdate, onMount } from 'svelte';
   import { appStore, updateSessionSaved, updateSidebarState } from '../stores/settings.store';
   import ElementsSelector from '../shared/components/elements-selector.svelte';
   import { capture } from '../shared/services/screenshot.service';
-  import { updateSessionImages, updateSessionTargetList } from '../stores/session.store';
+  import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
   import { messageService } from '../services/message.service';
   import { getUrlImage } from '../functions/url.functions';
 
@@ -17,14 +17,13 @@
   let enableHighlighter = false;
   let sidebarButtonHovered = false;
 
-  messageService.waitForMessage<string>('screenshot-saved').then((reference) => {
-    recordingService.saveReference(reference);
-    console.log(getUrlImage(reference));
-    updateSessionImages(getUrlImage(reference));
+  messageService.waitForMessage<string>('screenshot-saved').then(async (reference) => {
+    extensionService.saveReference(reference);
+    updateSessionImages(await getUrlImage(reference));
   });
 
   onMount(() => {
-    recording = recordingService.recording;
+    recording = extensionService.recording;
     updateSidebarState('start');
     addEventListener('message', (m) => {
       if (m.data.type === 'start-recording-from-extension') {
@@ -34,21 +33,22 @@
   });
 
   beforeUpdate(() => {
-    recording = recordingService.recording;
+    recording = extensionService.recording;
   });
 
   let startRecording = () => {
     openSidebar = false;
     updateSessionSaved(false);
-    recordingService.start();
+    initSessionStore();
+    extensionService.start($appStore.isLoginSession);
   };
   let cancelRecording = () => {
     recording = false;
-    recordingService.cancel();
+    extensionService.cancel();
   };
   let stopRecording = async () => {
     recording = false;
-    recordingService.stop();
+    await extensionService.stop();
     updateSidebarState('end');
     openSidebar = true;
   };

@@ -12,6 +12,8 @@
 
 import { isRecording } from './functions/recording.state';
 import { isLoaded } from './functions/embedded-script.state';
+import { sendMessage } from './message.api';
+import { NTUser } from '@notest/common';
 
 function addScriptToPage(url: string, id?: string) {
   return new Promise((r) => {
@@ -46,7 +48,7 @@ async function addStyleToPage(url: string, element: HTMLElement = document.head)
   });
 }
 
-(async () => {
+const injectWidgetCallBack = async () => {
   if (!isLoaded('--nt-widget')) {
     window.addEventListener('DOMContentLoaded', async () => {
       const div = await addDivToPage('--nt-widget');
@@ -59,4 +61,17 @@ async function addStyleToPage(url: string, element: HTMLElement = document.head)
     await addScriptToPage('page/monitor.js');
     postMessage({ type: 'start-monitoring' }, '*');
   }
+};
+
+(async () => {
+  sendMessage(
+    { type: 'fetch', data: { url: '/user/get-user', method: 'GET' } },
+    undefined,
+    false,
+    (user: NTUser) => {
+      if (!user?.domains?.length || user.domains.includes(window.location.hostname)) {
+        injectWidgetCallBack();
+      }
+    }
+  );
 })();

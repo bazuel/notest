@@ -1,16 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { globalConfig } from '@notest/backend-shared';
 
-const jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
 
-export class TokenData {
-  id: any;
-  created: string;
-  email: string;
-  tenant?: string;
+interface TokenBaseData {
+  id: string;
+  created: Date;
   exp: number;
-  iat: number;
   roles?: string[];
 }
+
+export interface TokenData extends TokenBaseData {
+  tenant?: string;
+  iat: number;
+  email: string;
+}
+
+export interface ApiTokenData extends TokenBaseData {
+  permissions?: NTApiPermission[];
+}
+
+export type NTApiPermission = 'ALL';
 
 export interface GenericRequest {
   headers: { [header: string]: string };
@@ -27,6 +37,10 @@ export class TokenService {
     });
   }
 
+  generateApiToken<X = ApiTokenData>(body: Partial<X>, expiresIn = '1y'): string {
+    return jwt.sign({ created: new Date(), ...body }, this.masterPassword, { expiresIn });
+  }
+
   verify<X = TokenData>(token: string, password = ''): X & TokenData {
     try {
       return jwt.verify(token, password || this.masterPassword);
@@ -36,10 +50,10 @@ export class TokenService {
   }
 
   checkAuthorized<X = TokenData>(req: GenericRequest): X & TokenData {
-    return this.verify(this.get(req));
+    return this.verify(this.getToken(req));
   }
 
-  get(req: GenericRequest) {
+  getToken(req: GenericRequest) {
     let auth = req.headers['Authorization'] || req.headers['authorization'];
     let token = auth?.split(' ')[1] ?? req.query.token;
     return token;
@@ -60,4 +74,24 @@ export class TokenService {
     let token = this.checkAuthorized(req);
     return token.roles || [];
   }
+
+  extractTokenData(request: GenericRequest) {
+    const tokenData = this.checkAuthorized<{ tenant: string }>(request);
+    if (!tokenData.email)
+      throw new HttpException(
+        'Could not find tenant on request for token ' + this.getToken(request),
+        HttpStatus.FORBIDDEN
+      );
+    return tokenData;
+  }
+
+  extractApiTokenData(request: GenericRequest): ApiTokenData {
+    return this.checkAuthorized<{ tenant: string }>(request);
+  }
+
+  emailAndRoles(request: GenericRequest) {
+    return this.extractTokenData(request);
+  }
 }
+
+export const tokenService = new TokenService(globalConfig.master_password);

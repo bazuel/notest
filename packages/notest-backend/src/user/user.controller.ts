@@ -6,24 +6,22 @@ import {
   HttpStatus,
   Post,
   Query,
-  Response,
-  UseGuards
+  Response
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CryptService } from '../shared/services/crypt.service';
 import { EmailService } from '../shared/services/email.service';
-import { TokenService } from '../shared/services/token.service';
-import { Admin } from '../shared/token.decorator';
+import { ApiTokenData, NTApiPermission, TokenService } from '../shared/services/token.service';
+import { UserId } from '../shared/decorators/token.decorator';
 import { NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
-import { ConfigService } from '../shared/services/config.service';
+import { HasToken, IsAdmin } from '../shared/guards/token.guards';
+import { ConfigService } from '@notest/backend-shared';
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
-    private readonly cryptService: CryptService,
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
     private readonly messagesService: MessagesService
@@ -37,7 +35,7 @@ export class UserController {
     );
     if (found.length > 0) {
       const token = this.tokenService.generate({
-        id: this.cryptService.encode(+found[0].nt_userid),
+        id: +found[0].nt_userid,
         email: user.email,
         name: found[0].name,
         surname: found[0].surname,
@@ -47,11 +45,15 @@ export class UserController {
     } else throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
+  @Get('check-password')
+  async checkPassword(@Query('password') password: string, @Query('email') email: string) {
+    const found = await this.userService.findUser(email.trim().toLowerCase(), password.trim());
+    if (found.length > 0) return { ok: true };
+    return { ok: false };
+  }
+
   @Post('request-registration')
-  async register(
-    @Body()
-    user: NTUser
-  ) {
+  async register(@Body() user: NTUser) {
     console.log('registering user: ', user);
     const result = await this.userService.createUser(user);
     console.log('user saved into db');
@@ -87,10 +89,10 @@ export class UserController {
       await this.userService.updateUserRoles(data.nt_userid, ['EMAIL_CONFIRMED', 'USER']);
       console.log('user saved into db');
       /*const loginToken = this.tokenService.generate({
-        id: this.cryptService.encode(+data.nt_userid),
-        email: user.email,
-        roles: data.roles
-      });*/
+              id: this.cryptService.encode(+data.nt_userid),
+              email: user.email,
+              roles: data.roles
+            });*/
       res.header(
         'Location',
         `${this.configService.app_url}/auth/registration-success?token=${token}`
@@ -103,10 +105,7 @@ export class UserController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(
-    @Body()
-    { email }: { email: string }
-  ) {
+  async forgotPassword(@Body() { email }: { email: string }) {
     const token = this.tokenService.generate({ email });
     const url = this.configService.app_url;
     const link = `${url}/auth/login?token=${token}`;
@@ -133,7 +132,7 @@ export class UserController {
   }
 
   @Get('list')
-  @UseGuards(Admin)
+  @IsAdmin()
   async list(
     @Query('page') page: number,
     @Query('size') size: number,
@@ -147,11 +146,17 @@ export class UserController {
   }
 
   @Get('find')
-  @UseGuards(Admin)
+  @IsAdmin()
   async find(@Query('id') nt_userid: string) {
     const user = await this.userService.findById(nt_userid);
     delete user?.password;
     return user;
+  }
+
+  @Get('get-user')
+  @HasToken()
+  async getUser(@UserId() id) {
+    return await this.find(id);
   }
 
   @Get('find-by-query')
@@ -162,7 +167,7 @@ export class UserController {
   }
 
   @Post('save')
-  @UseGuards(Admin)
+  @IsAdmin()
   async save(@Body() user: NTUser) {
     if (!user.nt_userid) {
       if (!user.state) user.state = 'ACTIVE';
@@ -171,10 +176,56 @@ export class UserController {
     } else return await this.userService.updateUser(user);
   }
 
+  @Post('update')
+  @HasToken()
+  async updateUser(@Body('user') user: NTUser, @UserId() userId: string) {
+    if (user.nt_userid == userId) {
+      return this.userService.updateUser(user);
+    }
+  }
+
   @Get('find-users-by-id')
-  @UseGuards(Admin)
+  @IsAdmin()
   async findUserByIds(@Query('ids') ids: string) {
     let users = await this.userService.findByIds(ids.split(','));
     return users.map((u) => ({ ...u, password: '' }));
+  }
+
+  @Get('generate-api-token')
+  @HasToken()
+  async generateApiToken(
+    @UserId() userId: string,
+    @Query('permission_type') permissionType: NTApiPermission
+  ) {
+    const user = await this.userService.findById(userId);
+    const apiToken: Partial<ApiTokenData> = {
+      id: userId,
+      permissions: [permissionType],
+      roles: user.roles
+    };
+    const api_token = this.tokenService.generateApiToken(apiToken, '1y');
+    await this.userService.updateUser({ nt_userid: userId, api_token });
+    return { api_token };
+  }
+
+  @Get('get-api-token')
+  @HasToken()
+  async getApiToken(@UserId() userid: string) {
+    return await this.userService.findById(userid).then((user) => {
+      return { apiToken: user.api_token };
+    });
+  }
+
+  @Get('delete-api-token')
+  @HasToken()
+  async deleteApiToken(@UserId() userId: string) {
+    const api_token = '';
+    await this.userService.updateUser({ nt_userid: userId, api_token });
+  }
+
+  @Get('get-permissions')
+  @HasToken()
+  async verifyApiToken(@Query('api-token') apiToken) {
+    return this.tokenService.verify<ApiTokenData>(apiToken).permissions;
   }
 }

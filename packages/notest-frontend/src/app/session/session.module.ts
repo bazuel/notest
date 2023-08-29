@@ -42,6 +42,9 @@ const routes: Routes = [
     NotestSharedModule,
     FormsModule
   ],
+  exports: [
+    SessionPreviewComponent
+  ],
   providers: [SessionService]
 })
 export class SessionModule {}

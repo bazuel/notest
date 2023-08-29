@@ -18,7 +18,7 @@ export class MediaService {
     const path = `${reference}&${name}`;
     if (this.imgSources[path]) return this.imgSources[path];
     this.imgSources[path] = await this.http.getStreamImg(
-      this.http.url(`/media/screenshot-download?reference=${reference}&name=${name}`)
+      await this.http.url(`/media/screenshot-download?reference=${reference}&name=${name}`)
     );
     return this.imgSources[path];
   }
@@ -27,7 +27,7 @@ export class MediaService {
     const path = `${reference}&${name}`;
     if (this.videoSources[path]) return this.videoSources[path];
     this.videoSources[path] = await this.http.getStreamImg(
-      this.http.url(`/media/video-download?reference=${reference}&name=${name}`)
+      await this.http.url(`/media/video-download?reference=${reference}&name=${name}`)
     );
     return this.videoSources[path];
   }

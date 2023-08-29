@@ -1,4 +1,4 @@
-import { BLSessionEvent, NTRunnerConfig } from '@notest/common';
+import { BLSessionEvent, NTRunnerConfig, NTScreenshot } from '@notest/common';
 import { SessionRunner } from 'notest-backend-shared';
 
 export async function runLoginSession(eventList: BLSessionEvent[], sessionDomain: string) {
@@ -19,10 +19,9 @@ export async function runSession(
   backendType: 'mock' | 'full',
   loginEvents: BLSessionEvent[]
 ) {
-  return await Promise.all([
-    runMonitoringSession(eventList, domain, backendType, loginEvents),
-    runScreenshotSession(eventList, domain, backendType, loginEvents)
-  ]);
+  const monitoringSession = await runMonitoringSession(eventList, domain, backendType, loginEvents);
+  const screenshotSession = await runScreenshotSession(eventList, domain, backendType, loginEvents);
+  return { monitoringSession, screenshotSession };
 }
 
 async function runMonitoringSession(
@@ -71,6 +70,6 @@ type MonitoringReturnType = {
 };
 
 type ScreenshotReturnType = {
-  screenshotList: { name: string; data: Buffer; fired: Date }[];
+  screenshotList: NTScreenshot[];
   startVideoTimeStamp: Date;
 };

@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
-import { AssertionService, MediaService } from '@notest/backend-shared';
+import { MediaService } from '@notest/backend-shared';
 import { Readable } from 'stream';
 import { MultipartFile } from '../../session-event/session.controller';
 import { streamToBuffer } from '@notest/common';
 
 @Controller('media')
 export class MediaController {
-  constructor(private mediaService: MediaService, private assertionService: AssertionService) {}
+  constructor(private mediaService: MediaService) {}
 
   @Get('screenshot-download')
   async getScreenshot(
@@ -28,7 +28,7 @@ export class MediaController {
     const timestamp: number = +data.fields['timestamp'].value;
     const buffer = await streamToBuffer(data.file);
     await this.mediaService.saveScreenshot(
-      [{ name, data: buffer, fired: new Date(timestamp) }],
+      [{ name, data: buffer, fired: new Date(timestamp), type: 'image' }],
       reference
     );
   }

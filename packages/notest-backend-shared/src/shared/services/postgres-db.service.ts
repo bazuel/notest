@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { globalConfig } from './config.service';
 require('dotenv').config();
 
 export interface DBConfig {
@@ -9,14 +10,7 @@ export interface DBConfig {
   port: number;
 }
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT } = process.env;
-const config = {
-  host: DB_HOST,
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_NAME,
-  port: +DB_PORT!
-};
+const config = globalConfig.db;
 
 export const paginated = (page: number, size = 20) =>
   sql` limit ${size} offset ${page * size || 0}`;
@@ -26,7 +20,7 @@ export const like = (column: string, value: string) =>
 
 export const sql = postgres({
   ...config,
-  ssl: { rejectUnauthorized: false }
+  ssl: config.host == 'localhost' ? false : { rejectUnauthorized: false }
 });
 
 export class PostgresDbService {
@@ -35,7 +29,7 @@ export class PostgresDbService {
   }
 
   async query<T>(q: TemplateStringsArray, ...params: any[]) {
-    const res = await sql(q, ...params);
+    const res = await sql(q, ...params)
     return (res || []) as unknown as T[];
   }
 
@@ -56,3 +50,5 @@ export class PostgresDbService {
     return tableExistData && tableExistData.length > 0 && tableExistData[0].exists;
   }
 }
+
+export const db = new PostgresDbService();

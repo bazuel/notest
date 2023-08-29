@@ -1,0 +1,58 @@
+<div
+  class="absolute bo-popup-content shadow-2xl rounded-lg right-0 w-fit h-fit p-3 flex flex-col gap-y-5">
+  <div>
+    <label class="mt-4">Name *</label>
+    <input name="title" class="w-48" [(ngModel)]="sessionBattery.name" placeholder="Name" />
+  </div>
+  <div>
+    <label class="mt-4">Schedule Date *</label>
+    <nt-cron
+      [(scheduleTime)]="sessionBattery.scheduled_time"
+      (scheduleTimeChange)="sessionBattery.scheduled_time = $event"></nt-cron>
+  </div>
+  <nt-switch
+    class="mt-2"
+    [switched]="sessionBattery.backend_type == 'mock'"
+    (switchedChange)="toggleBackend()">
+    Frontend isolated
+  </nt-switch>
+  <div class="flex flex-col">
+    <label class="mt-4">Webhook API</label>
+    <div class="flex flex-row gap-2">
+      <input
+        class="nt-input"
+        placeholder="Save to show Webhook API"
+        value="{{ sessionBattery.nt_batteryid ? getLink() : '' }}" />
+      <button *ngIf="sessionBattery.nt_batteryid" title="Copy webhook link" (click)="copyLink()">
+        <nt-icon name="copy"></nt-icon>
+      </button>
+    </div>
+  </div>
+  <div class="flex flex-row items-center gap-2">
+    <div class="flex flex-col">
+      <label class="mt-4">Battery sessions *</label>
+      <nt-async-autocomplete
+        [searchFunction]="findBatteryByUseridAndTitle"
+        property="title"
+        placeholder="Select User Session"
+        (itemSelected)="onSessionSelected($event)"></nt-async-autocomplete>
+    </div>
+  </div>
+  <div class="flex flex-col h-52 overflow-auto scrollbar-sm">
+    <div *ngFor="let session of sessionsSelected" class="w-fit mt-4 items-center">
+      <nt-badge (click)="deleteSession(session)">{{ session.info.title }}</nt-badge>
+      <nt-screenshot class="card" [reference]="session.reference"></nt-screenshot>
+    </div>
+  </div>
+  <div class="flex flex-row gap-2" [title]="controlIfIsSavable()">
+    <button
+      class="w-14 text-center mt-2"
+      [class.readonly]="!isSavable"
+      (click)="saveBattery.emit(); emitSessionSelected.emit(sessionsSelected)">
+      Save
+    </button>
+    <button *ngIf="sessionBattery.nt_batteryid" class="w-16 text-center mt-2" (click)="delete()">
+      Delete
+    </button>
+  </div>
+</div>

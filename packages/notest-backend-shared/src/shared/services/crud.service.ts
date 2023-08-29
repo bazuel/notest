@@ -115,7 +115,7 @@ export class CrudService<T> {
   }
 
   async findByFields(
-    fieldsMap: { [key in keyof T]: string | number | Date },
+    fieldsMap: { [key in keyof T]?: string | number | Date },
     options: { page?: number; size?: number } = {}
   ) {
     const payload: { column: keyof T; value: string | number | any }[] = [];

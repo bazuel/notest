@@ -1,5 +1,5 @@
 import { DBConfig } from './postgres-db.service';
-import { StorageConfig } from './storage.service';
+import { StorageConfig } from './s3.service';
 
 export interface Config {
   db: DBConfig;
@@ -9,6 +9,7 @@ export interface Config {
 }
 
 function initGlobalConfig() {
+  require('dotenv').config();
   const {
     DB_HOST,
     DB_USERNAME,
@@ -31,27 +32,42 @@ function initGlobalConfig() {
     S3_ACCESS_KEY,
     S3_SECRET_KEY,
     KAFKA_BOOTSTRAP_BROKER_IP,
-    KAFKA_BOOTSTRAP_BROKER_PORT
+    KAFKA_BOOTSTRAP_BROKER_PORT,
+    KAFKA_TOPIC,
+    KAFKA_GROUP_ID
   } = process.env;
+
+  let NT_CUSTOM_CONFIG = null;
+  try {
+    NT_CUSTOM_CONFIG = require(`${process.cwd()}/notest.json`);
+  } catch (e) {
+    console.log('no notest.json found');
+  }
+
+  let db = NT_CUSTOM_CONFIG?.db || {
+    host: DB_HOST,
+    user: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    port: +DB_PORT
+  };
+  let storage = NT_CUSTOM_CONFIG?.storage || {
+    type: 'cloud',
+    endpoint: S3_ENDPOINT,
+    accessKey: S3_ACCESS_KEY,
+    secretKey: S3_SECRET_KEY,
+    bucket: S3_BUCKET
+  };
+
+  console.log('db: ', db);
 
   return {
     dropbox: {
       clientId: DROPBOX_CLIENTID,
       clientSecret: DROPBOX_CLIENTSECRET
     },
-    db: {
-      host: DB_HOST,
-      user: DB_USERNAME,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      port: +DB_PORT
-    },
-    storage: {
-      endpoint: S3_ENDPOINT,
-      accessKey: S3_ACCESS_KEY,
-      secretKey: S3_SECRET_KEY,
-      bucket: S3_BUCKET
-    },
+    db,
+    storage,
     email: {
       aws: {
         access_key_id: SSO_EMAIL_AWS_ACCESS_KEY_ID,
@@ -67,7 +83,9 @@ function initGlobalConfig() {
     color: SSO_DEFAULT_COLOR || '#29ffad',
     broker: {
       endpoint: KAFKA_BOOTSTRAP_BROKER_IP,
-      port: +KAFKA_BOOTSTRAP_BROKER_PORT
+      port: +KAFKA_BOOTSTRAP_BROKER_PORT,
+      groupId: KAFKA_GROUP_ID,
+      topic: KAFKA_TOPIC
     }
   };
 }
@@ -82,6 +100,7 @@ export class ConfigService implements Config {
   app_url: string;
   color: string;
   dropbox: { clientId: string; clientSecret: string };
+  broker: { endpoint: string; port: number; groupId: string; topic: string };
 
   constructor() {
     const gc = initGlobalConfig();
@@ -93,5 +112,8 @@ export class ConfigService implements Config {
     this.color = globalConfig.color;
     this.dropbox = globalConfig.dropbox;
     this.storage = globalConfig.storage;
+    this.broker = globalConfig.broker;
   }
 }
+
+export const configService = new ConfigService();

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { BLDomEvent, BLSessionEvent, NTAssertion, NTRunnerConfig, NTSession } from '@notest/common';
+import { BLDomEvent, BLSessionEvent, NTRunnerConfig, NTSession } from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +50,7 @@ export class SessionService {
   }
 
   async getRerunSessions(reference: string) {
-    return this.http.gest<NTAssertion[]>(`/session/get-rerun-session`, { reference });
+    return this.http.gest<number>(`/session/get-rerun-session`, { reference });
   }
 
   rerunSession(
@@ -58,7 +58,11 @@ export class SessionService {
     backend_type: NTRunnerConfig['backendType'],
     session_domain: string
   ) {
-    return this.http.gest(`/session/run`, { reference, backend_type, session_domain });
+    return this.http.gest(`/session/run`, {
+      reference,
+      backend_type,
+      session_domain
+    });
   }
 
   updateSessionInfo(session: NTSession) {
@@ -69,18 +73,20 @@ export class SessionService {
     await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
         const rerunSessions = await this.getRerunSessions(reference);
-        console.log('waiting for new session', currentSessions, rerunSessions.length);
+        console.log('waiting for new session', currentSessions, rerunSessions);
         console.log(rerunSessions);
-        if (rerunSessions.length > currentSessions) {
+        if (rerunSessions > currentSessions) {
           clearInterval(interval);
           resolve();
         }
       }, 1000);
     });
-    return this.getSessionRunHistory(reference);
+    return await this.getSessionRunHistory(reference);
   }
 
-  async loadFullDom(fullDomId: string) {
-    return this.http.gest<BLDomEvent>(`/session/shot`, { id: fullDomId });
+  async loadFullDom(fullDomId: string, backendUrl: string) {
+    return this.http.gest<BLDomEvent>(`${decodeURIComponent(backendUrl)}/api/session/shot`, {
+      id: fullDomId
+    });
   }
 }

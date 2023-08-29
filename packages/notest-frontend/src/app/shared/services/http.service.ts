@@ -2,27 +2,37 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TokenService } from './token.service';
 import { environment } from '../../../environments/environment';
+import { extensionService } from '../../notest-shared/services/extension.service';
 
 @Injectable({ providedIn: 'root' })
 export class HttpService {
-  private rootUrl = environment.api;
   private prefix = '/api';
 
-  constructor(private http: HttpClient, private token: TokenService) {
-    if (
-      window.location.hostname.indexOf('staging') >= 0 ||
-      window.location.hostname.indexOf('localhost') >= 0
-    ) {
-    }
+  constructor(private http: HttpClient, private token: TokenService) {}
+
+  async rootUrl() {
+    return (await extensionService.getCustomBackendUrl()) || environment.api;
+  }
+
+  setCustomBackendUrl(url: string) {
+    extensionService.customBackendUrl = url;
+  }
+
+  async getCustomBackendUrl() {
+    return (await extensionService.getCustomBackendUrl()) || '';
+  }
+
+  async backendIsCustom() {
+    return (await this.rootUrl()) != environment.api;
   }
 
   client() {
     return this.http;
   }
 
-  url(path: string, usePrefix = true) {
+  async url(path: string, usePrefix = true) {
     if (path.indexOf('http') == 0) return path;
-    else return this.rootUrl + (usePrefix ? this.prefix : '') + path;
+    else return (await this.rootUrl()) + (usePrefix ? this.prefix : '') + path;
   }
 
   async gest<T>(
@@ -51,7 +61,10 @@ export class HttpService {
   ): Promise<T> {
     return this.makeRequest(async () => {
       return this.http
-        .get<T>(rawpath ? path : this.url(path, usePrefix), this.headerOptions(additionalHeaders))
+        .get<T>(
+          rawpath ? path : await this.url(path, usePrefix),
+          this.headerOptions(additionalHeaders)
+        )
         .toPromise();
     });
   }
@@ -130,17 +143,17 @@ export class HttpService {
       responseType: 'blob'
     } as any;
     return this.makeRequest(async () => {
-      return this.http.get(rawpath ? path : this.url(path), options).toPromise();
+      return this.http.get(rawpath ? path : await this.url(path), options).toPromise();
     });
   }
 
   async delete(path: string, usePrefix = true) {
     return this.makeRequest(async () => {
-      return this.http.delete(this.url(path, usePrefix), this.headerOptions()).toPromise();
+      return this.http.delete(await this.url(path, usePrefix), this.headerOptions()).toPromise();
     });
   }
 
-  formPost<T>(path: string, params: { [p: string]: string } = {}, usePrefix = true) {
+  async formPost<T>(path: string, params: { [p: string]: string } = {}, usePrefix = true) {
     const body = new URLSearchParams();
     for (const p in params) body.set(p, params[p]);
 
@@ -149,7 +162,7 @@ export class HttpService {
     };
 
     return this.http
-      .post(this.url(path, usePrefix), body.toString(), options)
+      .post(await this.url(path, usePrefix), body.toString(), options)
       .toPromise() as Promise<T>;
   }
 
@@ -161,7 +174,7 @@ export class HttpService {
   ): Promise<any> {
     return this.makeRequest(async () => {
       return this.http
-        .post(this.url(path, usePrefix), body, {
+        .post(await this.url(path, usePrefix), body, {
           ...this.headerOptions(additionalHeaders)
         })
         .toPromise();
@@ -170,14 +183,16 @@ export class HttpService {
 
   async put(path: string, body, additionalHeaders: { [h: string]: string } = {}) {
     return this.makeRequest(async () => {
-      return this.http.put(this.url(path), body, this.headerOptions(additionalHeaders)).toPromise();
+      return this.http
+        .put(await this.url(path), body, this.headerOptions(additionalHeaders))
+        .toPromise();
     });
   }
 
   async putWithOptions(path: string, body, options = {}) {
     return this.makeRequest(async () => {
       return this.http
-        .put(this.url(path), body, { ...this.headerOptions(), ...options })
+        .put(await this.url(path), body, { ...this.headerOptions(), ...options })
         .toPromise();
     });
   }
@@ -250,7 +265,7 @@ export class HttpService {
     else {
       for (let f = 0; f < files.length; f++) formData.append('file' + f, files[f]);
     }
-    const response = await fetch(this.url(path), {
+    const response = await fetch(await this.url(path), {
       method: 'POST',
       body: formData
     });

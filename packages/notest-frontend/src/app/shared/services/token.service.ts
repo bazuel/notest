@@ -53,25 +53,10 @@ export class TokenService {
     return roles;
   }
 
-  isImpersonated() {
-    return !!this.impersonatedBy();
-  }
-
-  impersonatedBy() {
-    let impersonating = '';
-    if (localStorage.getItem(TokenService.TOKEN_TEMP))
-      impersonating = this.tokenData(localStorage.getItem(TokenService.TOKEN_TEMP)!)?.sub;
-    return impersonating;
-  }
-
   logout() {
     localStorage.removeItem(TokenService.TOKEN);
     localStorage.removeItem(TokenService.TOKEN_TEMP);
     sessionStorage.removeItem(TokenService.TOKEN);
-  }
-
-  username(): string | undefined {
-    return this.tokenData()?.sub;
   }
 
   isExpired(): boolean {
@@ -83,7 +68,16 @@ export class TokenService {
     return true;
   }
 
-  tokenData(token?: string): any {
+  tokenData(token?: string): {
+    created: string;
+    roles: string[];
+    id: string;
+    email: string;
+    name: string;
+    surname: string;
+    iat: 1683186640;
+    exp: 1683273040;
+  } {
     const t = token ?? this.get();
     const tdata = t ? JSON.parse(atob(t!.split('.')[1])) : null;
     return tdata;

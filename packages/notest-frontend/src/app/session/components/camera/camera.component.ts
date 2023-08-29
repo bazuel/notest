@@ -15,7 +15,8 @@ export class CameraComponent implements OnInit {
 
   async ngOnInit() {
     const fullDomId = this.urlParams.get('id');
-    const fullDom = await this.sessionService.loadFullDom(fullDomId!);
+    const backendUrl = this.urlParams.get('backend')!;
+    const fullDom = await this.sessionService.loadFullDom(fullDomId!, backendUrl);
     this.session = [
       { url: (fullDom as any).href, tab: 1, name: 'dom-full', timestamp: 1, sid: 1, full: fullDom }
     ];

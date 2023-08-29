@@ -5,7 +5,7 @@ import {
   BLWheelEvent,
   BLWindowResizeEvent
 } from '@notest/common';
-import { environment } from '../environments/environment';
+import { globalConfig } from '../shared/services/config.service';
 
 export const actionWhitelists: BLEventName[] = [
   'mousedown',
@@ -50,7 +50,7 @@ function generateRightClick(event: BLMouseEvent) {
 function generateReferrer(event: BLPageReferrerEvent) {
   let url = '';
   if (status.mode === 'local') {
-    const localhost = environment.frontend;
+    const localhost = globalConfig.app_url;
     //change domain from prod to localhost
     const host = new URL(event.url).origin;
     url = event.url.replace(host, localhost);

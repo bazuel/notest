@@ -5,12 +5,18 @@
   import Switch from '../shared/components/Switch.svelte';
   import StartTest from './StartTest.svelte';
   import LoginRegistration from './LoginRegistration.svelte';
-  import { recordingService } from '../services/recording.service.js';
+  import { extensionService } from '../services/extension.service.js';
   import { copyToClipboard, NTSession } from '@notest/common';
   import { tokenService } from '../shared/services/token.service.js';
   import SessionPanel from './SessionPanel.svelte';
   import { http } from '../shared/services/http.service';
-  import {appStore, updateRecButtonOnScreen, updateSessionSaved, updateSidebarState} from '../stores/settings.store.js';
+  import {
+    appStore,
+    updateIsLoginSession,
+    updateRecButtonOnScreen,
+    updateSessionSaved,
+    updateSidebarState
+  } from '../stores/settings.store.js';
   import { router } from '../shared/services/router.service';
   import { initSessionStore, removeSessionImage, sessionStore } from '../stores/session.store';
 
@@ -19,31 +25,35 @@
   let validSessionTitle = true;
   let userSessions = [];
   let showPopupSettings = false;
+  let isCustomBackend = false;
+  let customBackendUrl = '';
 
   onMount(async () => {
     if ($appStore.logged) loadUserSessions();
+    await getBackendInfo();
   });
 
   const onClickStartButton = () => {
     dispatcher('start-recording');
   };
+
   const onClickSaveButton = async () => {
     if ($sessionStore.title) {
       validSessionTitle = true;
-      recordingService.save({
+      extensionService.save({
         title: $sessionStore.title,
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
         isLogin: false,
-        reference: recordingService.reference
+        reference: extensionService.reference
       });
-      updateSessionSaved(await recordingService.referenceAvailable());
+      updateSessionSaved(await extensionService.referenceAvailable());
       loadUserSessions();
     } else {
       validSessionTitle = false;
     }
   };
-  const copyLinkReference = () => copyToClipboard(link(recordingService.reference));
+  const copyLinkReference = () => copyToClipboard(link(extensionService.reference));
 
   const link = (ref) => `${import.meta.env.VITE_APP_URL}/session/session-preview?reference=${ref}`;
 
@@ -67,13 +77,25 @@
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-dashboard`);
   }
 
-  function togglePopupSettings() {
+  async function getBackendInfo() {
+    customBackendUrl = await extensionService.getCustomBackendUrl();
+    isCustomBackend = !!customBackendUrl;
+  }
+
+  async function togglePopupSettings() {
     showPopupSettings = !showPopupSettings;
+    if (showPopupSettings) await getBackendInfo();
   }
 
   let loadUserSessions = () => {
     http.get('/session/find-by-userid').then((res: { sessions: NTSession[] }) => userSessions = res.sessions);
   };
+
+  async function onCustomBackendSwitched(value: boolean) {
+    isCustomBackend = value;
+    if (value) customBackendUrl = await extensionService.getCustomBackendUrl();
+    else extensionService.customBackendUrl = '';
+  }
 
 
 </script>
@@ -94,12 +116,31 @@
         <Icon name='home' color='white'></Icon>
       </button>
       {#if showPopupSettings}
-          <div class="nt-settings-container">
-            <p class="nt-settings-name">Settings</p>
-            <Switch switched="{$appStore.recButtonOnScreen}"  on:switched-change={(ev) => updateRecButtonOnScreen(ev.detail)}>
-              Show Buttons on screen
+        <div class='nt-settings-container'>
+          <p class='nt-settings-name'>Settings</p>
+          <Switch switched='{$appStore.recButtonOnScreen}'
+                  on:switched-change={(ev) => updateRecButtonOnScreen(ev.detail)}>
+            Show Buttons on screen
+          </Switch>
+          <Switch switched='{$appStore.isLoginSession}'
+                  on:switched-change={(ev) => updateIsLoginSession(ev.detail)}>
+            Register a Clean Session
+          </Switch>
+          {#if !$appStore.logged}
+            <Switch switched={isCustomBackend}
+                    on:switched-change={(ev) => onCustomBackendSwitched(ev.detail)}>On premise
             </Switch>
-          </div>
+            {#if isCustomBackend}
+              <div class='flex justify-between items-center'>
+                <input class='nt-input m-2' bind:value={customBackendUrl} placeholder='https://...' />
+                <button class='nt-button'
+                        on:mouseup={ () => {extensionService.customBackendUrl = customBackendUrl;showPopupSettings = false}}>
+                  Save
+                </button>
+              </div>
+            {/if}
+          {/if}
+        </div>
       {/if}
     </div>
   </div>
@@ -161,12 +202,12 @@
       </div>
       {#if $appStore.sessionSaved}
         <div class='nt-copy-button-container'>
-          <input class='nt-input' value='{link(recordingService.reference)}' />
+          <input class='nt-input' value='{link(extensionService.reference)}' />
           <button class='nt-button nt-copy-button' title='Copy session link' on:click={copyLinkReference}>
             <Icon name='copy' color='white'></Icon>
           </button>
           <button class='nt-button nt-redirect-container' title='Open your session'
-                  on:click={()=>redirect(recordingService.reference)}>
+                  on:click={()=>redirect(extensionService.reference)}>
             <Icon color='white' name='redirect'></Icon>
           </button>
         </div>
@@ -306,7 +347,7 @@
 
   .nt-settings-container {
     z-index: 2;
-    @apply absolute top-12 shadow-md shadow-gray-500 right-0 bg-white rounded-xl w-64
+    @apply absolute top-12 shadow-md shadow-gray-500 right-0 bg-white rounded-xl w-96 p-3;
   }
 
   .nt-header-container {

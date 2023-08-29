@@ -30,7 +30,7 @@ async function bootstrap() {
   function logger(req, res, next) {
     console.log(
       req.method,
-      req.pathname,
+      req.url,
       formatMemoryUsage(memoryData.heapUsed),
       formatMemoryUsage(memoryData.heapTotal)
     );

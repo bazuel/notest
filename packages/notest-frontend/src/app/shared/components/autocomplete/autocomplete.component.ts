@@ -13,7 +13,7 @@ import { IComponent } from '../../directives/component-injector.directive';
 import { HighlightPipe } from '../../pipes/highlight.pipe';
 
 @Component({
-  selector: 'sm-autocomplete',
+  selector: 'nt-autocomplete',
   templateUrl: './autocomplete.component.html',
   styleUrls: ['./autocomplete.component.scss']
 })
@@ -39,6 +39,9 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
 
   @Input()
   show = false;
+
+  @Input()
+  filterCallBack?: (i: T, query: string) => boolean;
 
   @Input('input-class')
   inputClasses = '';
@@ -99,8 +102,6 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
   itemsHeight = 40;
 
   highlight = new HighlightPipe();
-
-  constructor() {}
 
   ngOnInit() {
     if (!this.query) this.query = '';
@@ -194,6 +195,9 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
       const value = (i) =>
         `${i[this.property] ?? i} ${i[this.secondProperty] ?? ''} ${i[this.thirdProperty] ?? ''}`;
       const inQuery = (i) => {
+        if (this.filterCallBack) {
+          return this.filterCallBack(i, query);
+        }
         const s = value(i);
         return s.toLowerCase().indexOf(query.toLowerCase()) >= 0;
       };

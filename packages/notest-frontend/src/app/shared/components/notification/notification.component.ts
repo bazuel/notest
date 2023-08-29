@@ -51,19 +51,19 @@ export class NotificationService {
     }
   }
 
-  success(message: string, timeout = 2500) {
+  success(message: string, timeout = 5000) {
     this.add({ message, type: 'success' }, timeout);
   }
 
-  error(error: string, timeout = 2500) {
+  error(error: string, timeout = 5000) {
     this.add({ message: error, type: 'error' }, timeout);
   }
 
-  warning(message: string, timeout = 2500) {
+  warning(message: string, timeout = 5000) {
     this.add({ message, type: 'warning' }, timeout);
   }
 
-  add(n: NotificationData, timeout = 2500) {
+  add(n: NotificationData, timeout = 5000) {
     this.notifications.push(n);
     setTimeout(() => {
       this.notifications.splice(0, 1);

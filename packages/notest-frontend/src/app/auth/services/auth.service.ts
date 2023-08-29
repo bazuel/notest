@@ -18,8 +18,10 @@ export class AuthService {
     });
   }
 
-  resetPassword(token: string, password: string) {
-    return this.http.post(`/user/reset-password`, { token, password });
+  async resetPassword(token: string, password: string): Promise<boolean> {
+    return await this.http
+      .post<{ ok: boolean }>(`/user/reset-password`, { token, password })
+      .then((res) => res.ok);
   }
 
   signIn(user: NTUser): Promise<{ ok: boolean }> {

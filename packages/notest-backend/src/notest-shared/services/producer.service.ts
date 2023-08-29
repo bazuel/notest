@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { KafkaService } from '../../shared/services/kafka.service';
-import { globalConfig } from '../../shared/services/config.service';
 import { NTClusterMessage } from '@notest/common';
+import { ConfigService, KafkaService } from '@notest/backend-shared';
+import { Producer } from 'kafkajs';
 
 @Injectable()
 export class ProducerService {
-  topic = globalConfig.broker.topic;
+  producer: Producer;
 
-  constructor(private kafkaService: KafkaService) {}
+  constructor(private kafkaService: KafkaService, private configService: ConfigService) {
+    this.producer = this.kafkaService.createProducer('notest-producer-client');
+  }
 
   async produceMessage(message: NTClusterMessage) {
-    await this.kafkaService.produce(this.topic, JSON.stringify(message));
+    await this.kafkaService.produce(
+      this.producer,
+      this.configService.broker.topic,
+      JSON.stringify(message)
+    );
   }
 }

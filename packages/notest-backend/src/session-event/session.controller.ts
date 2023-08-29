@@ -1,17 +1,23 @@
 import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
-import { AssertionService, MediaService, SessionService } from '@notest/backend-shared';
+import {
+  AssertionService,
+  globalConfig,
+  MediaService,
+  SessionService
+} from '@notest/backend-shared';
 import {
   BLEvent,
   BLSessionEvent,
   NTAssertion,
   NTClusterMessage,
+  NTScreenshot,
   NTSession,
   streamToBuffer,
   unzipJson
 } from '@notest/common';
-import { EventService } from './event.service';
-import { UserId, UserIdIfHasToken } from '../shared/token.decorator';
+import { UserId, UserIdIfHasToken } from '../shared/decorators/token.decorator';
 import { ProducerService } from '../notest-shared/services/producer.service';
+import { HasToken } from '../shared/guards/token.guards';
 
 export type MultipartFile = {
   file: ReadableStream;
@@ -36,7 +42,6 @@ export class SessionController {
 
   constructor(
     private sessionService: SessionService,
-    private eventService: EventService,
     private producerService: ProducerService,
     private assertionService: AssertionService,
     private mediaService: MediaService
@@ -50,20 +55,23 @@ export class SessionController {
     const { reference, fullDom } = body;
     console.log('takeScreenshot', fullDom);
     this.fullDoms[reference] = fullDom;
-    const frontendBase = process.env.APP_URL || 'http://localhost:4200';
-    const frontendUrl =
-      frontendBase + `/session/session-camera?id=${encodeURIComponent(reference)}`;
+    const frontendBase = globalConfig.app_url || 'http://localhost:4200';
+    const frontendUrl = `${frontendBase}/session/session-camera?id=${reference}&backend=${globalConfig.backend_url}`;
+    console.log('frontendUrl', frontendUrl);
     const shotUrl =
       process.env.SCREENSHOT_URL +
-      `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${frontendUrl}`;
+      `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${encodeURIComponent(
+        frontendUrl
+      )}`;
     console.log(shotUrl);
     const imageResponse = await fetch(shotUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
-    const screenshot = [
+    const screenshot: NTScreenshot[] = [
       {
         name: 'shot',
         data: new Buffer(imageBuffer),
-        fired: new Date()
+        fired: new Date(),
+        type: 'image'
       }
     ];
     await this.mediaService.saveScreenshot(screenshot, reference);
@@ -134,7 +142,7 @@ export class SessionController {
     const references = await this.sessionService
       .findByUrl(url)
       .then((result) => result.map((row) => decodeURIComponent(row.reference)));
-    const sessions = await Promise.all(
+    return await Promise.all(
       references.map((ref) => {
         return {
           reference: ref,
@@ -142,7 +150,6 @@ export class SessionController {
         };
       })
     );
-    return sessions;
   }
 
   @Get('download-filtered')
@@ -158,14 +165,14 @@ export class SessionController {
     return eventList;
   }
 
-  //@UseGuards(HasToken)
+  @HasToken()
   @Get('find-by-userid')
   async findById(@UserId() userid: string) {
     const sessions = await this.sessionService.findByField('userid', userid);
     return { sessions };
   }
 
-  //@UseGuards(HasToken)
+  @HasToken()
   @Get('find-by-reference')
   async findByReference(@Query('reference') reference: string) {
     const sessions = await this.sessionService.findByField(
@@ -184,6 +191,35 @@ export class SessionController {
     return this.getRunHistory(assertions);
   }
 
+  @Get('get-battery-run-history')
+  async batteryRunHistory(
+    @Query('battery_id') batteryId: string,
+    @Query('battery_timestamp') batteryTimestamp?: string
+  ) {
+    type batteryType = Record<string, NTAssertion[]>;
+    let timestamp;
+    if (batteryTimestamp != 'undefined') {
+      timestamp = batteryTimestamp;
+    } else {
+      timestamp = await this.assertionService.findLastTimestampByBatteryId(batteryId);
+    }
+    const assertions: NTAssertion[] = await this.assertionService.findByFields({
+      battery_id: batteryId,
+      run_timestamp: timestamp
+    });
+    let battery: batteryType = assertions.reduce((acc: batteryType, assertion) => {
+      if (!acc[assertion.original_reference]) acc[assertion.original_reference] = [];
+      acc[assertion.original_reference].push(assertion);
+      return acc;
+    }, {});
+    return battery;
+  }
+
+  @Get('get-battery-run-timestamps')
+  async batteryRunTimestamps(@Query('battery_id') batteryId: string) {
+    return await this.assertionService.findAllBatteryTimestamps(batteryId);
+  }
+
   @Get('login-sessions')
   async loginSessions(@Query('domain') domain: string, @UserId() userid: string) {
     const sessions = await this.sessionService.findByDomain(domain, userid);
@@ -192,22 +228,27 @@ export class SessionController {
 
   @Get('get-rerun-session')
   async getRerunSession(@Query('reference') reference: string) {
-    return await this.assertionService.findByField(
-      'original_reference',
-      encodeURIComponent(reference)
-    );
+    return await this.assertionService.countRerun(encodeURIComponent(reference));
   }
 
   private async getRunHistory(assertions: NTAssertion[]) {
+    const rerunSessionsMap = assertions.reduce(
+      (acc: { [k: string]: NTAssertion[] }, current_assertion) => {
+        if (!acc[current_assertion.new_reference]) acc[current_assertion.new_reference] = [];
+        acc[current_assertion.new_reference].push(current_assertion);
+        return acc;
+      },
+      {}
+    );
     const runHistory = await Promise.all(
-      assertions.map(async (assertion) => {
-        const session = await this.sessionService.findByField('reference', assertion.new_reference);
-        const media = await this.mediaService.findByField('reference', assertion.new_reference);
+      Object.entries(rerunSessionsMap).map(async ([new_reference, assertions]) => {
+        const session = await this.sessionService.findByField('reference', new_reference);
+        const media = await this.mediaService.findByField('reference', new_reference);
         return {
           session: session[0],
           screenshot: media.filter((m) => m.type === 'image').reverse(),
           video: media.filter((m) => m.type === 'video')[0],
-          assertion
+          assertions
         };
       })
     );

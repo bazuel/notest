@@ -26,6 +26,7 @@
     "@notest/common": "link:..\\notest-common",
     "@types/codemirror": "^5.60.6",
     "codemirror": "^6.0.1",
+    "cron-parser": "^4.8.1",
     "dayjs": "^1.11.7",
     "rxjs": "~7.5.7",
     "sass": "^1.57.1",

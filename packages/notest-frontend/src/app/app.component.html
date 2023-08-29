@@ -1,7 +1,7 @@
-<div class="flex h-screen">
+<div class="flex h-screen w-screen">
   <nt-sidebar *ngIf="tokenService.logged"></nt-sidebar>
 
-  <div class="p-8 {{ pathClass }} flex-1 overflow-auto">
+  <div class="{{ pathClass }} flex-1 overflow-auto">
     <router-outlet></router-outlet>
   </div>
 </div>

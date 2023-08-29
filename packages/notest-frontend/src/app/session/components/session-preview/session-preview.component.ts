@@ -5,6 +5,7 @@ import { NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common'
 import { TokenService } from '../../../shared/services/token.service';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
+import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 
 @Component({
   selector: 'nt-session-preview',
@@ -23,7 +24,7 @@ export class SessionPreviewComponent {
     session: NTSession;
     screenshot: NTMedia[];
     video: NTMedia;
-    assertion: NTAssertion;
+    assertions: NTAssertion[];
     showInfo: boolean;
   }[];
   screenshotOnHover?: NTMedia;
@@ -32,7 +33,15 @@ export class SessionPreviewComponent {
   loading = false;
   fullLoading = false;
   showSessionSettings = false;
+  showAssertionPopup: boolean = false;
   sessionDomain = { domain: '', ssl: false, port: '' };
+  runSelected?: {
+    session: NTSession;
+    screenshot: NTMedia[];
+    video: NTMedia;
+    assertions: NTAssertion[];
+    showInfo: boolean;
+  };
 
   constructor(
     private sessionService: SessionService,
@@ -42,6 +51,20 @@ export class SessionPreviewComponent {
   ) {}
 
   async ngOnInit() {
+    const rerunStorage = await this.initSessionInfo();
+    if (this.sessionRunHistory?.length == 0) {
+      this.fullLoading = true;
+      this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
+      this.fullLoading = false;
+    }
+    this.videoReference = this.sessionRunHistory[0].session.reference;
+    if (rerunStorage.loading && rerunStorage.reference === this.reference) {
+      await this.waitForSessionLoaded(rerunStorage.currentSessions);
+    }
+  }
+
+  @ShowFullScreenLoading()
+  private async initSessionInfo() {
     this.reference = this.urlParamsService.get('reference')!;
     this.session = await this.sessionService.getSessionByReference(this.reference);
     this.sessionDomain.ssl = this.session.url.includes('https://');
@@ -51,16 +74,7 @@ export class SessionPreviewComponent {
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
     this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.reference);
-    if (this.sessionRunHistory?.length == 0) {
-      this.fullLoading = true;
-      this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
-      this.fullLoading = false;
-    }
-    this.sessionRunHistory.forEach((sessionRun) => sessionRun.screenshot);
-    this.videoReference = this.sessionRunHistory[0].session.reference;
-    if (rerunStorage.loading && rerunStorage.reference === this.reference) {
-      this.waitForSessionLoaded(rerunStorage.currentSessions);
-    }
+    return rerunStorage;
   }
 
   private async waitForSessionLoaded(currentSessions: number) {

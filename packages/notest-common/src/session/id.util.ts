@@ -10,10 +10,13 @@ import { domainFromUrl } from "./domain-from-url.util";
 export function eventPath(event: BLSessionEvent) {
   return `${domainFromUrl(event.url)}/${eventReference(event)}`;
 }
-export function eventReference(event: BLSessionEvent) {
-  return `${event.timestamp}_${event.type}_${event.name}_${event.sid}_${
-    event.tab
-  }_${encodeURIComponent(event.url)}`;
+export function eventReference(
+  event: BLSessionEvent,
+  optionalTimestamp?: number
+) {
+  return `${optionalTimestamp ?? event.timestamp}_${event.type}_${event.name}_${
+    event.sid
+  }_${event.tab}_${encodeURIComponent(event.url)}`;
 }
 
 export function eventInfoFromReference(
