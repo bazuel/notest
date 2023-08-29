@@ -1,8 +1,8 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { like, paginated, PostgresDbService, sql } from '@notest/backend-shared';
+import {Injectable, OnModuleInit} from '@nestjs/common';
+import {like, paginated, PostgresDbService, sql} from '@notest/backend-shared';
 import { CryptService } from '../shared/services/crypt.service';
-import { CrudService } from '../shared/services/crud.service';
-import { NTUser } from '@notest/common';
+import {CrudService} from '../shared/services/crud.service';
+import {NTUser} from '@notest/common';
 
 @Injectable()
 export class UserService extends CrudService<NTUser> implements OnModuleInit {
@@ -34,7 +34,7 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
               state     text,
               phone     text,
               domains   jsonb,
-              api_token     text,
+              api_token text,
               created   TIMESTAMPTZ
           );
       `;
@@ -53,7 +53,7 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
   }
 
   async createUser(user: NTUser) {
-    let { nt_userid, ...u } = user;
+    let {nt_userid, ...u} = user;
     if (!u.password) u.password = 'smith@' + Math.round(Math.random() * 1000);
     else u.password = this.crypt.hash(u.password);
     return this.create(u);
@@ -73,7 +73,7 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
   }
 
   async updateUser(user: Partial<NTUser>) {
-    const { password, ...u } = user;
+    const {password, ...u} = user;
     return await this.update(u);
   }
 

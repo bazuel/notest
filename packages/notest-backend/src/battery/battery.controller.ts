@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BatteryService } from './battery.service';
-import { UserId } from '../shared/token.decorator';
+import { UserId } from '../shared/decorators/token.decorator';
 import { NTBattery } from '@notest/common';
 
 @Controller('battery')

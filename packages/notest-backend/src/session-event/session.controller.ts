@@ -15,9 +15,9 @@ import {
   streamToBuffer,
   unzipJson
 } from '@notest/common';
-import { EventService } from './event.service';
-import { UserId, UserIdIfHasToken } from '../shared/token.decorator';
+import { UserId, UserIdIfHasToken } from '../shared/decorators/token.decorator';
 import { ProducerService } from '../notest-shared/services/producer.service';
+import { HasToken } from '../shared/guards/token.guards';
 
 export type MultipartFile = {
   file: ReadableStream;
@@ -42,7 +42,6 @@ export class SessionController {
 
   constructor(
     private sessionService: SessionService,
-    private eventService: EventService,
     private producerService: ProducerService,
     private assertionService: AssertionService,
     private mediaService: MediaService
@@ -58,6 +57,7 @@ export class SessionController {
     this.fullDoms[reference] = fullDom;
     const frontendBase = globalConfig.app_url || 'http://localhost:4200';
     const frontendUrl = `${frontendBase}/session/session-camera?id=${reference}&backend=${globalConfig.backend_url}`;
+    console.log('frontendUrl', frontendUrl);
     const shotUrl =
       process.env.SCREENSHOT_URL +
       `/?width=${fullDom.width}&height=${fullDom.height}&wait=10000&url=${encodeURIComponent(
@@ -165,14 +165,14 @@ export class SessionController {
     return eventList;
   }
 
-  //@UseGuards(HasToken)
+  @HasToken()
   @Get('find-by-userid')
   async findById(@UserId() userid: string) {
     const sessions = await this.sessionService.findByField('userid', userid);
     return { sessions };
   }
 
-  //@UseGuards(HasToken)
+  @HasToken()
   @Get('find-by-reference')
   async findByReference(@Query('reference') reference: string) {
     const sessions = await this.sessionService.findByField(

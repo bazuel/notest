@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NTBattery, NTTest } from '@notest/common';
-import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { Router } from '@angular/router';
 import { BatteryService } from '../../services/battery.service';
+
 @Component({
   selector: 'nt-battery-test-dashboard',
   templateUrl: './battery-test-dashboard.component.html',
@@ -11,11 +11,8 @@ import { BatteryService } from '../../services/battery.service';
 export class BatteryTestDashboardComponent implements OnInit {
   activeBatteryList: NTBattery[] = [];
 
-  constructor(
-    private urlParamService: UrlParamsService,
-    private router: Router,
-    private batteryService: BatteryService
-  ) {}
+  constructor(private router: Router, private batteryService: BatteryService) {}
+
   async ngOnInit() {
     this.activeBatteryList = await this.batteryService
       .findBatteryByUserId()
