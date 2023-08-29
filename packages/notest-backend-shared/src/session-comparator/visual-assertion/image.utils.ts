@@ -8,14 +8,14 @@ export function cropImage(image: Buffer, rect: DOMRect) {
   return extractedImage;
 }
 
-export function cropImageAndShift1Px(image: Buffer, rect: DOMRect) {
+export function cropImageAndShift1Px(image: Buffer, rect: DOMRect): PNG {
+  let sourceImg = PNG.sync.read(image);
   try {
-    let sourceImg = PNG.sync.read(image);
     let extractedImage = new PNG({ width: rect.width, height: rect.height });
     PNG.bitblt(sourceImg, extractedImage, rect.x + 1, rect.y + 1, rect.width, rect.height);
     return extractedImage;
   } catch (error) {
-    return image;
+    return sourceImg;
   }
 }
 
