@@ -15,6 +15,7 @@ export function cropImageAndShift1Px(image: Buffer, rect: DOMRect): PNG {
     PNG.bitblt(sourceImg, extractedImage, rect.x + 1, rect.y + 1, rect.width, rect.height);
     return extractedImage;
   } catch (error) {
+    console.log('error cropping image');
     return sourceImg;
   }
 }
@@ -43,8 +44,7 @@ export function compareImage(image1: PNG, image2: PNG) {
     );
   }
 
-  console.log('version 1');
-  if (primaryColor1.primaryColorPercent >= 99) return { imageDiff: diff, pixelMismatch: 0 };
+  if (primaryColor1.primaryColorPercent >= 95) return { imageDiff: diff, pixelMismatch: 0 };
 
   totalPixels = totalPixels - primaryColor1.primaryColorPixelNumber;
 
@@ -57,7 +57,7 @@ export function getPrimaryColor(image: PNG) {
   const { width, height } = image;
   const colors: { [color: string]: number } = {};
   for (let i = 0; i < image.data.length; i += 4) {
-    const pixel = image.data.slice(i, i + 4);
+    const pixel = image.data.subarray(i, i + 4);
     const color = pixel.join(',');
     if (colors[color]) colors[color]++;
     else colors[color] = 1;
