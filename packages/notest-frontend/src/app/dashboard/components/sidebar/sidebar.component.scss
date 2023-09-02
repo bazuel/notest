@@ -1,33 +1,87 @@
 .sidebar {
-  @apply flex h-screen w-10 flex-col overflow-hidden bg-gradient-to-br from-nt-50 to-white transition-all md:w-64;
+  @apply fixed top-0 left-0 z-20 h-screen w-14 hover:w-64 overflow-hidden py-6 px-4 hover:px-6;
+  @apply bg-gradient-to-br from-nt-50 to-white transition-all;
+  @apply flex flex-col justify-center justify-items-center shadow-lg;
 
   ul {
-    @apply list-none m-0 p-0;
+    @apply list-none p-0;
   }
 
   li {
-    @apply h-10 w-full cursor-pointer px-2 leading-10 whitespace-nowrap hover:bg-nt-100;
-    nt-icon {
-      @apply mr-2 indent-[0%];
-    }
+    @apply h-10 w-full cursor-pointer leading-10 whitespace-nowrap hover:bg-nt-100;
 
     a {
-      @apply flex items-center indent-[-1000%] uppercase text-nt-400 no-underline md:indent-[0%] md:ml-3;
+      @apply flex items-center h-10 uppercase text-nt-400 no-underline p-2;
     }
   }
   nt-logo {
-    @apply indent-[-1000%] md:indent-[0%] my-4 mx-1;
+    @apply mb-4;
   }
 
   .personal-info {
+    @apply mb-10 -ml-2;
     nt-icon {
-      @apply m-0 indent-0 absolute left-2 md:relative left-auto;
+      @apply m-0 indent-0 absolute md:relative;
     }
-
-    @apply indent-[-1000%] md:indent-[0%];
   }
 }
 
-bazuel-link {
-  @apply m-2 block invisible md:visible;
+.sidebar:hover {
+  a div {
+    display: flex;
+  }
+
+  a,
+  li > div {
+    @apply justify-start;
+  }
+  nt-icon {
+    @apply mr-2;
+  }
+
+  nt-icon[name='add'] {
+    display: block;
+  }
+
+  ::ng-deep {
+    nt-logo span {
+      @apply indent-[0%];
+    }
+  }
+
+  .personal-info {
+    * :not(nt-profile-image) {
+      @apply opacity-100;
+    }
+  }
+}
+
+.sidebar {
+  a div {
+    display: none;
+  }
+
+  a,
+  li > div {
+    @apply justify-center;
+  }
+
+  nt-icon[name='add'] {
+    display: none;
+  }
+
+  ::ng-deep {
+    nt-logo img {
+      @apply -ml-1;
+    }
+    nt-logo span {
+      @apply indent-[-1000%];
+    }
+  }
+
+  .personal-info {
+    * :not(nt-profile-image) {
+      @apply opacity-0;
+    }
+  }
 }

@@ -68,8 +68,12 @@ const injectWidgetCallBack = async () => {
     { type: 'fetch', data: { url: '/user/get-user', method: 'GET' } },
     undefined,
     false,
-    (user: NTUser) => {
-      if (!user?.domains?.length || user.domains.includes(window.location.hostname)) {
+    async (user: NTUser) => {
+      if (
+        !user?.domains?.length ||
+        user.domains.includes(window.location.hostname) ||
+        (await isRecording())
+      ) {
         injectWidgetCallBack();
       }
     }

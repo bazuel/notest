@@ -1,9 +1,9 @@
-<div class="relative">
+<div class="relative h-full">
   <div id="copied" class="copied-popup hidden">copied to clipboard</div>
   <div class="title">
     {{label}}
     <nt-icon title="copy" id="copy" class="relative ml-auto" name="copy" (click)="onCopyClick()"></nt-icon>
     <nt-icon title="download" class="mx-2" name="download" (click)="onDownloadClick()"></nt-icon>
   </div>
-  <div #textareaContainer></div>
+  <div #textareaContainer class="flex-1 overflow-auto"></div>
 </div>

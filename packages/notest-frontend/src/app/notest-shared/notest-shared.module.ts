@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { LogoComponent } from './components/logo/logo.component';
 import { ScreenshotComponent } from './components/screenshot/screenshot.component';
 import { SharedModule } from '../shared/shared.module';
@@ -31,6 +31,6 @@ import { SessionListWrappedComponent } from './components/session-list-wrapped/s
     AssertionPreviewComponent,
     SessionListWrappedComponent
   ],
-  imports: [CommonModule, SharedModule]
+  imports: [CommonModule, SharedModule, NgOptimizedImage]
 })
 export class NotestSharedModule {}

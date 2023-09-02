@@ -8,7 +8,6 @@
     "activeTab",
     "tabs",
     "cookies",
-    "commands",
     "webRequest"
   ],
   "host_permissions": [

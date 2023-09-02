@@ -22,14 +22,15 @@ export class ClusterRunnerService {
   async runMessage(messagePayload: EachMessagePayload) {
     if (messagePayload.message.size == 0) throw new Error('Empty message');
     const timer = setInterval(() => messagePayload.heartbeat(), 5000);
-    let videoPath;
-    try {
-      //get Event List from reference
-      console.log('Session Started');
+    let videoPath: string;
+    const { reference, backendType, sessionDomain, batteryId, runTimestamp } = JSON.parse(
+      messagePayload.message.value.toString()
+    ) as NTClusterMessage;
 
-      const { reference, backendType, sessionDomain, batteryId, runTimestamp } = JSON.parse(
-        messagePayload.message.value.toString()
-      ) as NTClusterMessage;
+    let newReference = '';
+
+    try {
+      console.log('Session Started');
 
       const targetList = await sessionService.getTargetListFromReference(reference);
 
@@ -51,7 +52,7 @@ export class ClusterRunnerService {
       );
       videoPath = monitoringSession.videoPath;
       //Save Results and Clean
-      const newReference = eventReference(monitoringSession.events[0], Date.now());
+      newReference = eventReference(monitoringSession.events[0], Date.now());
       const newSession: Partial<NTSession> = {
         reference: newReference,
         info: {
@@ -182,6 +183,13 @@ export class ClusterRunnerService {
       console.log('Session Ended');
     } catch (e) {
       console.log(`Error: \nsession reference: ${messagePayload.message.value.toString()}`, e);
+      const runFinishedAssertion: NTRunFinishedAssertion = {
+        original_reference: encodeURIComponent(reference),
+        new_reference: '',
+        type: 'runSuccessfullyFinished',
+        payload: { testSuccessfullyFinished: false, error: e }
+      };
+      await assertionService.save(runFinishedAssertion);
     } finally {
       this.removeVideo(videoPath);
       clearInterval(timer);

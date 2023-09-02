@@ -12,6 +12,7 @@ export class SidebarComponent implements OnInit {
   role = '';
   userid = '';
   ready = false;
+  sidebarHover = false;
 
   constructor(private tokenService: TokenService, private router: Router) {}
 

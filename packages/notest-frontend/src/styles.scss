@@ -103,7 +103,7 @@ label {
 }
 
 .card{
-  @apply w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer
+  @apply w-64 h-28 rounded-md shadow-md shadow-gray-300 overflow-hidden cursor-pointer transition-all hover:shadow-lg;
 }
 
 textarea{

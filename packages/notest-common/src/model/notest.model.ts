@@ -42,12 +42,35 @@ export interface NTBattery {
   backend_type: "full" | "mock";
   created?: Date | null;
 }
+
+/**
+ * Represents a session for the NoTest app.
+ *
+ * @interface
+ * @name NTSession
+ *
+ * @property {string} nt_sessionid - The session ID.
+ * @property {string} url - The URL associated with the session.
+ * @property {number} userid - The user ID associated with the session.
+ * @property {string} reference - A reference string associated with the session.
+ * @property {object} info - Additional information about the session.
+ * @property {string} info.title - The title of the session.
+ * @property {string} info.description - The description of the session.
+ * @property {DOMRect[]} [info.targetList] - A list of target DOMRect objects used for visual assertion captured during the session.
+ * @property {string} [info.loginReference] - A login reference string.
+ * @property {boolean} [info.isLogin] - Indicates if the session is a login session.
+ * @property {boolean} info.session_logged - Indicates if the session is logged.
+ * @property {boolean} info.internal_error - Indicates if there was an internal error in the session.
+ * @property {string} info.backend_type - The backend type associated with the session.
+ * @property {Date | null} [created] - The date and time when the session was created.
+ */
 export interface NTSession {
   nt_sessionid?: string;
   url: string;
   userid: number;
   reference: string;
   info: {
+    e2eScript: string;
     title: string;
     description: string;
     targetList?: DOMRect[];

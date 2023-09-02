@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import {BLSessionEvent, NTEvent, NTSession} from '@notest/common';
+import { BLSessionEvent, debounce, NTEvent, NTSession } from '@notest/common';
 import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
-import {Router} from "@angular/router";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'nt-session-debugger',
@@ -19,26 +19,40 @@ export class SessionDebuggerComponent implements OnInit {
   ready = false;
   generatingScript = false;
 
-  constructor(private sessionService: SessionService, private urlParamsService: UrlParamsService, private router: Router) {}
+  showScript = false;
+
+  constructor(
+    private sessionService: SessionService,
+    private urlParamsService: UrlParamsService,
+    private router: Router
+  ) {}
 
   @ShowFullScreenLoading()
   async ngOnInit() {
     this.reference = this.urlParamsService.get('reference')!;
     this.eventList = await this.sessionService.getEventsByReference(this.reference);
     this.session = await this.sessionService.getSessionByReference(this.reference);
+    this.script = this.session.info.e2eScript;
     this.ready = true;
     this.generatingScript = false;
     console.log('ref: ', this.reference);
-    console.log('session: ', this.eventList);
+    console.log('session: ', this.session);
   }
 
   async getSessionTest() {
     this.generatingScript = true;
-    this.script = await this.sessionService.getSessionTest(this.reference);
+    this.session.info.e2eScript = await this.sessionService.getSessionTest(this.reference);
+    this.showScript = true;
+    this.updateSession();
   }
 
   goTo() {
-    const previewLink = this.router.url.replace('debugger','preview');
+    const previewLink = this.router.url.replace('debugger', 'preview');
     this.router.navigateByUrl(previewLink);
   }
+
+  async updateSession() {
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+  debouncedSaveSession = debounce(async () => this.updateSession(), 1000);
 }

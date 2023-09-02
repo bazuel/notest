@@ -73,8 +73,6 @@ export class SessionService {
     await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
         const rerunSessions = await this.getRerunSessions(reference);
-        console.log('waiting for new session', currentSessions, rerunSessions);
-        console.log(rerunSessions);
         if (rerunSessions > currentSessions) {
           clearInterval(interval);
           resolve();

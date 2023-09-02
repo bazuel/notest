@@ -13,7 +13,7 @@ import { SessionDashboardComponent } from './components/session-dashboard/sessio
 import { NotestSharedModule } from '../notest-shared/notest-shared.module';
 import { SessionPreviewComponent } from './components/session-preview/session-preview.component';
 import { CameraComponent } from './components/camera/camera.component';
-import { CatchToken } from "../shared/services/catch-token";
+import { CatchToken } from '../shared/services/catch-token';
 import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
@@ -34,6 +34,12 @@ const routes: Routes = [
     SessionDashboardComponent,
     SessionPreviewComponent,
     CameraComponent
+    // DevtoolNetworkComponent,
+    // DevtoolStorageComponent,
+    // DevtoolHeaderComponent,
+    // DevtoolSummaryComponent,
+    // SessionDevtoolComponent,
+    // ResizableDirective
   ],
   imports: [
     CommonModule,
@@ -42,9 +48,7 @@ const routes: Routes = [
     NotestSharedModule,
     FormsModule
   ],
-  exports: [
-    SessionPreviewComponent
-  ],
+  exports: [SessionPreviewComponent],
   providers: [SessionService]
 })
 export class SessionModule {}

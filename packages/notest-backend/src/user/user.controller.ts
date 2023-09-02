@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { EmailService } from '../shared/services/email.service';
 import { ApiTokenData, NTApiPermission, TokenService } from '../shared/services/token.service';
-import { UserId } from '../shared/decorators/token.decorator';
+import { UserId, UserIdIfHasToken } from '../shared/decorators/token.decorator';
 import { NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
 import { HasToken, IsAdmin } from '../shared/guards/token.guards';
@@ -155,7 +155,8 @@ export class UserController {
 
   @Get('get-user')
   @HasToken()
-  async getUser(@UserId() id) {
+  async getUser(@UserIdIfHasToken() id: string | undefined) {
+    if (!id) return null;
     return await this.find(id);
   }
 

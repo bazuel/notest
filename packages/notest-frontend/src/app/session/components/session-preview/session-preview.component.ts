@@ -1,8 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import { NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common';
-import { TokenService } from '../../../shared/services/token.service';
+import { debounce, NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
 import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
@@ -46,7 +45,6 @@ export class SessionPreviewComponent {
   constructor(
     private sessionService: SessionService,
     private urlParamsService: UrlParamsService,
-    private tokenService: TokenService,
     private router: Router
   ) {}
 
@@ -101,8 +99,8 @@ export class SessionPreviewComponent {
     this.loginSessions = loginSessions.map((session) => {
       return { title: session.info.title, reference: session.reference };
     });
-    this.loginSessionSelected = await this.loginSessions.find(
-      (loginSession) => loginSession.reference == this.session.info.loginReference
+    this.loginSessionSelected = this.loginSessions.find(
+      (s) => s.reference == this.session.info.loginReference
     );
   }
 
@@ -134,8 +132,10 @@ export class SessionPreviewComponent {
 
   showVideo(reference: string) {
     this.videoReference = undefined;
-    setTimeout(() => (this.videoReference = reference), 10);
-    setTimeout(() => this.video?.play(0), 100);
+    setTimeout(() => {
+      this.videoReference = reference;
+      setTimeout(() => this.video?.play(0), 100);
+    }, 10);
   }
 
   setSessionHover(session?: NTSession) {
@@ -166,6 +166,10 @@ export class SessionPreviewComponent {
       this.session.info.loginReference = undefined;
     }
     this.loginSessionSelected = loginSession;
+    await this.updateSession();
+  }
+
+  async updateSession() {
     await this.sessionService.updateSessionInfo(this.session);
   }
 
@@ -187,4 +191,6 @@ export class SessionPreviewComponent {
     this.backendType = this.backendType === 'full' ? 'mock' : 'full';
     if (this.backendType === 'mock') await this.setLoginReference(undefined);
   }
+
+  debouncedSaveSession = debounce(async () => this.updateSession(), 1000);
 }
