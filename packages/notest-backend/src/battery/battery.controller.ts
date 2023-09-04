@@ -36,4 +36,5 @@ export class BatteryController {
     await this.batteryService.deleteCronJob(batteryId);
     await this.batteryService.delete(batteryId);
   }
+
 }
