@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { UserId } from '../shared/token.decorator';
+import { UserId } from '../shared/decorators/token.decorator';
 import { BatteryService } from '../battery/battery.service';
 import { HasPermission } from '../shared/guards/token.guards';
 

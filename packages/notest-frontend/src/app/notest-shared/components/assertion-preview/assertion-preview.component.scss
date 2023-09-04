@@ -9,3 +9,8 @@ table{
     }
   }
 }
+
+
+.visual-assertion-card {
+  @apply rounded-md shadow-lg overflow-hidden border-nt-400 m-2 cursor-pointer h-fit w-fit max-h-[300px] max-w-[300px];
+}

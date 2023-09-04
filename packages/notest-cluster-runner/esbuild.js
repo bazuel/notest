@@ -33,4 +33,4 @@ async function build(options) {
 build({
   outfile: 'dist/index.js',
   platform: 'node'
-});
+}).then(() => console.log('build done', process.argv.includes('-w') ? '\nwatching...' : ''));

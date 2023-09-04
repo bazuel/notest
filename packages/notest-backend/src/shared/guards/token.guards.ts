@@ -1,36 +1,36 @@
-import { CanActivate, ExecutionContext, Injectable, UseGuards } from '@nestjs/common';
-import { ApiTokenData, NTApiPermissionType, tokenService } from '../services/token.service';
-import { emailAndRoles, extractApiTokenData } from '../token.decorator';
+import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
+import { NTApiPermission, tokenService } from '../services/token.service';
 
-@Injectable()
-export class Admin implements CanActivate {
+export class _IsAdmin implements CanActivate {
   canActivate(ctx: ExecutionContext): boolean | Promise<boolean> {
-    const { roles } = emailAndRoles(ctx);
+    const req = ctx.switchToHttp().getRequest();
+    const { roles } = tokenService.emailAndRoles(req);
     return roles.indexOf('ADMIN') >= 0;
   }
 }
 
-@Injectable()
-export class HasToken implements CanActivate {
+export class _HasToken implements CanActivate {
   canActivate(ctx: ExecutionContext): boolean | Promise<boolean> {
-    const { roles } = emailAndRoles(ctx);
+    const req = ctx.switchToHttp().getRequest();
+    const { roles } = tokenService.emailAndRoles(req);
     return roles.length > 0;
   }
 }
 
-class HasApiPermission implements CanActivate {
-  constructor(private permission: NTApiPermissionType) {}
+class _HasPermission implements CanActivate {
+  constructor(private permission: NTApiPermission) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const hasToken = await new HasToken().canActivate(context);
+    const hasToken = await new _HasToken().canActivate(context);
     if (!hasToken) return false;
-    const { api } = extractApiTokenData(
-      context.switchToHttp().getRequest(),
-      tokenService
-    ) as ApiTokenData;
-    return api?.includes('ALL') || api?.includes(this.permission);
+    const { permissions } = tokenService.extractApiTokenData(context.switchToHttp().getRequest());
+    return permissions?.includes('ALL') || permissions?.includes(this.permission);
   }
 }
 
-export const HasPermission = (permission: NTApiPermissionType) =>
-  UseGuards(new HasApiPermission(permission));
+export const HasPermission = (permission: NTApiPermission) =>
+  UseGuards(new _HasPermission(permission));
+
+export const HasToken = () => UseGuards(new _HasToken());
+
+export const IsAdmin = () => UseGuards(new _IsAdmin());
