@@ -1,0 +1,3 @@
+<div class="devtool-header">
+  <a (click)="active = p; panelChange.emit(p)" *ngFor="let p of panels" [class.active]="active == p">{{p}}</a>
+</div>

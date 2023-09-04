@@ -1,0 +1,35 @@
+<ul [class.master]="isMaster">
+  <li *ngIf="isMaster">
+    <div class="actions">
+      <ng-container *ngFor="let a of actions">
+        <bl-icon-button class="md" [icon]="a.icon" [tooltip]="a.tooltip" [link]="a.link"
+                        (click)="handleAction(a, {event: $event, json: json, rows:rendered, wholeJson: wholeJson}) "></bl-icon-button>
+      </ng-container>
+    </div>
+  </li>
+  <ng-container *ngFor="let r of rendered">
+    <li [class.expanded]="r.expanded">
+      <div (click)="r.toggle($event)" class="json-viewer-row {{r.jsonType}}">
+        <span class="json-viewer-key">{{r.key}}</span>
+        <span class="json-viewer-ddots">:</span>
+        <span *ngIf="!r.expanded" [title]="r.tooltip" class="json-viewer-value {{r.jsonType}}">{{r.value}}</span>
+
+        <div class="actions" *ngIf="r.expanded">
+          <ng-container *ngFor="let a of actions">
+            <bl-icon-button class="md" [icon]="a.icon" [tooltip]="a.tooltip" [link]="a.link"
+                            (click)="handleAction(a, {event: $event, json: r.json, key:r.key, rows: r.rendered, wholeJson: wholeJson}) "></bl-icon-button>
+          </ng-container>
+        </div>
+      </div>
+      <div *ngIf="r.expanded">
+        <bl-json-viewer [isMaster]="false" [wholeJson]="wholeJson" [json]="r.json" (renderedUpdated)="r.rendered = $event"></bl-json-viewer>
+      </div>
+
+    </li>
+
+  </ng-container>
+
+
+</ul>
+
+

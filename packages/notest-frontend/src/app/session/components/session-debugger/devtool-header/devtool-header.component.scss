@@ -1,0 +1,38 @@
+.devtool-header {
+  display: flex;
+  align-items: center;
+  background-color: var(--bl-devtool-bkg-color);
+  border-bottom: 1px solid var(--bl-devtool-border-color);
+  width: 100%;
+  height: 27px;
+  font-size: 12px;
+  font-family: Consolas, sans-serif;
+  color: var(--bl-devtool-font-dark-color);
+  line-height: 26px;
+
+  a {
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 10px 0px 10px;
+    font-family: Consolas, sans-serif;
+    color: var(--bl-devtool-font-dark-color);
+    height: 26px;
+    line-height: 26px;
+    border-bottom: 2px solid transparent;
+  }
+
+  a:hover {
+    background-color: var(--bl-devtool-tab-bkg-color-hover);
+  }
+
+  a:hover:not(.active) {
+    border-bottom: 0px;
+    padding-bottom: 1px;
+  }
+
+  a.active {
+    background-color: transparent;
+    color: var(--bl-devtool-active-color);
+    border-bottom: 2px solid #2E75EC;
+  }
+}

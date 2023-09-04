@@ -1,0 +1,79 @@
+:host {
+  display: inline-flex;
+}
+
+.link {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--bl-primary-color) !important;
+  position: relative;
+  height: 30px;
+  min-width: 120px;
+  line-height: 30px;
+  white-space: nowrap;
+
+  span {
+    white-space: nowrap;
+  }
+
+  span.base {
+    color: var(--bl-primary-color) !important;
+  }
+
+  span:not(.base) {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .base {
+    position: absolute;
+    top: -12px;
+    width: inherit;
+    font-size: 8px !important;
+    @apply text-blue-700;
+  }
+
+  .path {
+    color: var(--bl-600) !important;
+  }
+
+  .query {
+    color: var(--bl-700) !important;
+    font-size: 12px;
+  }
+
+  .hash {
+    color: var(--bl-800) !important;
+  }
+
+  .hash-query {
+    color: var(--bl-900) !important;
+  }
+}
+
+.url {
+  display: block;
+
+  &.url-preview {
+    height: 12px;
+    line-height: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+  }
+
+  span {
+    @apply text-gray-700;
+    font-size: 10px;
+    line-height: 12px;
+    height: 12px;
+    display: inline;
+    white-space: nowrap;
+
+    &:nth-child(even) {
+      @apply text-gray-900;
+    }
+
+  }
+}

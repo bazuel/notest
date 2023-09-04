@@ -1,0 +1,79 @@
+<bl-loading *ngIf="loading"></bl-loading>
+<div class="filters">
+  <input [(ngModel)]="filters.path" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by path"
+         title="Optionally you can use a regexp too"/>
+  <input [(ngModel)]="filters.status" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by status code"/>
+  <input [(ngModel)]="filters.method" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by method"/>
+</div>
+<div class="netwok-table-container">
+  <table *ngIf="!loading" class="bl-table" #table>
+    <tr>
+      <th resize style="width: 160px">Path</th>
+      <th resize style="width: 60px">Method/Status</th>
+      <th resize>Request</th>
+      <th resize style="width: 120px">Time</th>
+    </tr>
+    <tbody>
+    <ng-container *ngFor="let r of filteredRequests; let i = index">
+      <ng-container *ngIf="r.request">
+        <ng-container *ngTemplateOutlet="req; context: {r: r.request, i: i}"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="r.info">
+        <ng-container *ngTemplateOutlet="info; context: {info: r.info, i: i}"></ng-container>
+      </ng-container>
+    </ng-container>
+    </tbody>
+  </table>
+</div>
+<ng-template #info let-i="i" let-info="info">
+  <tr (click)="onInfoClick(info)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0" [class.highlight]="highlight[i]"
+      class="request-info-line">
+    <td>
+      <ng-container *ngIf="info.address">
+        Page address changed to
+      </ng-container>
+      <ng-container *ngIf="info.click">
+        Click
+      </ng-container>
+      <ng-container *ngIf="info.cursor">
+        <b>Cursor is here</b>
+      </ng-container>
+    </td>
+    <td class="text-center p-1" colspan="2">
+      <ng-container *ngIf="info.address">
+        <bl-url [full]="true" [url]="info.url" class="h-8 my-1 block p-1 bg-gray-100 rounded-md"></bl-url>
+      </ng-container>
+      <ng-container *ngIf="info.click">
+<!--        <nt-screenshot [reference]="info"></nt-screenshot>-->
+      </ng-container>
+      <ng-container *ngIf="info.cursor">
+<!--        <bl-img-shot [tab]="info" class="xs rounded"></bl-img-shot>-->
+      </ng-container>
+    </td>
+    <td [title]="info.timestamp | formatDate: 'HH:mm:ss'">
+<!--      <nt-badge class="tab-{{info.index}} mr-1">Tab #{{info.index + 1}}</nt-badge>-->
+      <bl-event-time [timestamp]="info.timestamp"></bl-event-time>
+    </td>
+  </tr>
+</ng-template>
+
+
+<ng-template #req let-i="i" let-r="r">
+  <tr (click)="onRequestClick(r)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0" [class.highlight]="highlight[i]"
+      class="cursor-pointer">
+    <td [title]="r.request.url" class="address">&lrm;{{r.request.path}}</td>
+    <td>{{r.request.method}}/{{r.status}}</td>
+    <td [title]="r.preview">{{r.preview}}</td>
+    <td [title]="r.timestamp | formatDate: 'HH:mm:ss'">
+      <nt-badge class="tab-{{r.tab}} mr-1">Tab #{{r.tab + 1}}</nt-badge>
+      <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
+    </td>
+  </tr>
+  <tr *ngIf="r.show">
+    <td class="json-view" colspan="5">
+      <bl-loading *ngIf="r.loading"></bl-loading>
+      <bl-json-viewer *ngIf="!r.loading"
+                      [json]="{url: r.data.request.url, request: r.data.request, response: r.data.response || r.data.error || {}}"></bl-json-viewer>
+    </td>
+  </tr>
+</ng-template>

@@ -33,6 +33,11 @@ import {
   MinusOneMonthDatePipe,
   PlusOneMonthDatePipe
 } from './pipes/time.pipe';
+import { JsonViewerComponent } from './components/json-viewer/json-viewer.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { JsonViewerService } from './components/json-viewer/json-viewer.service';
+import { IconButtonComponent } from './components/icon-button/icon-button.component';
+import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +64,11 @@ import {
     SwitchComponent,
     FromNowPipe,
     ProfileImageComponent,
-    CronComponent
+    CronComponent,
+    JsonViewerComponent,
+    LoadingComponent,
+    IconButtonComponent,
+    SvgIconComponent
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -83,12 +92,17 @@ import {
     BadgeComponent,
     SwitchComponent,
     ProfileImageComponent,
-    CronComponent
+    CronComponent,
+    JsonViewerComponent,
+    LoadingComponent,
+    IconButtonComponent,
+    SvgIconComponent
   ],
   providers: [
     { provide: NotificationService, useValue: new NotificationService() },
     IsLogged,
-    CatchToken
+    CatchToken,
+    JsonViewerService
   ]
 })
 export class SharedModule {}

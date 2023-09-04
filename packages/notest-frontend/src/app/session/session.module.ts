@@ -15,10 +15,15 @@ import { SessionPreviewComponent } from './components/session-preview/session-pr
 import { CameraComponent } from './components/camera/camera.component';
 import { CatchToken } from '../shared/services/catch-token';
 import { FormsModule } from '@angular/forms';
+import { DevtoolNetworkComponent } from './components/session-debugger/devtool-network/devtool-network.component';
+import { DevtoolStorageComponent } from './components/session-debugger/devtool-storage/devtool-storage.component';
+import { DevtoolHeaderComponent } from './components/session-debugger/devtool-header/devtool-header.component';
+import { SessionDevtoolComponent } from './components/session-debugger/session-devtool/session-devtool.component';
+import { ResizableDirective } from './directives/resizable.directive';
 
 const routes: Routes = [
   { path: 'session-camera', component: CameraComponent },
-  { path: 'session-debugger', component: SessionDebuggerComponent, canActivate: [CatchToken] },
+  { path: 'session-debugger', component: SessionDebuggerComponent, canActivate: [IsLogged] },
   { path: 'session-comparator', component: SessionComparatorComponent, canActivate: [IsLogged] },
   { path: 'session-dashboard', component: SessionDashboardComponent, canActivate: [IsLogged] },
   { path: 'session-preview', component: SessionPreviewComponent, canActivate: [CatchToken] }
@@ -33,13 +38,12 @@ const routes: Routes = [
     SessionComparatorComponent,
     SessionDashboardComponent,
     SessionPreviewComponent,
-    CameraComponent
-    // DevtoolNetworkComponent,
-    // DevtoolStorageComponent,
-    // DevtoolHeaderComponent,
-    // DevtoolSummaryComponent,
-    // SessionDevtoolComponent,
-    // ResizableDirective
+    CameraComponent,
+    DevtoolNetworkComponent,
+    DevtoolStorageComponent,
+    DevtoolHeaderComponent,
+    SessionDevtoolComponent,
+    ResizableDirective
   ],
   imports: [
     CommonModule,

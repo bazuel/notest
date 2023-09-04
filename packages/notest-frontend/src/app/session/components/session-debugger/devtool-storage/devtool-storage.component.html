@@ -1,0 +1,27 @@
+<table class="bl-table">
+  <tr>
+    <th resize>Key</th>
+    <th resize>Value</th>
+    <th resize style="width: 100px">Time</th>
+  </tr>
+  <tbody>
+  <ng-container *ngFor="let r of rendered; let i = index">
+    <tr (click)="r.show = !r.show" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
+        class="cursor-pointer">
+      <td [title]="r.key"><span class="inline-block truncate max-w-md">{{r.key}}</span></td>
+      <td [title]="r.value">{{r.preview}}</td>
+      <td>
+        <nt-badge class="tab-{{r.tab}} mr-1">Tab #{{r.tab + 1}}</nt-badge>
+        <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
+      </td>
+    </tr>
+    <tr *ngIf="r.show">
+      <td class="json-view" colspan="5">
+        <bl-json-viewer
+          [json]="{key: r.key, value: r.value}"></bl-json-viewer>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+
+</table>

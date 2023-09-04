@@ -1,0 +1,31 @@
+
+td.address {
+  text-align: right;
+  white-space: nowrap;
+  direction: rtl;
+}
+
+.filters {
+  display: flex;
+  border-bottom: 1px solid #d7d7d7;
+
+  input {
+    @apply p-2;
+  }
+}
+
+.request-info-line {
+  @apply cursor-pointer opacity-20;
+  &:hover {
+    opacity: 1 !important;
+  }
+}
+
+.netwok-table-container {
+  @apply overflow-y-auto;
+  height: calc(100% - 45px);
+}
+
+tr.highlight {
+  background-color: lightyellow;
+}
