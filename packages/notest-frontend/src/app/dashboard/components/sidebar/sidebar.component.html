@@ -15,7 +15,7 @@
     </li>
   </ul>
   <div class="relative mt-auto" *ngIf="tokenService.logged">
-    <div class="flex items-center personal-info">
+    <div class="flex items-center cursor-pointer personal-info" (click)="redirectToUser()">
       <nt-profile-image class="fixed" *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
       <div class="ml-12">
         <div class="text-sm text-gray-700">{{ fullname }}</div>

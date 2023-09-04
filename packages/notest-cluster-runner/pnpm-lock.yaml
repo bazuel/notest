@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@notest/common':
     specifier: link:..\notest-common
@@ -277,3 +273,7 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
