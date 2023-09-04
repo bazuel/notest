@@ -14,7 +14,7 @@ export class SidebarComponent implements OnInit {
   ready = false;
   sidebarHover = false;
 
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(public tokenService: TokenService, private router: Router) {}
 
   async ngOnInit() {
     this.fullname =

@@ -14,7 +14,7 @@
       </a>
     </li>
   </ul>
-  <div class="relative mt-auto">
+  <div class="relative mt-auto" *ngIf="tokenService.logged">
     <div class="flex items-center personal-info">
       <nt-profile-image class="fixed" *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
       <div class="ml-12">

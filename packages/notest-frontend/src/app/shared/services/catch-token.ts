@@ -16,11 +16,12 @@ export class CatchToken implements CanActivate {
       const isTokenExpired = this.tokenService.isExpired();
       const urlToken = this.urlParamsService.get<{ token: string }>('token');
       if (isTokenExpired && urlToken) {
-          this.tokenService.set(urlToken);
+        this.tokenService.set(urlToken);
       }
       return true;
     } catch (e) {
       console.error(e);
+      this.router.navigate(['auth/login']);
       return false;
     }
   }
