@@ -7,13 +7,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {
-  BLEvent,
-  BLHTTPResponseEvent,
-  BLSessionEvent,
-  byTimestamp,
-  TabIndex
-} from '@notest/common';
+import { BLHTTPResponseEvent, BLSessionEvent, byTimestamp } from '@notest/common';
 import { CurrentTimestampService } from '../../../services/current-timestamp.service';
 import { SessionUrlParamsService } from '../../../services/session-url-params.service';
 
@@ -35,6 +29,13 @@ type InfoBeforeRequest = {
   address?: boolean;
 };
 
+export interface BLRange<T = any> {
+  from: number;
+  to: number;
+  loading?: boolean;
+  data?: T[];
+}
+
 @Component({
   selector: 'bl-devtool-network',
   templateUrl: './devtool-network.component.html',
@@ -51,41 +52,45 @@ export class DevtoolNetworkComponent implements OnInit {
 
   filteredRequests: {
     request?: AugmentedSidRequest;
-    info?: InfoBeforeRequest;
     timestamp: number;
   }[] = [];
   requests: AugmentedSidRequest[] = [];
   loading = true;
   filters = { path: '', status: '', method: '' };
-  private infos: InfoBeforeRequest[] = [];
   highlight: boolean[] = [];
 
   constructor(private params: SessionUrlParamsService, private ts: CurrentTimestampService) {
     ts.onChange((currentTimestamp) => {
-      if (this.filteredRequests.length > 1 && this.tableRef) {
-        let rows = this.tableRef.nativeElement.querySelectorAll('tr');
-        let r = this.filteredRequests.find((r) => r.timestamp > currentTimestamp)!;
-        let index = this.filteredRequests.indexOf(r);
-        rows[index + 1].scrollIntoView();
+      console.log('network.currentTimestamp: ', currentTimestamp);
+      try {
+        if (this.filteredRequests.length > 1 && this.tableRef) {
+          let rows = this.tableRef.nativeElement.querySelectorAll('tr');
+          let r = this.filteredRequests.find((r) => r.timestamp > currentTimestamp)!;
+          let index = this.filteredRequests.indexOf(r);
+          rows[index + 1].scrollIntoView();
+        }
+        this.filteredRequests.forEach((r, i) => {
+          this.highlight[i] = ts.isClose(r.timestamp);
+        });
+      } catch {
+        //ignore highlighting errors
       }
-      this.filteredRequests.forEach((r, i) => {
-        this.highlight[i] = ts.isClose(r.timestamp);
-      });
     });
   }
 
   async ngOnInit() {
-    let { sid, tabs, from, to } = await this.params.get();
-    let tabIndex = new TabIndex().index.bind(new TabIndex());
-    const tabIndexes = tabs.map((t) => ({
-      tab: t,
-      index: tabIndex(t)
-    }));
-    const isRequest = (e: BLEvent): e is BLHTTPResponseEvent => e.type == 'http';
-    this.requests = this.events.filter(isRequest).map((r: BLHTTPResponseEvent) => {
+    await this.updateRange();
+  }
+
+  private async updateRange() {
+    console.log('this.events: ', this.events);
+    this.loading = true;
+    const isHttpRequest = (e: BLSessionEvent): e is BLHTTPResponseEvent =>
+      e.name === 'after-response';
+    this.requests = this.events.filter(isHttpRequest).map((r: BLHTTPResponseEvent) => {
       return {
         ...r,
-        tab: tabIndexes.find((ti) => ti.tab == r.tab)!.index,
+        tab: r.tab,
         preview: JSON.stringify({
           headers: r.request.headers,
           body: r.request.body,
@@ -95,25 +100,7 @@ export class DevtoolNetworkComponent implements OnInit {
         show: false
       };
     });
-    const isClickAddresses = (e: BLEvent): e is BLSessionEvent =>
-      ['click', 'address'].includes(e.name);
-    let clickAddresses = this.events.filter(isClickAddresses);
-    let infos: InfoBeforeRequest[] = [
-      ...clickAddresses.map((i) => {
-        let info: InfoBeforeRequest = {
-          timestamp: i.timestamp,
-          tab: i.tab,
-          url: i.url,
-          sid: i.sid,
-          index: tabIndex(i.tab)
-        };
-        if (i.name == 'click') info.click = true;
-        if (i.name == 'address') info.address = true;
-        return info;
-      })
-    ];
-
-    this.infos = [...infos];
+    console.log('this.requests: ', this.requests);
     this.updateFilteredRequests();
     this.loading = false;
   }
@@ -149,8 +136,7 @@ export class DevtoolNetworkComponent implements OnInit {
 
     //include infos and sort
     this.filteredRequests = [
-      ...requestsToInclude.map((r) => ({ request: r, timestamp: r.timestamp })),
-      ...this.infos.map((r) => ({ info: r, timestamp: r.timestamp }))
+      ...requestsToInclude.map((r) => ({ request: r, timestamp: r.timestamp }))
     ].sort(byTimestamp);
   }
 
@@ -177,10 +163,5 @@ export class DevtoolNetworkComponent implements OnInit {
     );
     r.loading = false;
     this.timestampChange.emit(r.timestamp);
-  }
-
-  onInfoClick(info: InfoBeforeRequest) {
-    console.log('info: ', info);
-    this.timestampChange.emit(info.timestamp);
   }
 }
