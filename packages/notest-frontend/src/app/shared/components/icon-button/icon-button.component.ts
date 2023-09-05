@@ -7,8 +7,6 @@ import { BOIcon, icons } from '../icon/icon.component';
   styleUrls: ['./icon-button.component.scss']
 })
 export class IconButtonComponent implements OnInit {
-  icons = icons;
-
   @HostBinding('class') @Input('class') classList = '';
 
   @Input()
@@ -33,5 +31,7 @@ export class IconButtonComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.icon);
+  }
 }

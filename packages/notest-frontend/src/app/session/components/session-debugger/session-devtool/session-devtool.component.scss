@@ -1,19 +1,9 @@
-
-.resizer {
-  cursor: ew-resize;
-  background-color: #f9f9f9;
-}
-
-.devtool-panels {
-  @apply flex-1;
-  background-color: var(--bl-devtool-bkg-color);
-  border-right: 1px solid var(--bl-devtool-border-color);
+.devtool {
+  @apply flex flex-col bg-white shadow-md h-full w-full;
 }
 
 .devtool-content {
-  @apply overflow-y-auto;
-  height: calc(100% - 30px);
+  @apply flex-1 w-full overflow-y-auto;
 }
-
 
 

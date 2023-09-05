@@ -1,0 +1,6 @@
+<!--
+<bl-code-editor [code]="data.json" [actions]="['save']" (save)="data.json = $event" mode="json"></bl-code-editor>
+-->
+<bl-code-editor
+  code="console.log(json) // you can write any javascript to manipulate the json. then run it with the button above"
+  [context]="data.json" [actions]="['run']"></bl-code-editor>

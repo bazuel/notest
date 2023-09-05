@@ -1,13 +1,10 @@
-<div class="flex h-full">
-  <div class="devtool-panels">
-    <bl-devtool-header (panelChange)="active = $event" [panels]="panels"></bl-devtool-header>
-    <div class="devtool-content">
-      <bl-devtool-network [events]="events" (timestampChange)="timestampChange.emit($event)"
-                          *ngIf="active == 'Network'"></bl-devtool-network>
-      <bl-devtool-storage *ngIf="active == 'LocalStorage'" [events]="events" type="local"></bl-devtool-storage>
-      <bl-devtool-storage *ngIf="active == 'SessionStorage'" [events]="events" type="session"></bl-devtool-storage>
-      <bl-devtool-storage *ngIf="active == 'Cookies'" [events]="events" type="cookie"></bl-devtool-storage>
-    </div>
+<div class="devtool">
+  <nt-devtool-header class="h-fit" (panelChange)="active = $event" [panels]="panels"></nt-devtool-header>
+  <div class="devtool-content">
+          <nt-devtool-network class="h-full overflow-y-auto w-full" [events]="events" (timestampChange)="timestampChange.emit($event)"
+                              *ngIf="active == 'Network'"></nt-devtool-network>
+          <bl-devtool-storage *ngIf="active == 'LocalStorage'" [events]="events" type="local"></bl-devtool-storage>
+          <bl-devtool-storage *ngIf="active == 'SessionStorage'" [events]="events" type="session"></bl-devtool-storage>
+          <bl-devtool-storage *ngIf="active == 'Cookies'" [events]="events" type="cookie"></bl-devtool-storage>
   </div>
-  <div class="h-full w-1 resizer hidden md:block" resize="parent"></div>
 </div>

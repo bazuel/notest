@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DevtoolPanel, devtoolsPanels } from '../session-devtool/session-devtool.component';
 
 @Component({
-  selector: 'bl-devtool-header',
+  selector: 'nt-devtool-header',
   templateUrl: './devtool-header.component.html',
   styleUrls: ['./devtool-header.component.scss']
 })

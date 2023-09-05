@@ -16,7 +16,7 @@ export type DevtoolPanel = keyof typeof devtoolsPanelsData;
 export const devtoolsPanels: DevtoolPanel[] = Object.keys(devtoolsPanelsData) as DevtoolPanel[];
 
 @Component({
-  selector: 'bl-session-devtool',
+  selector: 'nt-session-devtool',
   templateUrl: './session-devtool.component.html',
   styleUrls: ['./session-devtool.component.scss']
 })

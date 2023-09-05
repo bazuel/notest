@@ -43,7 +43,7 @@ li {
   position: relative;
 }
 
-.json-viewer-ddots {
+.json-viewer-dots {
   color: #240024;
 }
 
@@ -95,5 +95,3 @@ li {
 li.expanded > .json-viewer-row.object:before, li.expanded > .json-viewer-row.array:before {
   transform: rotate(90deg);
 }
-
-

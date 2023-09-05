@@ -1,8 +1,12 @@
 
+@import "../../../../notest-shared/styles/table";
+@import "../../../../notest-shared/styles/scrollbar";
+
 td.address {
   text-align: right;
   white-space: nowrap;
   direction: rtl;
+  @apply font-semibold text-sm text-nt-400;
 }
 
 .filters {
@@ -10,22 +14,22 @@ td.address {
   border-bottom: 1px solid #d7d7d7;
 
   input {
-    @apply p-2;
-  }
-}
-
-.request-info-line {
-  @apply cursor-pointer opacity-20;
-  &:hover {
-    opacity: 1 !important;
+    @apply p-2 rounded-none border-0 border-b-2 border-r border-gray-200 focus:border-b-blue-500;
   }
 }
 
 .network-table-container {
-  @apply overflow-y-auto;
+  @apply overflow-y-auto scrollbar-md;
   height: calc(100% - 45px);
 }
 
-tr.highlight {
-  background-color: lightyellow;
+td.json-view {
+  @apply p-0 border-t border-b border-gray-200;
+}
+
+bl-devtool, bl-session-devtool {
+  font-size: 12px;
+  font-family: Consolas, sans-serif;
+  color: var(--bl-devtool-font-dark-color);
+  line-height: 26px;
 }

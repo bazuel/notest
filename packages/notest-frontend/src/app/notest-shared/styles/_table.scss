@@ -1,0 +1,41 @@
+.bl-table {
+  width: calc(100% - 1px);
+
+  th {
+    cursor: ew-resize;
+  }
+
+  td {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    @apply px-2 py-1;
+  }
+}
+
+.bl-table th, .bl-table td {
+  @apply px-2;
+}
+
+.bl-table tr.odd {
+  background-color: #f9f9f9;
+}
+
+.bl-table tr.even {
+  background-color: #fefefe;
+}
+
+.bl-table.striped tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.bl-table th:not(:last-child), .bl-table td:not(:last-child) {
+  border-right: 1px solid var(--bl-devtool-border-color);
+}
+
+.bl-table th {
+  border: 0;
+  background-color: var(--bl-devtool-bkg-color);
+  height: 27px;
+}

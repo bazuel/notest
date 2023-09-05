@@ -38,6 +38,9 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { JsonViewerService } from './components/json-viewer/json-viewer.service';
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
+import { JsonTemplateComponent } from './components/json-template/json-template.component';
+import { CopyDirective } from './directives/copy.directive';
+import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +71,10 @@ import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
     JsonViewerComponent,
     LoadingComponent,
     IconButtonComponent,
-    SvgIconComponent
+    SvgIconComponent,
+    JsonTemplateComponent,
+    CopyDirective,
+    CodeEditorComponent
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -96,7 +102,10 @@ import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
     JsonViewerComponent,
     LoadingComponent,
     IconButtonComponent,
-    SvgIconComponent
+    SvgIconComponent,
+    JsonTemplateComponent,
+    CopyDirective,
+    CodeEditorComponent
   ],
   providers: [
     { provide: NotificationService, useValue: new NotificationService() },

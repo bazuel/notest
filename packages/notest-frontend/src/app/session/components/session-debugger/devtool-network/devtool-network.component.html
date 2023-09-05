@@ -4,33 +4,33 @@
   <input [(ngModel)]="filters.status" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by status code"/>
   <input [(ngModel)]="filters.method" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by method"/>
 </div>
-<div class="netwok-table-container">
-  <bl-loading *ngIf="loading"></bl-loading>
-  <table *ngIf="!loading" class="bl-table" #table>
-    <tr>
+<div class="network-table-container">
+  <table class="bl-table">
+    <tr class="sticky top-0 shadow-md">
       <th resize style="width: 160px">Path</th>
       <th resize style="width: 60px">Method/Status</th>
       <th resize>Request</th>
-      <th resize style="width: 120px">Time</th>
+      <th resize style="width: 90px">Time</th>
     </tr>
     <tbody>
     <ng-container *ngFor="let r of filteredRequests; let i = index">
       <ng-container *ngIf="r.request">
-        <tr (click)="onRequestClick(r.request)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
-            [class.highlight]="highlight[i]"
+        <tr (click)="onRequestClick(r)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
             class="cursor-pointer">
-          <td [title]="r.request.url" class="address">&lrm;{{r.request.request.path}}</td>
-          <td>{{r.request.request.method}}/{{r.request.status}}</td>
-          <td [title]="r.request.preview">{{r.request.preview}}</td>
+          <td [title]="r.request.url" class="address">{{r.request.path}}</td>
+          <td class="font-semibold text-sm"
+              [ngClass]="{'text-green-500': r.status >= 200 && r.status < 300, 'text-red-500': r.status < 200 || r.status >= 300 }"
+          >{{r.request.method}} / {{r.status}}</td>
+          <td [title]="r.preview">{{r.preview}}</td>
           <td [title]="r.request.timestamp | formatDate: 'HH:mm:ss'">
+            <!--            <bl-tab-badge [tab]="r.request.tab" class="mr-1"></bl-tab-badge>-->
             <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
           </td>
         </tr>
-        <tr *ngIf="r.request.show">
-          <td class="json-view" colspan="5">
-            <bl-loading *ngIf="r.request.loading"></bl-loading>
-            <bl-json-viewer *ngIf="!r.request.loading"
-                            [json]="{url: r.request.data.request.url, request: r.request.data.request, response: r.request.data.response || r.request.data.error || {}}"></bl-json-viewer>
+        <tr *ngIf="selectedRequest == r">
+          <td class="json-view" colspan="4">
+            <bl-json-viewer
+              [json]="{url: r.parsedQuery, request: r.request, response: r.response  || {}}"></bl-json-viewer>
           </td>
         </tr>
       </ng-container>

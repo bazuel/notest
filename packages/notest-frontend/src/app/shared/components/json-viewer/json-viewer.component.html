@@ -11,7 +11,7 @@
     <li [class.expanded]="r.expanded">
       <div (click)="r.toggle($event)" class="json-viewer-row {{r.jsonType}}">
         <span class="json-viewer-key">{{r.key}}</span>
-        <span class="json-viewer-ddots">:</span>
+        <span class="json-viewer-dots">:</span>
         <span *ngIf="!r.expanded" [title]="r.tooltip" class="json-viewer-value {{r.jsonType}}">{{r.value}}</span>
 
         <div class="actions" *ngIf="r.expanded">

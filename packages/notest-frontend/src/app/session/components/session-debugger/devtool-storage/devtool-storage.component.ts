@@ -30,8 +30,6 @@ export class DevtoolStorageComponent implements OnInit {
 
   rendered: DevtoolStorageItem[] = [];
 
-  constructor(private params: SessionUrlParamsService) {}
-
   ngOnInit(): void {
     this.updateRendered();
   }
@@ -46,9 +44,10 @@ export class DevtoolStorageComponent implements OnInit {
       if (!acc.includes(e.tab)) acc.push(e.tab);
       return acc;
     }, [] as number[]);
-    let call = () => this.events.filter((e) => e.type == 'storage');
-    if (this.type == 'session') call = () => this.events.filter((e) => e.type == 'session');
-    else if (this.type == 'cookie') call = () => this.events.filter((e) => e.type == 'cookie');
+    let call = () => this.events.filter((e) => e.name == 'storage');
+    if (this.type == 'session') call = () => this.events.filter((e) => e.name == 'local-full');
+    else if (this.type == 'cookie')
+      call = () => this.events.filter((e) => e.name == 'cookie-details');
 
     let tabIndex = new TabIndex();
     for (let t of tabs) {
@@ -106,6 +105,7 @@ export class DevtoolStorageComponent implements OnInit {
 
   private toCookieJson(cookieString: string) {
     console.log('cookieString: ', cookieString);
+    if (!cookieString) return {};
     return cookieString.split(/; */).reduce((obj, str) => {
       if (str === '') return obj;
       const eq = str.indexOf('=');
