@@ -16,6 +16,7 @@ class ScreenshotComparator {
     const imagesSimilarity: number[] = [];
     for (let i = 0; i < targetList.length; i++) {
       let rect = targetList[i];
+      console.log('comparing target', rect);
       let origImg = cropImageAndShift1Px(originalFinalImage, rect);
       let newImg = cropImage(newFinalImage, rect);
       let { imageDiff, pixelMismatch } = compareImage(origImg, newImg);

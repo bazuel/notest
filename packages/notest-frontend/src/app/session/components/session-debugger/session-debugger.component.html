@@ -28,6 +28,6 @@
   <nt-session-devtool class="w-[650px]"  [events]="eventList"></nt-session-devtool>
 
 </div>
-<nt-popup *ngIf="jsonTemplate" (close)="jsonTemplate = undefined">
+<nt-popup *ngIf="jsonTemplate" [closeClickOutside]=false (close)="jsonTemplate = undefined">
   <bl-json-template class="block w-[1000px] h-[800px]" [data]="jsonTemplate!"></bl-json-template>
 </nt-popup>

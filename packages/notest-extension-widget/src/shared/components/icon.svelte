@@ -4,7 +4,7 @@
   import { afterUpdate } from 'svelte';
 
   export let name: NotestIcon;
-  export let tooltip;
+  export let tooltip: string |undefined;
   export let color = 'currentColor';
 
   let clazz: string = '';
@@ -31,7 +31,6 @@
 </div>
 
 <style lang="scss">
-  @import '/app.scss';
   .hl-icon {
     @apply inline-block;
   }

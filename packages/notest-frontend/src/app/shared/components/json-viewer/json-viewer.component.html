@@ -22,7 +22,8 @@
         </div>
       </div>
       <div *ngIf="r.expanded">
-        <bl-json-viewer [isMaster]="false" [wholeJson]="wholeJson" [json]="r.json" (renderedUpdated)="r.rendered = $event"></bl-json-viewer>
+        <bl-json-viewer [isMaster]="false" [wholeJson]="wholeJson" [json]="r.json"
+                        (renderedUpdated)="r.rendered = $event"></bl-json-viewer>
       </div>
 
     </li>

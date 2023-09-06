@@ -78,7 +78,10 @@
   };
 </script>
 
-
+<svelte:head>
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet">
+</svelte:head>
 <div class='--nt-extension fixed --nt-widget flex flex-row'>
   {#if openSidebar}
     <Sidebar
@@ -118,21 +121,20 @@
 {/if}
 
 <style lang='scss'>
-  @import '../../app';
 
   .start-button {
-    @apply cursor-pointer absolute bottom-[-7px] right-11 w-5 h-5;
+    @apply cursor-pointer absolute bottom-[-7px] right-11 w-10 h-10;
     &.out {
       animation: vanish 100s;
     }
   }
 
   .stop-button {
-    @apply cursor-pointer absolute right-2 bottom-1 w-6 h-6;
+    @apply cursor-pointer absolute right-2 bottom-1 w-10 h-10;
   }
 
   .cancel-button {
-    @apply cursor-pointer absolute right-2 w-6 h-6;
+    @apply cursor-pointer absolute right-2 w-10 h-10;
   }
 
   .sidebar-button {

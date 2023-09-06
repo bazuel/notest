@@ -223,7 +223,6 @@
 
 
 <style lang='scss'>
-  @import "/app.scss";
 
   .sidebar-right {
     z-index: 10001;

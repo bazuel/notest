@@ -10,7 +10,6 @@
   let highlighter: HTMLElement | null = null;
 
   onMount(() => {
-    highlighter = document.getElementById('--nt-highlighter');
     enabled = true
     setListeners()
   })
@@ -86,6 +85,7 @@
     if (box) {
       setTimeout(() => {
         const {x, y} = document.body.getBoundingClientRect();
+        console.log(box, x, y)
         if (highlighter) {
           highlighter.style.width = box.width + 'px';
           highlighter.style.height = box.height + 'px';
@@ -97,20 +97,19 @@
   }
 </script>
 
-<div class="nt-highlighter" id="--nt-highlighter">
-    <Icon name="highlighter" color="white"></Icon>
+<div class="nt-highlighter" bind:this={highlighter}>
+  <Icon name="highlighter" color="white" tooltip=""></Icon>
 </div>
 
 <style lang="scss">
-    @import '/app.scss';
-    .nt-highlighter {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        z-index: 10001;
-        pointer-events: none;
-        background-color: rgba(6, 182, 212, .3);
-    }
+  .nt-highlighter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 10001;
+    pointer-events: none;
+    background-color: rgba(6, 182, 212, .3);
+  }
 
 </style>

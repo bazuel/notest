@@ -18,6 +18,7 @@ export class AppComponent {
   ) {
     router.events.subscribe(() => {
       this.pathClass = 'path' + window.location.pathname.replace(/\//gi, '-');
+      console.log(this.pathClass);
     });
   }
 }

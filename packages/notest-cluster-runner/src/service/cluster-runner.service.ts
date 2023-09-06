@@ -60,7 +60,8 @@ export class ClusterRunnerService {
           description: '',
           backend_type: backendType,
           internal_error: false,
-          session_logged: !!loginEventList
+          session_logged: !!loginEventList,
+          e2eScript: ''
         }
       };
       await mediaService

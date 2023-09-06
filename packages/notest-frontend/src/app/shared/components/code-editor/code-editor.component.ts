@@ -1,29 +1,30 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
   ViewChild
 } from '@angular/core';
+import { Compartment, EditorState } from '@codemirror/state';
+import { basicSetup, EditorView } from 'codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { indentUnit } from '@codemirror/language';
 
 type Json = any;
-
-import * as CM from 'codemirror';
 
 @Component({
   selector: 'bl-code-editor',
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss']
 })
-export class CodeEditorComponent implements OnInit, AfterViewInit {
-  @ViewChild('textarea', { static: true })
-  private textarea!: ElementRef<HTMLTextAreaElement>;
-  private editor: any;
+export class CodeEditorComponent implements OnInit, OnChanges {
+  @ViewChild('textarea', { static: true }) private textarea!: ElementRef<HTMLTextAreaElement>;
 
-  @Input()
+  private editor!: EditorView;
+
   code: string | Json;
 
   @Input()
@@ -33,34 +34,51 @@ export class CodeEditorComponent implements OnInit, AfterViewInit {
   save = new EventEmitter<string>();
   @Input()
   actions: ('save' | 'run')[] = [];
-  @Input()
-  mode: 'javascript' | 'json' | 'html' | 'xml' = 'javascript';
+
+  language = new Compartment();
 
   ngOnInit() {
-    if (typeof this.code != 'string') this.code = JSON.stringify(this.code, null, '  ');
+    this.code = 'console.log(json) // json is the context object so you can investigate it here';
+    this.code += '\n'.repeat(20);
+    this.recreateView();
+    this.editor.focus();
   }
 
-  ngAfterViewInit() {
-    const mode = this.mode == 'json' ? 'application/ld+json' : 'javascript';
-    console.log('cm');
-    // this.editor = Codemirror.fromTextArea(this.textarea.nativeElement, {
-    //   lineNumbers: true,
-    //   matchBrackets: true,
-    //   autoCloseBrackets: true,
-    //   lineWrapping: true,
-    //   mode
-    // });
+  ngOnChanges() {
+    this.updateCMView();
+  }
 
-    this.editor.setSize(window.innerWidth * 0.6, window.innerHeight * 0.6);
-    console.log('editor: ', this.editor);
+  recreateView() {
+    const state = EditorState.create({
+      extensions: [
+        basicSetup,
+        this.language.of(javascript({ typescript: true })),
+        indentUnit.of('  ')
+      ]
+    });
+    this.editor = new EditorView({
+      doc: this.code,
+      state,
+      parent: this.textarea.nativeElement
+    });
+    this.updateCMView();
+  }
+
+  private updateCMView() {
+    if (this.editor) {
+      let transaction = this.editor.state.update({
+        changes: { from: 0, to: this.editor.state.doc.length, insert: this.code }
+      });
+      this.editor.dispatch(transaction);
+    }
   }
 
   emitSaveEvent() {
-    this.save.emit(this.editor.getValue());
+    this.save.emit(this.editor.state.doc.toString());
   }
 
   run() {
-    this.code = this.editor.getValue();
-    new Function('json', this.code as string)(this.context);
+    this.code = this.editor.state.doc.toString();
+    new Function('json', this.code)(this.context);
   }
 }

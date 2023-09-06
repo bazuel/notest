@@ -44,6 +44,7 @@ export class SessionDebuggerComponent implements OnInit {
         icon: 'magic',
         tooltip: 'Open templates',
         handler: (data) => {
+          console.log('data: ', data);
           this.jsonTemplate = data;
         }
       },

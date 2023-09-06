@@ -1,12 +1,8 @@
-//import "./app.scss";
-import App from "./components/App.svelte";
+import '../app.scss';
+import App from './components/App.svelte';
 
-const app = setTimeout(
-  () =>
-    new App({
-      target: document.getElementById("--nt-widget"),
-    }),
-  1000
-);
+const app = new App({
+  target: document.querySelector('notest-widget').shadowRoot.getElementById('--nt-widget')
+});
 
 export default app;

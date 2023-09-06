@@ -38,7 +38,6 @@
 </div>
 
 <style lang='scss'>
-  @import "/app.scss";
 
   .nt-preview-image {
     @apply w-64 h-28 rounded-md shadow-lg overflow-hidden cursor-pointer;
