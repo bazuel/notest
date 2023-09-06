@@ -261,26 +261,3 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
     return text;
   }
 }
-
-/*
-@Component({
-  selector: 'sm-dossier-info-component',
-  template: `
-    <div class="flex">
-      <div>{{ data.surname }}</div>
-      <div>{{ data.name }}</div>
-      <div>{{ data.ragione_sociale }}</div>
-      <div>{{ data.date_start }}</div>
-    </div>
-  `,
-  styles: [
-    `
-      :host {
-        @apply p-2;
-      }
-    `
-  ]
-})
-export class DefaultItemComponent {
-  @Input() data!: SMDossierInfo;
-}*/

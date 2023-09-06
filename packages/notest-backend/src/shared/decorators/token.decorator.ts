@@ -30,6 +30,7 @@ import { decorator } from '../utils/decorator.util';
 
 export const Token = decorator((req) => tokenService.getToken(req));
 export const UserId = decorator((req) => tokenService.emailAndRoles(req).id);
+export const Roles = decorator((req) => tokenService.emailAndRoles(req).roles);
 
 export const UserIdIfHasToken = decorator((req) => {
   try {

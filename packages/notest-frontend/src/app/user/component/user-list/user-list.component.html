@@ -1,0 +1,38 @@
+<div *ngIf="users.length" class="p-8 h-full flex flex-col">
+  <h1>User list</h1>
+  <div class="flex-1 overflow-y-auto">
+    <table>
+      <thead>
+      <tr class="sticky top-0 bg-white shadow-md">
+        <th>Id</th>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>Email</th>
+        <th>Telephone</th>
+        <th>Roles</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of users" (click)="openUser(user.nt_userid)">
+        <td>{{user.nt_userid}}</td>
+        <td>{{user.name}}</td>
+        <td>{{user.surname}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.phone}}</td>
+        <td>
+          <div class="flex">
+            <nt-badge class="sm" *ngFor="let role of user.roles">{{NTRoleLabelsMap[role]}}</nt-badge>
+          </div>
+        </td>
+      </tr>
+      <tr (click)="openNewUser()">
+        <td>+</td>
+        <td>...</td>
+        <td>...</td>
+        <td>...</td>
+        <td>...</td>
+        <td>...</td>
+      </tr>
+    </table>
+  </div>
+</div>

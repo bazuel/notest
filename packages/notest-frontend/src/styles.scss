@@ -4,6 +4,7 @@
 
 @import 'node_modules/@butopen/design-system/src/index';
 @import url('https://fonts.googleapis.com/css?family=Anton');
+@import url('https://fonts.googleapis.com/css?family=Poppins');
 
 :root {
   --nt-primary-color: #0097e4;
@@ -63,7 +64,7 @@
 
 body {
   @extend .use-bo-design-system;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'poppins', sans-serif;
 }
 
 label {
@@ -76,14 +77,18 @@ label {
 }
 
 .bo-button {
-  @apply bg-gradient-to-br from-nt-secondary-light to-nt-secondary drop-shadow-md shadow-nt-400 font-extrabold text-xs p-1.5;
+  @apply font-extrabold text-xs p-1.5;
+
+  &:not(.outline) {
+    @apply bg-bop text-white;
+  }
 
   &[disabled] {
     @apply opacity-30;
   }
 
   &.outline {
-    @apply border-0 border-white bg-white p-1 text-xs outline-0;
+    @apply border-2 border-nt-secondary bg-white p-1 text-xs text-nt-secondary outline-0;
   }
 
   &.sm {

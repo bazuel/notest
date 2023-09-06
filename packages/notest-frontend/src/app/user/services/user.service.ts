@@ -8,8 +8,8 @@ import { NTUser } from '@notest/common';
 export class UserService {
   constructor(private http: HttpService) {}
 
-  async getUserById() {
-    return await this.http.get<NTUser>('/user/get-user');
+  async getUserById(id?: string) {
+    return await this.http.gest<NTUser>('/user/find', id ? { id } : {});
   }
 
   async generateApiToken() {
@@ -28,11 +28,15 @@ export class UserService {
       .then((res) => res.ok);
   }
 
-  async saveUserInfo(user: NTUser): Promise<NTUser> {
+  async save(user: NTUser): Promise<NTUser> {
     return await this.http.post('/user/update', { user });
   }
 
   async getApiToken() {
     return await this.http.get<{ apiToken: string }>('/user/get-api-token');
+  }
+
+  getUsers() {
+    return this.http.get<NTUser[]>('/user/list');
   }
 }

@@ -15,3 +15,4 @@ export * from "./model/assertion";
 export * from "./functions/assertion.guard";
 export * from "./functions/sort.util";
 export * from "./utils/tab-index.util";
+export * from "./functions/array.utils";

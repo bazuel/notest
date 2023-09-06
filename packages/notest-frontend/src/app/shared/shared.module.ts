@@ -41,6 +41,7 @@ import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { JsonTemplateComponent } from './components/json-template/json-template.component';
 import { CopyDirective } from './directives/copy.directive';
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
+import { InputLabelDirective } from './directives/input-label.directive';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { CodeEditorComponent } from './components/code-editor/code-editor.compon
     SvgIconComponent,
     JsonTemplateComponent,
     CopyDirective,
-    CodeEditorComponent
+    CodeEditorComponent,
+    InputLabelDirective
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -105,7 +107,8 @@ import { CodeEditorComponent } from './components/code-editor/code-editor.compon
     SvgIconComponent,
     JsonTemplateComponent,
     CopyDirective,
-    CodeEditorComponent
+    CodeEditorComponent,
+    InputLabelDirective
   ],
   providers: [
     { provide: NotificationService, useValue: new NotificationService() },

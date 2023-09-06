@@ -13,9 +13,15 @@
         <div>Test e2e</div>
       </a>
     </li>
+    <li>
+      <a routerLink="/user/user-list">
+        <nt-icon name="users"></nt-icon>
+        <div>User List</div>
+      </a>
+    </li>
   </ul>
   <div class="relative mt-auto" *ngIf="tokenService.logged">
-    <div class="flex items-center personal-info">
+    <div class="flex items-center personal-info cursor-pointer" routerLink="user/user-form">
       <nt-profile-image class="fixed" *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
       <div class="ml-12">
         <div class="text-sm text-gray-700">{{ fullname }}</div>

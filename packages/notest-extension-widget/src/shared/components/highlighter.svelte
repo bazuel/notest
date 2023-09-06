@@ -85,7 +85,6 @@
     if (box) {
       setTimeout(() => {
         const {x, y} = document.body.getBoundingClientRect();
-        console.log(box, x, y)
         if (highlighter) {
           highlighter.style.width = box.width + 'px';
           highlighter.style.height = box.height + 'px';
