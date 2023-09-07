@@ -1,0 +1,23 @@
+<div *ngIf="showConfirm" class="dialog-container">
+  <div class="bo-popup-content dialog">
+    <div [innerHTML]="text | safeHtml"></div>
+    <div class="flex items-center justify-center gap-4">
+      <button (click)="callbackConfirmResponse(true); showConfirm = false">Yes</button>
+      <button (click)="callbackConfirmResponse(false); showConfirm = false">No</button>
+      <button class="outline" (click)="callbackConfirmResponse(false); showConfirm = false">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showAlert" class="dialog-container">
+  <div class="bo-popup-content dialog">
+    <div class="text-center" [innerHTML]="text | safeHtml"></div>
+    <div class="flex items-center justify-center">
+      <button class="flex items-center justify-center w-20 p-2" (click)="callbackAlertResponse(); showAlert = false">
+        Ok
+      </button>
+    </div>
+  </div>
+</div>

@@ -13,6 +13,8 @@ import { TokenService } from '../../../shared/services/token.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 import { Location } from '@angular/common';
+import { dialog } from '../../../shared/components/dialog/dialog.component';
+import { RolesService } from '../../../notest-shared/services/roles.service';
 
 @Component({
   selector: 'nt-user',
@@ -54,7 +56,8 @@ export class UserComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     public tokenService: TokenService,
-    private urlParamsService: UrlParamsService
+    private urlParamsService: UrlParamsService,
+    public rolesService: RolesService
   ) {}
 
   @ShowFullScreenLoading()
@@ -179,8 +182,23 @@ export class UserComponent implements OnInit {
     return await this.userService.checkPassword(this.user.email, this.currentPassword!);
   }
 
-  toggleRole(value: NTRole) {
-    toggle(value, this.user.roles);
+  async toggleRole(value: NTRole) {
+    if (
+      value == 'ADMIN' &&
+      this.user.roles.includes('ADMIN') &&
+      this.user.nt_userid == this.tokenService.tokenData().id
+    ) {
+      const yes = await dialog.confirm(
+        'Are you sure you want to remove <b>Administrator</b> role to yourself? You will be logged out.'
+      );
+      if (!yes) return;
+      toggle(value, this.user.roles);
+      await this.saveUser();
+      this.tokenService.logout();
+      window.location.href = '/';
+    } else {
+      toggle(value, this.user.roles);
+    }
   }
 
   private canSavePassword() {

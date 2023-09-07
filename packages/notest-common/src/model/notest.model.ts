@@ -166,6 +166,13 @@ export const NTRoleLabelsMap: Record<NTRole, string> = {
   TESTER: "Tester",
 };
 
+export const NTRolesPriority: Record<NTRole, number> = {
+  ADMIN: 0,
+  USER: 3,
+  DEVELOPER: 1,
+  TESTER: 2,
+};
+
 export interface NTUser {
   nt_userid: string;
   name: string;

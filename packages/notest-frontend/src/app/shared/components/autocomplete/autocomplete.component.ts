@@ -23,83 +23,56 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
 
   @Input() component?: IComponent;
 
-  @Input()
-  items: T[] = [];
+  @Input() items: T[] = [];
+
+  @Input() item?: T;
+
+  @Input() show = false;
+
+  @Input() filterCallBack?: (i: T, query: string) => boolean;
+
+  @Input('input-class') inputClasses = '';
+
+  @Input('menu-class') menuClasses = '';
+
+  @Input() disabled = false;
+
+  @Input() required = false;
+
+  @Input() query? = '';
+
+  @Input() placeholder = '';
+
+  @Input() property!: keyof T;
+
+  @Input('second-property') secondProperty = '';
+
+  @Input('property-id') propertyId? = '';
+
+  @Input('selected-id') selectedId: string | number | undefined = '';
+
+  @Input('third-property') thirdProperty = '';
+
+  @Input() tooltipProperty?: string;
+
+  @Input() hideMenuOnSelect = true;
+
+  @Input() showKeys = false;
+
+  @Input() keysMapLabel: { [k in keyof T]?: string } = {};
+
+  @Output() blur = new EventEmitter();
+  @Output() onEnter = new EventEmitter<string>();
+  @Output() queryEmpty = new EventEmitter();
+  @Output() itemSelected = new EventEmitter<T>();
+  @Output() emptySelection = new EventEmitter<void>();
+  @Output() queryChanged = new EventEmitter<string>();
 
   itemsToShow: T[] = [];
 
-  @Input()
-  item?: T;
-
-  @Output()
-  itemSelected = new EventEmitter<T>();
-
-  @Output()
-  emptySelection = new EventEmitter<void>();
-
-  @Input()
-  show = false;
-
-  @Input()
-  filterCallBack?: (i: T, query: string) => boolean;
-
-  @Input('input-class')
-  inputClasses = '';
-  @Input('menu-class')
-  menuClasses = '';
-
-  @Input()
-  disabled = false;
-
-  @Input()
-  required = false;
-
-  @Input()
-  query? = '';
-
-  @Output()
-  queryChanged = new EventEmitter<string>();
-  @Input()
-  placeholder = '';
-
-  @Input()
-  property = '';
-
-  @Input('second-property')
-  secondProperty = '';
-
-  @Input('property-id')
-  propertyId? = '';
-
-  @Input('selected-id')
-  selectedId: string | number | undefined = '';
-
-  @Input('third-property')
-  thirdProperty = '';
-
-  style: { left: string; top: string } = { left: '', top: '' };
-  @Input()
-  tooltipProperty?: string;
-
-  @Input()
-  hideMenuOnSelect = true;
-
-  currentIndex = -1;
-
-  @Input()
-  showKeys = false;
-
-  @Input()
-  keysMapLabel: { [k in keyof T]: string } | {} = {};
-
-  @Output()
-  blur = new EventEmitter();
-  @Output()
-  onEnter = new EventEmitter<string>();
-  @Output()
-  queryEmpty = new EventEmitter();
-
   itemsHeight = 40;
+  currentIndex = -1;
+  style: { left: string; top: string } = { left: '', top: '' };
 
   highlight = new HighlightPipe();
 
@@ -170,7 +143,7 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
     console.log('i: ', i);
     this.query = '';
     if (!i[this.property] && i && typeof i === 'string') this.query = i;
-    if (i[this.property]) this.query = i[this.property];
+    if (i[this.property]) this.query = i[this.property] as string;
     if (i[this.secondProperty]) this.query = i[this.property] + ' ' + i[this.secondProperty];
     this.item = i;
     this.itemSelected.emit(this.item);
@@ -242,7 +215,7 @@ export class AutocompleteComponent<T = any> implements OnInit, OnChanges {
       highlighted(typeof i === 'string' ? i || '??' : i[property] || '??');
     let text;
     if (this.showKeys && this.keysMapLabel) {
-      text = `${this.keysMapLabel[this.property]}: ${value(item, this.property)}`;
+      text = `${this.keysMapLabel[this.property] as string}: ${value(item, this.property)}`;
       if (this.secondProperty) {
         text += ` - ${this.keysMapLabel[this.secondProperty]}: ${value(item, this.secondProperty)}`;
         if (this.thirdProperty) {

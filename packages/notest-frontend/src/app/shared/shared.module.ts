@@ -14,7 +14,7 @@ import {
 import { CapsLockDirective } from './directives/caps-lock.directive';
 import { PopupComponent } from './components/popup/popup.component';
 import { IsLogged } from './services/is-logged.guard';
-import { SafeUrlPipe } from './pipes/safe-url.pipe';
+import { SafeHtmlPipe, SafeUrlPipe } from './pipes/safe-url.pipe';
 import { CatchToken } from './services/catch-token';
 import { AutocompleteComponent } from './components/autocomplete/autocomplete.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
@@ -42,6 +42,7 @@ import { JsonTemplateComponent } from './components/json-template/json-template.
 import { CopyDirective } from './directives/copy.directive';
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 import { InputLabelDirective } from './directives/input-label.directive';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,9 @@ import { InputLabelDirective } from './directives/input-label.directive';
     JsonTemplateComponent,
     CopyDirective,
     CodeEditorComponent,
-    InputLabelDirective
+    InputLabelDirective,
+    DialogComponent,
+    SafeHtmlPipe
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -108,7 +111,9 @@ import { InputLabelDirective } from './directives/input-label.directive';
     JsonTemplateComponent,
     CopyDirective,
     CodeEditorComponent,
-    InputLabelDirective
+    InputLabelDirective,
+    DialogComponent,
+    SafeHtmlPipe
   ],
   providers: [
     { provide: NotificationService, useValue: new NotificationService() },

@@ -14,7 +14,7 @@ export class AsyncAutocompleteComponent<T = any> implements OnInit {
   @Input()
   searchFunction: (q: string) => Promise<T[]> = () => Promise.resolve([]);
   @Input()
-  property = '';
+  property!: keyof T;
 
   @Input('second-property')
   secondProperty = '';

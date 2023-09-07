@@ -15,7 +15,7 @@
     <div class="form-success" *ngIf="userInfoUpdated">
       Information saved Correctly
     </div>
-    <div *ngIf="tokenService.hasRole('ADMIN')">
+    <div *ngIf="rolesService.isAdmin">
       <nt-autocomplete label=Roles [items]="NTRoleMap" [property]="'name'"
                        (itemSelected)="toggleRole($event.value)"></nt-autocomplete>
       <div class="flex">

@@ -13,7 +13,7 @@
         <div>Test e2e</div>
       </a>
     </li>
-    <li>
+    <li *ngIf="rolesService.isAdmin">
       <a routerLink="/user/user-list">
         <nt-icon name="users"></nt-icon>
         <div>User List</div>
@@ -25,7 +25,7 @@
       <nt-profile-image class="fixed" *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
       <div class="ml-12">
         <div class="text-sm text-gray-700">{{ fullname }}</div>
-        <div class="text-xs uppercase text-gray-500">{{ role }}</div>
+        <div class="text-xs uppercase text-gray-500">{{ roleLabelsMap[role] }}</div>
       </div>
       <nt-icon class="ml-2 text-gray-500" name="logout" (click)="logout()"></nt-icon>
     </div>
