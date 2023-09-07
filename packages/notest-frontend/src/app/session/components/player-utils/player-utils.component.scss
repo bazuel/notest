@@ -1,0 +1,16 @@
+#time-bar {
+  @apply relative h-3 rounded-full flex items-center border border-bop w-full cursor-pointer;
+  @apply transition-all hover:shadow-gray-400 hover:drop-shadow-md;
+}
+
+#cursor {
+  @apply absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-md shadow-gray-400 -translate-x-1/2;
+  @apply cursor-pointer select-none;
+}
+
+.speed {
+  @apply p-2;
+  &.active {
+    @apply text-white bg-nt-500;
+  }
+}

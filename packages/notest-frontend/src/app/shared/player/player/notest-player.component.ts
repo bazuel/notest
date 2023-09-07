@@ -6,14 +6,16 @@ import {
   Input,
   OnChanges,
   Output,
-  ViewChild,
-} from "@angular/core";
-import { BLSessionEvent } from "@notest/common";
-import { PlayerComponent } from "./player.component";
+  ViewChild
+} from '@angular/core';
+import { BLSessionEvent } from '@notest/common';
+import { PlayerComponent } from './player.component';
 
 @Component({
-  selector: "nt-shared-player",
-  template: ` <div #camera class="camera"></div> `,
+  selector: 'nt-shared-player',
+  template: `
+    <div #camera class="camera"></div>
+  `,
   styles: [
     `
       :host {
@@ -27,11 +29,11 @@ import { PlayerComponent } from "./player.component";
         max-height: 100%;
         justify-content: center;
       }
-    `,
-  ],
+    `
+  ]
 })
 export class NotestPlayerComponent implements AfterViewInit, OnChanges {
-  @ViewChild("camera", { static: true })
+  @ViewChild('camera', { static: true })
   camera!: ElementRef<HTMLDivElement>;
   @Input()
   session!: BLSessionEvent[];
@@ -78,27 +80,21 @@ export class NotestPlayerComponent implements AfterViewInit, OnChanges {
   async ngAfterViewInit() {
     if (this.session) this.updatePlayerSession();
     this.player?.setSpeed(this.speed);
-    document.addEventListener("bl-devtool-resize", () => {
-      this.player.updatePlayerZoom();
-    });
+    document.addEventListener('bl-devtool-resize', () => this.player.updatePlayerZoom());
   }
 
   moveTo(timestamp: number) {
     if (timestamp < this.session[0].timestamp)
-      throw new Error(
-        "Provided timestamp is lesser than session timestamp range"
-      );
+      throw new Error('Provided timestamp is lesser than session timestamp range');
     if (timestamp > this.session[this.session.length - 1].timestamp)
-      throw new Error(
-        "Provided timestamp is greater than session timestamp range"
-      );
+      throw new Error('Provided timestamp is greater than session timestamp range');
     this.player.moveTo(timestamp);
   }
 
   private updatePlayerSession() {
     if (!this.player) {
       let player = new PlayerComponent(this.camera.nativeElement, {
-        deserializerProxyBasePath: "http://localhost:2550", //this.config.proxyBasePath,
+        deserializerProxyBasePath: 'http://localhost:2550', //this.config.proxyBasePath,
         onTimestampChange: (ts, last?: boolean) => {
           this.playerUpdate.emit({ timestamp: Math.round(ts), last });
         },
@@ -107,11 +103,11 @@ export class NotestPlayerComponent implements AfterViewInit, OnChanges {
         },
         onResize: (scale) => {
           this.playerResize.emit({ scale });
-        },
+        }
       });
       this.player = player;
     }
-    //let domFullTimestamp = this.session.find(h => (h as BLDomEvent).full)!.timestamp
-    this.player.setEvents(this.session);
+
+    this.player.setEvents(this.session, 'notest-widget');
   }
 }

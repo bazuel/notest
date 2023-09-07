@@ -91,6 +91,7 @@ export class SessionDebuggerComponent implements OnInit {
   async getSessionTest() {
     this.generatingScript = true;
     this.session.info.e2eScript = await this.sessionService.getSessionTest(this.reference);
+    this.generatingScript = false;
     this.showScript = true;
     this.updateSession();
   }

@@ -20,6 +20,7 @@ import { DevtoolStorageComponent } from './components/session-debugger/devtool-s
 import { DevtoolHeaderComponent } from './components/session-debugger/devtool-header/devtool-header.component';
 import { SessionDevtoolComponent } from './components/session-debugger/session-devtool/session-devtool.component';
 import { ResizableDirective } from './directives/resizable.directive';
+import { PlayerUtilsComponent } from './components/player-utils/player-utils.component';
 
 const routes: Routes = [
   { path: 'session-camera', component: CameraComponent },
@@ -43,7 +44,8 @@ const routes: Routes = [
     DevtoolStorageComponent,
     DevtoolHeaderComponent,
     SessionDevtoolComponent,
-    ResizableDirective
+    ResizableDirective,
+    PlayerUtilsComponent
   ],
   imports: [
     CommonModule,

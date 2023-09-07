@@ -5,14 +5,16 @@ import {
   EventEmitter,
   Input,
   Output,
-  ViewChild,
-} from "@angular/core";
-import { BLDomEvent } from "@notest/common";
-import { PlayerComponent } from "./player.component";
+  ViewChild
+} from '@angular/core';
+import { BLDomEvent } from '@notest/common';
+import { PlayerComponent } from './player.component';
 
 @Component({
-  selector: "nt-camera",
-  template: ` <div #camera class="camera"></div> `,
+  selector: 'nt-camera',
+  template: `
+    <div #camera class="camera"></div>
+  `,
   styles: [
     `
       :host {
@@ -26,11 +28,11 @@ import { PlayerComponent } from "./player.component";
         max-height: 100%;
         justify-content: center;
       }
-    `,
-  ],
+    `
+  ]
 })
 export class NotestCameraComponent implements AfterViewInit {
-  @ViewChild("camera", { static: true })
+  @ViewChild('camera', { static: true })
   camera!: ElementRef<HTMLDivElement>;
 
   @Input()
@@ -58,7 +60,7 @@ export class NotestCameraComponent implements AfterViewInit {
 
   async ngAfterViewInit() {
     if (this.domEvent) this.updatePlayerSession();
-    document.addEventListener("bl-devtool-resize", () => {
+    document.addEventListener('bl-devtool-resize', () => {
       this.player.updatePlayerZoom();
     });
   }
@@ -66,7 +68,7 @@ export class NotestCameraComponent implements AfterViewInit {
   private updatePlayerSession() {
     if (!this.player) {
       this.player = new PlayerComponent(this.camera.nativeElement, {
-        deserializerProxyBasePath: "http://localhost:2550", //this.config.proxyBasePath,
+        deserializerProxyBasePath: 'http://localhost:2550', //this.config.proxyBasePath,
         onTimestampChange: (ts, last?: boolean) => {
           this.playerUpdate.emit({ timestamp: Math.round(ts), last });
         },
@@ -75,13 +77,14 @@ export class NotestCameraComponent implements AfterViewInit {
         },
         onResize: (scale) => {
           this.playerResize.emit({ scale });
-        },
+        }
       });
     }
     //let domFullTimestamp = this.session.find(h => (h as BLDomEvent).full)!.timestamp
-    this.player.setEvents([this.domEvent]);
+
+    this.player.setEvents([this.domEvent], 'notest-widget');
     this.iframeChanged.emit({
-      iframe: this.camera.nativeElement.querySelector("iframe")!,
+      iframe: this.camera.nativeElement.querySelector('iframe')!
     });
   }
 }

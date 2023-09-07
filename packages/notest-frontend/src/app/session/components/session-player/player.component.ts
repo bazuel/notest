@@ -18,9 +18,8 @@ export class PlayerComponent {
   playing = false;
   currentTimestamp!: number;
 
-  constructor() {}
-
-  ngOnInit(): void {}
+  currentPercentage = 0;
+  speed: 1 | 2 | 4 = 1;
 
   pause() {
     this.playing = false;
@@ -39,8 +38,14 @@ export class PlayerComponent {
 
   onPlayerUpdate(e: { timestamp: number; last?: boolean }) {
     this.updateCurrentTimestamp(e.timestamp);
+    const totalMilliseconds =
+      this.session[this.session.length - 1].timestamp - this.session[0].timestamp;
+    const currentMilliseconds = this.currentTimestamp - this.session[0].timestamp;
+    this.currentPercentage = (currentMilliseconds / totalMilliseconds) * 100;
     if (e.last) {
       this.pause();
+      this.screen.moveTo(this.session[0].timestamp);
+      this.currentPercentage = 0;
     }
   }
 
@@ -52,5 +57,12 @@ export class PlayerComponent {
       const max = this.session[this.session.length - 1].timestamp;
       this.currentTimestamp = Math.max(min, Math.min(max, Math.round(timestamp)));
     }
+  }
+
+  setVideoTimestamp(percentage: number) {
+    const min = this.session[0].timestamp;
+    const max = this.session[this.session.length - 1].timestamp;
+    const timestamp = Math.round((max - min) * (percentage / 100) + min);
+    this.screen.moveTo(timestamp);
   }
 }

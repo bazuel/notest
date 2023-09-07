@@ -2,14 +2,21 @@
   <div class="relative w-full">
     <nt-play-pause-animation [class.pointer-events-none]="!interactive"
                              [playing]="playing"
-                             class="absolute top-0 left-0 "></nt-play-pause-animation>
+                             class="absolute top-0 left-0"></nt-play-pause-animation>
     <nt-shared-player #player
-                          (playerClick)="togglePlaying()"
-                          (playerUpdate)="onPlayerUpdate($event)"
-                          (playerResize)="onPlayerResize($event)"
-                          [class.pointer-events-none]="!interactive"
-                          [session]="session"
-                          *ngIf="session.length > 0"></nt-shared-player>
-
+                      *ngIf="session.length > 0"
+                      (playerClick)="togglePlaying()"
+                      (playerUpdate)="onPlayerUpdate($event)"
+                      (playerResize)="onPlayerResize($event)"
+                      [speed]="speed"
+                      [class.pointer-events-none]="!interactive"
+                      [session]="session"></nt-shared-player>
   </div>
 </div>
+<nt-player-utils
+        [percentage]="currentPercentage"
+        [playing]="playing"
+        (pause)="pause()"
+        (play)="play()"
+        (speedChange)="speed = $event"
+        (percentageChange)="setVideoTimestamp($event)"></nt-player-utils>

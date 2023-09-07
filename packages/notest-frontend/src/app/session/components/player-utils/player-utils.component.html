@@ -1,0 +1,22 @@
+<div class="flex items-center gap-4 mt-5">
+  <div *ngIf="!playing" class="flex items-center bo-button-icon" (click)="playing = true; play.emit()">
+    <nt-icon name="player_play"></nt-icon>
+  </div>
+  <div *ngIf="playing" class="flex items-center bo-button-icon" (click)="playing = false; pause.emit()">
+    <nt-icon name="player_pause"></nt-icon>
+  </div>
+  <div class="flex gap-2 items-center">
+    <div class="speed bo-button-icon" [class.active]="speed == 1" (click)="changeSpeed(1)">
+      <nt-icon name="play1x"></nt-icon>
+    </div>
+    <div class="speed bo-button-icon" [class.active]="speed == 2" (click)="changeSpeed(2)">
+      <nt-icon name="play2x"></nt-icon>
+    </div>
+    <div class="speed bo-button-icon" [class.active]="speed == 4" (click)="changeSpeed(4)">
+      <nt-icon name="play4x"></nt-icon>
+    </div>
+  </div>
+  <div #timeBar id="time-bar" [style]="backgroundStyle" (click)="clickOnBar($event)">
+    <div id="cursor" [style.left.%]="percentage" (mousedown)="dragStart()"></div>
+  </div>
+</div>

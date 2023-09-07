@@ -6,28 +6,29 @@
       <button class="ml-10 h-1/3" *ngIf="ready" title="Go to session Preview Mode" (click)="goTo()">Session Preview
       </button>
     </div>
-    <nt-player class="w-5/6 m-5" *ngIf="ready" [session]="eventList"></nt-player>
+    <nt-player class="w-11/12 m-5 ml-8 " *ngIf="ready" [session]="eventList"></nt-player>
     <div class="flex flex-row">
       <div class="flex items-center">
         <button class="m-4 bo-button" *ngIf="ready" (click)="getSessionTest()">Generate test e2e</button>
-        <button class="m-4 bo-button" *ngIf="ready && session.info?.e2eScript" (click)="showScript = true">Show test e2e</button>
+        <button class="m-4 bo-button" *ngIf="ready && session.info?.e2eScript && !generatingScript" (click)="showScript = true">Show test e2e</button>
       </div>
-      <div *ngIf="!script && generatingScript" class="flex flex-row items-center justify-center">
+      <div *ngIf="generatingScript" class="flex flex-row items-center justify-center">
         <div class="bo-loading m-4"></div>
         <div class="text-nt-300 text-bold">Generating Script...</div>
       </div>
     </div>
-    <nt-popup *ngIf="showScript" (close)="showScript = false" (clickOutside)="showScript = false">
-      <nt-codemirror-editor
-        [script]="session.info.e2eScript"
-        class="editor"
-        label="Test e2e">
-      </nt-codemirror-editor>
-    </nt-popup>
   </div>
-  <nt-session-devtool class="w-[650px]"  [events]="eventList"></nt-session-devtool>
-
+  <nt-session-devtool class="w-[650px]" [events]="eventList"></nt-session-devtool>
 </div>
+
+<nt-popup *ngIf="showScript" (close)="showScript = false" (clickOutside)="showScript = false">
+  <nt-codemirror-editor
+          [script]="session.info.e2eScript"
+          class="editor"
+          label="Test e2e">
+  </nt-codemirror-editor>
+</nt-popup>
+
 <nt-popup *ngIf="jsonTemplate" [closeClickOutside]=false (close)="jsonTemplate = undefined">
   <bl-json-template class="block w-[1000px] h-[800px]" [data]="jsonTemplate!"></bl-json-template>
 </nt-popup>
