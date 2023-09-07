@@ -60,13 +60,20 @@
 </div>
 
 <div *ngIf="user" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 flex gap-4">
-  <div *ngIf="showSaveButton && !success" class="save-popup">
-    <div *ngIf="!saving && !error && user.nt_userid">There are changes not saved</div>
-    <div *ngIf="!saving && !error && !user.nt_userid">Create User</div>
-    <div *ngIf="!error && saving">Saving...</div>
-    <div *ngIf="error" class="text-red-500">{{errorMessage}}</div>
-    <button *ngIf="!saving" (click)="saveUser()">Save changes</button>
-    <div *ngIf="saving && !error" class="bo-loading"></div>
+  <div *ngIf="showSaveButton && !success && !error" class="save-popup">
+    <ng-container *ngIf="!saving">
+      <div *ngIf="user.nt_userid">There are changes not saved</div>
+      <div *ngIf="!user.nt_userid">Create User</div>
+      <button (click)="saveUser()">Save changes</button>
+    </ng-container>
+    <ng-container *ngIf="saving">
+      <div>Saving...</div>
+      <div *ngIf="saving " class="bo-loading"></div>
+    </ng-container>
+  </div>
+
+  <div *ngIf="error" class="save-popup">
+    <div class="text-red-500">{{errorMessage}}</div>
   </div>
 
   <div *ngIf="success" class="save-popup">
@@ -76,13 +83,16 @@
     </div>
   </div>
 
-  <div *ngIf="showChangePassword && !passwordSuccess" class="save-popup">
-    <div *ngIf="passwordError" class="text-red-500">{{passwordErrorMessage}}</div>
-    <ng-container *ngIf="!passwordError && changingPassword">
+  <div *ngIf="showChangePassword && !passwordSuccess && !passwordError" class="save-popup">
+    <ng-container *ngIf="changingPassword">
       <div>Changing password...</div>
       <div class="bo-loading"></div>
     </ng-container>
     <button *ngIf="!changingPassword" (click)="changePassword()">Change password</button>
+  </div>
+
+  <div *ngIf="passwordError" class="save-popup">
+    <div class="text-red-500">{{passwordErrorMessage}}</div>
   </div>
 
   <div *ngIf="passwordSuccess" class="save-popup">
