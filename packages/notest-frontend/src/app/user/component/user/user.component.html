@@ -59,17 +59,36 @@
   </div>
 </div>
 
-<div *ngIf="showSaveButton" class="save-popup">
-  <div *ngIf="!saving && !error">There are changes not saved</div>
-  <div *ngIf="!error && saving">Saving...</div>
-  <div *ngIf="error" class="text-red-500">{{errorMessage}}</div>
-  <button *ngIf="!saving" (click)="saveUser()">Save changes</button>
-  <div *ngIf="saving && !error" class="bo-loading"></div>
-</div>
+<div *ngIf="user" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 flex gap-4">
+  <div *ngIf="showSaveButton && !success" class="save-popup">
+    <div *ngIf="!saving && !error && user.nt_userid">There are changes not saved</div>
+    <div *ngIf="!saving && !error && !user.nt_userid">Create User</div>
+    <div *ngIf="!error && saving">Saving...</div>
+    <div *ngIf="error" class="text-red-500">{{errorMessage}}</div>
+    <button *ngIf="!saving" (click)="saveUser()">Save changes</button>
+    <div *ngIf="saving && !error" class="bo-loading"></div>
+  </div>
 
-<div *ngIf="showChangePassword" class="save-popup">
-  <div *ngIf="error" class="text-red-500">{{errorMessage}}</div>
-  <div *ngIf="!error && saving">Saving...</div>
-  <button *ngIf="!saving" (click)="changePassword()">Change password</button>
-  <div *ngIf="saving && !error" class="bo-loading"></div>
+  <div *ngIf="success" class="save-popup">
+    <div class="flex gap-3 items-center">
+      Saved
+      <nt-icon class="text-green-500" name="success"></nt-icon>
+    </div>
+  </div>
+
+  <div *ngIf="showChangePassword && !passwordSuccess" class="save-popup">
+    <div *ngIf="passwordError" class="text-red-500">{{passwordErrorMessage}}</div>
+    <ng-container *ngIf="!passwordError && changingPassword">
+      <div>Changing password...</div>
+      <div class="bo-loading"></div>
+    </ng-container>
+    <button *ngIf="!changingPassword" (click)="changePassword()">Change password</button>
+  </div>
+
+  <div *ngIf="passwordSuccess" class="save-popup">
+    <div class="flex gap-3 items-center">
+      Saved
+      <nt-icon class="text-green-500" name="success"></nt-icon>
+    </div>
+  </div>
 </div>
