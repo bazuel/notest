@@ -14,6 +14,9 @@
   </div>
 </div>
 <nt-player-utils
+        *ngIf="session"
+        [initialTimestamp]="session[0].timestamp"
+        [finalTimestamp]="session[session.length - 1].timestamp"
         [percentage]="currentPercentage"
         [playing]="playing"
         (pause)="pause()"

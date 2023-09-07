@@ -8,6 +8,13 @@
   @apply cursor-pointer select-none;
 }
 
+#time-tooltip{
+    @apply absolute -translate-x-1/2 bottom-4 w-24 h-8 bg-white rounded-md shadow-md shadow-gray-400;
+    @apply flex items-center justify-center;
+    @apply text-xs font-semibold;
+    @apply cursor-pointer select-none;
+}
+
 .speed {
   @apply p-2;
   &.active {

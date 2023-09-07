@@ -16,7 +16,15 @@
       <nt-icon name="play4x"></nt-icon>
     </div>
   </div>
-  <div #timeBar id="time-bar" [style]="backgroundStyle" (click)="clickOnBar($event)">
+  <div #timeBar id="time-bar"
+       [style]="backgroundStyle"
+       (click)="clickOnBar($event)"
+       (mouseleave)="showTooltip = false"
+       (mousemove)="showTooltipAt($event.clientX)">
+
+    <div *ngIf="showTooltip" id="time-tooltip" [style.left.%]="percentageTooltip">
+      {{currentTimestamp | formatTime:'HH:mm:ss' }}
+    </div>
     <div id="cursor" [style.left.%]="percentage" (mousedown)="dragStart()"></div>
   </div>
 </div>
