@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { AssetLoader } from '../../../../shared/services/asset-loader';
 import { BLEvent, BLSessionEvent } from '@notest/common';
 
@@ -20,13 +28,15 @@ export const devtoolsPanels: DevtoolPanel[] = Object.keys(devtoolsPanelsData) as
   templateUrl: './session-devtool.component.html',
   styleUrls: ['./session-devtool.component.scss']
 })
-export class SessionDevtoolComponent implements OnInit {
+export class SessionDevtoolComponent implements OnInit, OnChanges {
   panels: DevtoolPanel[] = [];
 
   @Input() events: BLSessionEvent[] = [];
 
   @Output()
   timestampChange = new EventEmitter<number>();
+
+  @Input() collapsed = false;
 
   @Output()
   noteClicked = new EventEmitter<number>();
@@ -42,5 +52,12 @@ export class SessionDevtoolComponent implements OnInit {
     //   await this.assets.loadScript('assets/libs/codemirror.javascript.min.js');
     //   await this.assets.loadStyle('assets/libs/codemirror.min.css');
     // }, 1000);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['events']) {
+      this.active = undefined as any;
+      setTimeout(() => (this.active = 'Network'));
+    }
   }
 }

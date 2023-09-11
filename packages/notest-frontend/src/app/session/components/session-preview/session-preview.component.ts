@@ -4,7 +4,6 @@ import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { debounce, NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
-import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 
 @Component({
   selector: 'nt-session-preview',
@@ -42,6 +41,8 @@ export class SessionPreviewComponent {
     showInfo: boolean;
   };
 
+  videoLoaded = false;
+
   constructor(
     private sessionService: SessionService,
     private urlParamsService: UrlParamsService,
@@ -61,7 +62,6 @@ export class SessionPreviewComponent {
     }
   }
 
-  @ShowFullScreenLoading()
   private async initSessionInfo() {
     this.reference = this.urlParamsService.get('reference')!;
     this.session = await this.sessionService.getSessionByReference(this.reference);

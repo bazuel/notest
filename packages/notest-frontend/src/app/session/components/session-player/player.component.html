@@ -3,6 +3,7 @@
     <nt-play-pause-animation [class.pointer-events-none]="!interactive"
                              [playing]="playing"
                              class="absolute top-0 left-0"></nt-play-pause-animation>
+    <div *ngIf="!session?.length" class="w-full h-[600px] bg-white bo-loading flex items-center justify-center scale-[400%]"></div>
     <nt-shared-player #player
                       *ngIf="session.length > 0"
                       (playerClick)="togglePlaying()"
@@ -14,9 +15,9 @@
   </div>
 </div>
 <nt-player-utils
-        *ngIf="session"
-        [initialTimestamp]="session[0].timestamp"
-        [finalTimestamp]="session[session.length - 1].timestamp"
+        *ngIf="session.length"
+        [initialTimestamp]="session[0]?.timestamp || 0"
+        [finalTimestamp]="session[session.length - 1]?.timestamp || 0"
         [percentage]="currentPercentage"
         [playing]="playing"
         (pause)="pause()"

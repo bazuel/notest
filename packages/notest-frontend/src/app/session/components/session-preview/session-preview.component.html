@@ -1,129 +1,135 @@
-<div *ngIf="session && !fullLoading" class="h-full w-full p-5 flex">
-  <div class="relative w-2/3 h-2/3">
+<div *ngIf="session && !fullLoading" class="h-full w-full flex bg-nt-50">
+  <div class="relative flex-1 h-full">
     <div class="flex gap-4 p-4 items-center">
       <input class="input-on-focus font-semibold text-gray-500" [(ngModel)]="session.info.title"
              (ngModelChange)="debouncedSaveSession()"/>
       <button class="h-fit" title="Go to Developer mode" (click)="goToDebugger()">Developer Mode</button>
     </div>
-    <nt-video
-      #video
-      *ngIf="videoReference"
-      class="absolute w-10/12 h-[85%]"
-      [reference]="videoReference"></nt-video>
-    <nt-screenshot
-      class="absolute mt-5 smooth-open w-11/12 h-[85%]"
-      *ngIf="screenshotOnHover"
-      [reference]="screenshotOnHover.reference"
-      [name]="screenshotOnHover.name"></nt-screenshot>
-  </div>
-  <div class="w-1/3 h-4/5 px-8">
-    <div class="flex justify-items items-center gap-3">
-      <div class="text-2xl text-bop my-4 mr-4">Run history</div>
-      <ng-container *ngIf="!loading">
-        <div class="bo-button-icon h-10 px-3 gap-2" title="Rerun session" (click)="rerunSession()">
-          <nt-icon name="rerun"></nt-icon>
-          <nt-icon
-            *ngIf="backendType == 'mock'"
-            name="frontend_isolated"
-            class="w-5 h-5 text-bop"
-            title="Frontend isolated"></nt-icon>
-          <nt-icon
-            *ngIf="loginSessionSelected"
-            name="user"
-            class="w-5 h-5 text-bop"
-            title="Logged Session"></nt-icon>
-        </div>
-        <div
-          class="bo-button-icon w-10 h-10"
-          title="Session settings"
-          (click)="showSessionSettings = !showSessionSettings">
-          <nt-icon name="settings"></nt-icon>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="loading">
-        <div class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
-        <div class="text-nt-300 ml-4 text-bold text-lg">Your session is running...</div>
-      </ng-container>
+    <div class="relative m-5 rounded-md shadow-md overflow-hidden min-h-[600px] bg-white">
+      <div *ngIf="!videoLoaded" class="w-full h-[600px] bg-white bo-loading flex items-center justify-center scale-[300%]"></div>
+      <nt-video
+        #video
+        *ngIf="videoReference"
+        [reference]="videoReference"
+        (loadedChange)="videoLoaded = $event"></nt-video>
+      <nt-screenshot
+        class="absolute smooth-open top-0"
+        *ngIf="screenshotOnHover"
+        [reference]="screenshotOnHover.reference"
+        [name]="screenshotOnHover.name"></nt-screenshot>
     </div>
-    <div class="h-full overflow-auto scrollbar-sm">
-      <nt-screenshot-list-placeholder *ngIf="loading"></nt-screenshot-list-placeholder>
-      <div
-        *ngFor="let run of sessionRunHistory"
-        class="flex flex-col mt-5"
-        (mouseenter)="setSessionHover(run.session)"
-        (mouseleave)="setSessionHover(undefined)">
-        <div class="flex items-center gap-3">
-          <label class="my-5">{{ run.session.created | date : 'dd-MM-YYYY, HH:mm' }}</label>
-          <div class="relative flex items-center cursor-pointer">
-            <nt-assertion-summary-item
-              [assertionList]="run.assertions"
-              type="all"
-              (mouseenter)="run.showInfo = true"
-              (mouseleave)="run.showInfo = false"
-              class="w-5 h-5"
-              (click)="runSelected = run; showAssertionPopup = true"></nt-assertion-summary-item>
-            <div *ngIf="run.showInfo" class="nt-session-info-popup p-2">
-              <div class="text-gray-400 w-56">Test Results</div>
+  </div>
+  <div class="w-1/3 h-full p-3">
+    <div
+      class="p-3 bg-white flex flex-col rounded-md overflow-hidden shadow-md transition-all cursor-pointer duration-400 h-full">
+      <div class="flex justify-items items-center gap-3">
+        <div class="text-2xl text-bop mr-4">Run history</div>
+        <ng-container *ngIf="!loading">
+          <div class="bo-button-icon h-10 px-3 gap-2" title="Rerun session" (click)="rerunSession()">
+            <nt-icon name="rerun"></nt-icon>
+            <nt-icon
+              *ngIf="backendType == 'mock'"
+              name="frontend_isolated"
+              class="w-5 h-5 text-bop"
+              title="Frontend isolated"></nt-icon>
+            <nt-icon
+              *ngIf="loginSessionSelected"
+              name="user"
+              class="w-5 h-5 text-bop"
+              title="Logged Session"></nt-icon>
+          </div>
+          <div
+            class="bo-button-icon w-10 h-10"
+            title="Session settings"
+            (click)="showSessionSettings = !showSessionSettings">
+            <nt-icon name="settings"></nt-icon>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="loading">
+          <div class="bo-button-icon pointer-events-none w-10 h-10 bo-loading p-0"></div>
+          <div class="text-nt-300 ml-4 text-bold text-lg">Your session is running...</div>
+        </ng-container>
+      </div>
+      <div class="flex-1 overflow-auto scrollbar-sm">
+        <nt-screenshot-list-placeholder *ngIf="!sessionRunHistory || loading"></nt-screenshot-list-placeholder>
+        <div
+          *ngFor="let run of sessionRunHistory"
+          class="flex flex-col mt-5"
+          (mouseenter)="setSessionHover(run.session)"
+          (mouseleave)="setSessionHover(undefined)">
+          <div class="flex items-center gap-3">
+            <label class="my-5">{{ run.session.created | date : 'dd-MM-YYYY, HH:mm' }}</label>
+            <div class="relative flex items-center">
               <nt-assertion-summary-item
                 [assertionList]="run.assertions"
-                type="runSuccessfullyFinished"
-                title="Session Run"></nt-assertion-summary-item>
-              <nt-assertion-summary-item
-                [assertionList]="run.assertions"
-                type="missedEvents"
-                title="Same HTTP Requests"></nt-assertion-summary-item>
-              <nt-assertion-summary-item
-                [assertionList]="run.assertions"
-                type="visual"
-                title="Visual Comparison"></nt-assertion-summary-item>
-              <nt-assertion-summary-item
-                [assertionList]="run.assertions"
-                type="http"
-                name="status"
-                title="HTTP Responses Status"></nt-assertion-summary-item>
-              <nt-assertion-summary-item
-                [assertionList]="run.assertions"
-                type="http"
-                name="bodyRequest"
-                title="HTTP Body Requests"></nt-assertion-summary-item>
-              <nt-assertion-summary-item
-                [assertionList]="run.assertions"
-                type="http"
-                name="contentType"
-                title="HTTP Body type"></nt-assertion-summary-item>
+                type="all"
+                (mouseenter)="run.showInfo = true"
+                (mouseleave)="run.showInfo = false"
+                class="w-5 h-5"
+                (click)="runSelected = run; showAssertionPopup = true"></nt-assertion-summary-item>
+              <div *ngIf="run.showInfo" class="nt-session-info-popup p-2">
+                <div class="text-gray-400 w-56">Test Results</div>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="runSuccessfullyFinished"
+                  title="Session Run"></nt-assertion-summary-item>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="missedEvents"
+                  title="Same HTTP Requests"></nt-assertion-summary-item>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="visual"
+                  title="Visual Comparison"></nt-assertion-summary-item>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="http"
+                  name="status"
+                  title="HTTP Responses Status"></nt-assertion-summary-item>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="http"
+                  name="bodyRequest"
+                  title="HTTP Body Requests"></nt-assertion-summary-item>
+                <nt-assertion-summary-item
+                  [assertionList]="run.assertions"
+                  type="http"
+                  name="contentType"
+                  title="HTTP Body type"></nt-assertion-summary-item>
+              </div>
+            </div>
+
+            <nt-icon
+              *ngIf="run.session.info?.backend_type == 'mock'"
+              name="frontend_isolated"
+              class="w-5 h-5 text-bop"
+              title="Frontend isolated"></nt-icon>
+
+            <nt-icon
+              *ngIf="run.session.info?.session_logged"
+              name="user"
+              class="w-5 h-5 text-bop"
+              title="Logged Session"></nt-icon>
+
+            <div
+              *ngIf="run.session === sessionOnHover"
+              class="bo-button-icon w-8 h-8"
+              (click)="showVideo(run.session.reference)">
+              <nt-icon name="play"></nt-icon>
             </div>
           </div>
-
-          <nt-icon
-            *ngIf="run.session.info?.backend_type == 'mock'"
-            name="frontend_isolated"
-            class="w-5 h-5 text-bop"
-            title="Frontend isolated"></nt-icon>
-
-          <nt-icon
-            *ngIf="run.session.info?.session_logged"
-            name="user"
-            class="w-5 h-5 text-bop"
-            title="Logged Session"></nt-icon>
-
-          <div
-            *ngIf="run.session === sessionOnHover"
-            class="bo-button-icon w-8 h-8"
-            (click)="showVideo(run.session.reference)">
-            <nt-icon name="play"></nt-icon>
-          </div>
-        </div>
-        <div class="flex gap-2 overflow-auto scrollbar-sm">
-          <div *ngFor="let image of run.screenshot">
-            <nt-screenshot
-              class="transition-all duration-50 w-64 h-28 rounded-md shadow-lg overflow-hidden border-nt-400 m-2 cursor-pointer"
-              [class.border-2]="screenshotOnHover === image"
-              (click)="goToVideo(run.session.reference, image.start!, run.video.start!)"
-              (mouseover)="showImage(image)"
-              (mouseout)="hideImage()"
-              [reference]="image.reference"
-              [name]="image.name"
-              [lazyload]="true"></nt-screenshot>
+          <div class="flex gap-2 overflow-auto scrollbar-sm">
+            <div *ngFor="let image of run.screenshot">
+              <nt-screenshot
+                class="transition-all duration-50 w-64 h-28 rounded-md shadow-lg overflow-hidden border-nt-400 m-2 cursor-pointer"
+                [class.border-2]="screenshotOnHover === image"
+                (click)="goToVideo(run.session.reference, image.start!, run.video.start!)"
+                (mouseover)="showImage(image)"
+                (mouseout)="hideImage()"
+                [reference]="image.reference"
+                [name]="image.name"
+                [lazyload]="true"></nt-screenshot>
+            </div>
           </div>
         </div>
       </div>

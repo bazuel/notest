@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { BLSessionEvent, copyToClipboard, debounce, NTEvent, NTSession } from '@notest/common';
@@ -26,6 +26,7 @@ export class SessionDebuggerComponent implements OnInit {
   generatingScript = false;
 
   jsonTemplate?: JsonActionData;
+  toolSelected?: 'devtool' | 'e2e' = 'devtool';
 
   showScript = false;
 
@@ -75,11 +76,15 @@ export class SessionDebuggerComponent implements OnInit {
     this.jsonViewerService.updateActions(actions);
   }
 
-  @ShowFullScreenLoading()
   async ngOnInit() {
     this.reference = this.urlParamsService.get('reference')!;
-    this.eventList = await this.sessionService.getEventsByReference(this.reference);
+    console.log('ref: ', this.reference);
+    this.sessionService
+      .getEventsByReference(this.reference)
+      .then((events) => (this.eventList = events));
+    console.log('events: ', this.eventList);
     this.session = await this.sessionService.getSessionByReference(this.reference);
+    console.log('session: ', this.session);
     this.script = this.session.info.e2eScript;
     this.ready = true;
     this.generatingScript = false;

@@ -2,7 +2,7 @@
   @apply block;
 }
 .screen-container {
-  @apply flex justify-center border border-gray-200 bg-gray-100 overflow-hidden;
+  @apply flex justify-center border border-gray-200 bg-gray-100 overflow-hidden rounded-md shadow-md;
 }
 
 @media screen and (min-width: 650px) {
