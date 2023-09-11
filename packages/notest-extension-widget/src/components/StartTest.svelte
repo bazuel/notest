@@ -1,10 +1,9 @@
 <script lang="ts">
-  import Icon from "../shared/components/icon.svelte";
-  import Switch from '../shared/components/Switch.svelte';
-  import {createEventDispatcher} from "svelte";
-  import {appStore, updateRecButtonOnScreen} from "../stores/settings.store.ts";
+    import Icon from "../shared/components/icon.svelte";
+    import {createEventDispatcher} from "svelte";
+    import {appStore} from "../stores/settings.store.ts";
 
-  export const dispatcher = createEventDispatcher()
+    export const dispatcher = createEventDispatcher()
 
   let createNewTestButtonPressed = false;
 </script>
@@ -46,7 +45,6 @@
     </div>
 {/if}
 <style lang="scss">
-    @import "/app.scss";
     @keyframes open {
         0% {
             height: 0;

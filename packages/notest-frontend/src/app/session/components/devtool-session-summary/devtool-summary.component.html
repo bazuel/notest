@@ -1,0 +1,73 @@
+<bl-loading *ngIf="loading"></bl-loading>
+<ng-container *ngIf="!loading">
+  <h1 class="text-lg">Notes</h1>
+  <div *ngIf="notes.length == 0" class="devtool-message">
+    <p class="flex items-center">
+      <bl-svg-icon [path]="icons.alert" class="mr-1 md"></bl-svg-icon>
+      There are no notes yet in this session
+    </p>
+    <p class="mt-2">
+      To add a note use the note button
+      <bl-svg-icon [path]="icons.comment" class="md"></bl-svg-icon>
+      <br>
+      (upper-right corner, next to the session address bar)
+    </p>
+  </div>
+  <div *ngIf="notes.length > 0" class="notes">
+    <div (click)="noteClicked.emit(n.timestamp)" *ngFor="let n of notes" class="note">
+      <div class="flex items-center">
+        <bl-svg-icon [path]="icons.comment" class="md mr-1 block"></bl-svg-icon>
+        <bl-badge class="tab-{{n.tab}} mr-1">Tab #{{n.tab + 1}}</bl-badge>
+        <bl-event-time [timestamp]="n.timestamp"></bl-event-time>
+      </div>
+      <hr>
+      <div *ngFor="let t of n.notes; let i = index " class="mb-2">
+        <div
+          class="font-bold text-gray-700 text-sm rounded-full bg-white shadow w-4 h-4 inline-flex items-center justify-center font-mono">{{i + 1}}</div>
+        {{t.value}}
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>
+<bl-loading *ngIf="!loading && loadingErrors"></bl-loading>
+<ng-container *ngIf="!loadingErrors">
+  <h1 class="text-lg">Errors</h1>
+  <div *ngIf="renderedErrors.length == 0" class="devtool-message">
+    <p class="flex items-center">
+      <bl-svg-icon [path]="icons.info" class="mr-1 md"></bl-svg-icon>
+      There are no errors in this session
+    </p>
+  </div>
+  <div *ngIf="!loadingErrors" class="bg-gray-50">
+    <table *ngIf="renderedErrors.length > 0" class="bl-table">
+      <tr>
+        <th resize>Type</th>
+        <th resize>Error</th>
+        <th resize>Time</th>
+      </tr>
+      <tbody>
+      <ng-container *ngFor="let r of renderedErrors; let i = index">
+        <tr (click)="r.show = !r.show" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
+            class="cursor-pointer">
+          <td><span class="inline-block truncate  max-w-md">{{r.type}}</span></td>
+          <td [title]="r.value"><span [class.http]="r.type == 'HTTP'"
+                                      class="inline-block truncate  max-w-md">{{r.value}}</span></td>
+          <td>
+            <bl-badge class="tab-{{r.tab}} mr-1">Tab #{{r.tab + 1}}</bl-badge>
+            <bl-event-time [timestamp]="r.time"></bl-event-time>
+          </td>
+        </tr>
+        <tr *ngIf="r.show">
+          <td class="json-view" colspan="3">
+            <bl-json-viewer
+              [json]="r.json"></bl-json-viewer>
+          </td>
+        </tr>
+      </ng-container>
+      </tbody>
+
+    </table>
+  </div>
+</ng-container>

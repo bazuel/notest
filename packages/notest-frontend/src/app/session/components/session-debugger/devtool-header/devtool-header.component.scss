@@ -1,0 +1,11 @@
+.devtool-header {
+  @apply flex items-center;
+  .panel{
+    @apply hover:bg-nt-50 cursor-pointer transition-all font-semibold text-nt-400 border-b-2;
+
+    &.active{
+      @apply text-white border-blue-500 bg-nt-200;
+    }
+  }
+}
+

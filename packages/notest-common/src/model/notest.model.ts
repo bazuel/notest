@@ -150,13 +150,36 @@ export const NTEventLabelsMap = {
   resize: "Resize window",
 };
 
+export type NTRole = "ADMIN" | "USER" | "DEVELOPER" | "TESTER";
+
+export const NTRoleMap: { name: string; value: NTRole }[] = [
+  { name: "Administrator", value: "ADMIN" },
+  { name: "User", value: "USER" },
+  { name: "Developer", value: "DEVELOPER" },
+  { name: "Tester", value: "TESTER" },
+];
+
+export const NTRoleLabelsMap: Record<NTRole, string> = {
+  ADMIN: "Administrator",
+  USER: "User",
+  DEVELOPER: "Developer",
+  TESTER: "Tester",
+};
+
+export const NTRolesPriority: Record<NTRole, number> = {
+  ADMIN: 0,
+  USER: 3,
+  DEVELOPER: 1,
+  TESTER: 2,
+};
+
 export interface NTUser {
   nt_userid: string;
   name: string;
   surname: string;
   email: string;
   password: string;
-  roles: string[];
+  roles: NTRole[];
   state: string;
   phone: string;
   domains?: string[];

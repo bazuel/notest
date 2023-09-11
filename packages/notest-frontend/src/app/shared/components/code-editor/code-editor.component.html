@@ -1,0 +1,8 @@
+<div class="h-full flex flex-col">
+  <div class="actions" *ngIf="actions.length > 0">
+    <bl-icon-button class="action w-6 h-6" *ngIf="actions.includes('save')" icon="save" tooltip="Save code"
+                    (click)="emitSaveEvent()"></bl-icon-button>
+    <bl-icon-button class="action w-6 h-6" *ngIf="actions.includes('run')" icon="run" tooltip="Run code" (click)="run()"></bl-icon-button>
+  </div>
+  <div class="flex-1 text-lg" #textarea></div>
+</div>

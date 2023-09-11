@@ -1,0 +1,9 @@
+.devtool {
+  @apply flex flex-col bg-white shadow-md h-full w-full;
+}
+
+.devtool-content {
+  @apply flex-1 w-full overflow-y-auto;
+}
+
+

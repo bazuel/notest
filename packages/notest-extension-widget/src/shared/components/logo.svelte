@@ -11,7 +11,10 @@
 </div>
 
 <style lang="scss">
-    @import '/app.scss';
+
+    .font-logo {
+        font-family: 'Anton', sans-serif !important;
+    }
     .nt-logo-container {
         @apply flex items-center;
     }

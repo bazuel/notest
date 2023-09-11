@@ -13,3 +13,6 @@ export * from "./utils/raf-timer.util";
 export * from "./functions/event-filter";
 export * from "./model/assertion";
 export * from "./functions/assertion.guard";
+export * from "./functions/sort.util";
+export * from "./utils/tab-index.util";
+export * from "./functions/array.utils";

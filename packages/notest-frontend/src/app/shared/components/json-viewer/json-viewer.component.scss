@@ -1,0 +1,97 @@
+:host {
+  background-color: white;
+  display: block;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  margin-left: 10px;
+}
+
+ul.master {
+  padding-top: 4px;
+}
+
+ul:not(.master) {
+  border-left: 1px solid #e7e7e7;
+  padding-left: 8px;
+}
+
+ul:not(.master):hover {
+  border-left-color: #bababa;
+}
+
+
+li {
+  padding: 0;
+  margin: 0;
+  width: 600px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.json-viewer-row {
+  display: inline-flex;
+  height: 16px;
+  line-height: 16px;
+}
+
+.json-viewer-key {
+  color: #a000a5;
+  position: relative;
+}
+
+.json-viewer-dots {
+  color: #240024;
+}
+
+.json-viewer-value {
+  display: inline-block;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.json-viewer-value.string {
+  color: #008b00;
+}
+
+.json-viewer-value.number {
+  color: #5e37ff;
+}
+
+.json-viewer-value.null {
+  color: #ec4a00;
+}
+
+.json-viewer-value.object, .json-viewer-value.array {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.json-viewer-value.string:before, .json-viewer-value.string:after {
+  content: '"';
+}
+
+.json-viewer-row:before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+}
+
+.json-viewer-row.object, .json-viewer-row.array {
+  cursor: pointer;
+}
+
+.json-viewer-row.object:before, .json-viewer-row.array:before {
+  content: url("data:image/svg+xml; utf8, <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><path d=\"M2,2 L10,7 L2,12 z\"/></svg>");
+  transition: transform 150ms ease-in-out;
+}
+
+li.expanded > .json-viewer-row.object:before, li.expanded > .json-viewer-row.array:before {
+  transform: rotate(90deg);
+}

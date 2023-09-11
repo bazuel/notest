@@ -14,7 +14,7 @@ import {
 import { CapsLockDirective } from './directives/caps-lock.directive';
 import { PopupComponent } from './components/popup/popup.component';
 import { IsLogged } from './services/is-logged.guard';
-import { SafeUrlPipe } from './pipes/safe-url.pipe';
+import { SafeHtmlPipe, SafeUrlPipe } from './pipes/safe-url.pipe';
 import { CatchToken } from './services/catch-token';
 import { AutocompleteComponent } from './components/autocomplete/autocomplete.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
@@ -33,6 +33,16 @@ import {
   MinusOneMonthDatePipe,
   PlusOneMonthDatePipe
 } from './pipes/time.pipe';
+import { JsonViewerComponent } from './components/json-viewer/json-viewer.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { JsonViewerService } from './components/json-viewer/json-viewer.service';
+import { IconButtonComponent } from './components/icon-button/icon-button.component';
+import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
+import { JsonTemplateComponent } from './components/json-template/json-template.component';
+import { CopyDirective } from './directives/copy.directive';
+import { CodeEditorComponent } from './components/code-editor/code-editor.component';
+import { InputLabelDirective } from './directives/input-label.directive';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +69,17 @@ import {
     SwitchComponent,
     FromNowPipe,
     ProfileImageComponent,
-    CronComponent
+    CronComponent,
+    JsonViewerComponent,
+    LoadingComponent,
+    IconButtonComponent,
+    SvgIconComponent,
+    JsonTemplateComponent,
+    CopyDirective,
+    CodeEditorComponent,
+    InputLabelDirective,
+    DialogComponent,
+    SafeHtmlPipe
   ],
   imports: [CommonModule, HttpClientModule, FormsModule],
   exports: [
@@ -83,12 +103,23 @@ import {
     BadgeComponent,
     SwitchComponent,
     ProfileImageComponent,
-    CronComponent
+    CronComponent,
+    JsonViewerComponent,
+    LoadingComponent,
+    IconButtonComponent,
+    SvgIconComponent,
+    JsonTemplateComponent,
+    CopyDirective,
+    CodeEditorComponent,
+    InputLabelDirective,
+    DialogComponent,
+    SafeHtmlPipe
   ],
   providers: [
     { provide: NotificationService, useValue: new NotificationService() },
     IsLogged,
-    CatchToken
+    CatchToken,
+    JsonViewerService
   ]
 })
 export class SharedModule {}

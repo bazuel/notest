@@ -19,7 +19,6 @@
 </div>
 
 <style lang="scss">
-    @import '/app.scss';
     .switch{
         @apply inline-flex cursor-pointer items-center transition-all;
         @apply p-3;

@@ -14,6 +14,9 @@ initAppStore();
 
 async function initAppStore() {
   appStore.update({ logged: await tokenService.logged() });
+  setInterval(async () => {
+    appStore.update({ logged: await tokenService.logged() });
+  }, 1000);
 }
 
 export function updateRecButtonOnScreen(recButtonOnScreen: boolean) {

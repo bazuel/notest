@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import { BLSessionEvent, debounce, NTEvent, NTSession } from '@notest/common';
+import { BLSessionEvent, copyToClipboard, debounce, NTEvent, NTSession } from '@notest/common';
 import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 import { Router } from '@angular/router';
+import {
+  JsonAction,
+  JsonActionData,
+  JsonViewerService
+} from '../../../shared/components/json-viewer/json-viewer.service';
+import { showCopiedTooltip } from '../../../shared/directives/copy.directive';
 
 @Component({
   selector: 'nt-session-debugger',
@@ -19,13 +25,55 @@ export class SessionDebuggerComponent implements OnInit {
   ready = false;
   generatingScript = false;
 
+  jsonTemplate?: JsonActionData;
+
   showScript = false;
 
   constructor(
     private sessionService: SessionService,
     private urlParamsService: UrlParamsService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private jsonViewerService: JsonViewerService
+  ) {
+    this.configureJsonViewer();
+  }
+
+  private configureJsonViewer() {
+    let actions: JsonAction[] = [
+      {
+        icon: 'magic',
+        tooltip: 'Open templates',
+        handler: (data) => {
+          console.log('data: ', data);
+          this.jsonTemplate = data;
+        }
+      },
+      {
+        icon: 'console',
+        tooltip: 'Log to console',
+        handler: (data) => {
+          console.log(data.key ?? 'root', data.json);
+        }
+      },
+      {
+        icon: 'copy',
+        tooltip: 'Copy to clipboard',
+        handler: (data) => {
+          console.log('data: ', data);
+          copyToClipboard(JSON.stringify(data.json, null, '  '));
+          if (data.event.currentTarget) showCopiedTooltip(data.event.currentTarget);
+        }
+      },
+      {
+        icon: 'sort',
+        tooltip: 'Sort alphabetically',
+        handler: (data) => {
+          data.rows.sort((r1, r2) => (r1.key || '').localeCompare(r2.key));
+        }
+      }
+    ];
+    this.jsonViewerService.updateActions(actions);
+  }
 
   @ShowFullScreenLoading()
   async ngOnInit() {
@@ -37,11 +85,13 @@ export class SessionDebuggerComponent implements OnInit {
     this.generatingScript = false;
     console.log('ref: ', this.reference);
     console.log('session: ', this.session);
+    console.log('events: ', this.eventList);
   }
 
   async getSessionTest() {
     this.generatingScript = true;
     this.session.info.e2eScript = await this.sessionService.getSessionTest(this.reference);
+    this.generatingScript = false;
     this.showScript = true;
     this.updateSession();
   }

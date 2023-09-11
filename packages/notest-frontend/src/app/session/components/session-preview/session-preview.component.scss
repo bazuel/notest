@@ -26,5 +26,5 @@
 }
 
 .input-on-focus {
-  @apply border-0 bg-white text-2xl focus:border focus:border-gray-400 focus:bg-gray-50;
+  @apply w-[600px] border-0 bg-white text-2xl focus:border focus:border-gray-400 focus:bg-gray-50 transition-all;
 }

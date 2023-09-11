@@ -4,11 +4,29 @@
 
 @import 'node_modules/@butopen/design-system/src/index';
 @import url('https://fonts.googleapis.com/css?family=Anton');
+@import url('https://fonts.googleapis.com/css?family=Poppins');
 
 :root {
   --nt-primary-color: #0097e4;
   --nt-secondary-color: #ff4d00;
   --bo-theme-color: var(--nt-primary-color);
+
+  --bl-bkg-light: #f5f9ff;
+  --bl-color-xs: #C3EAFF;
+  --bl-text-color-light: #7d7d7d;
+  --bl-text-color: #282828;
+  --bl-primary-color-dark: #003f55;
+  --bl-devtool-bkg-color: #f3f3f3;
+  --bl-devtool-border-color: #D0D0D0;
+  --bl-devtool-font-color: #D0D0D0;
+  --bl-devtool-font-dark-color: #5a5a5a;
+  --bl-devtool-inactive-color: #777777;
+  --bl-devtool-active-color: #333333;
+  --bl-devtool-font-size: 18px;
+  --bl-devtool-font-weight: 100;
+  --bl-devtool-tab-bkg-color: #eaeaea;
+  --bl-devtool-hover-bkg-color: #f1f8ff;
+  --bl-devtool-tab-bkg-color-hover: #eaeaea;
 }
 
 .scrollbar-sm {
@@ -46,7 +64,7 @@
 
 body {
   @extend .use-bo-design-system;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'poppins', sans-serif;
 }
 
 label {
@@ -59,14 +77,18 @@ label {
 }
 
 .bo-button {
-  @apply bg-gradient-to-br from-nt-secondary-light to-nt-secondary drop-shadow-md shadow-nt-400 font-extrabold text-xs p-1.5;
+  @apply font-extrabold text-xs p-1.5;
+
+  &:not(.outline) {
+    @apply bg-bop text-white;
+  }
 
   &[disabled] {
     @apply opacity-30;
   }
 
   &.outline {
-    @apply border-0 border-white bg-white p-1 text-xs outline-0;
+    @apply border-2 border-bop bg-white p-1 text-xs text-bop outline-0;
   }
 
   &.sm {

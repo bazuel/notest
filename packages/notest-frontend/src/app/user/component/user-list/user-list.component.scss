@@ -1,0 +1,25 @@
+.label {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.p {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
+}
+
+tr {
+  @apply px-10 hover:bg-gray-100 cursor-pointer border-b border-gray-700;
+}
+
+th {
+  @apply label text-bop px-5 py-2;
+}
+
+td {
+  @apply p px-10 py-5 text-center;
+}

@@ -1,0 +1,6 @@
+@import "../../../../notest-shared/styles/table";
+@import "../../../../notest-shared/styles/scrollbar";
+
+.key{
+  @apply flex items-center truncate max-w-md font-semibold text-sm text-nt-400;
+}

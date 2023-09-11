@@ -11,7 +11,9 @@ export class ClusterConsumer {
   constructor(private kafkaService: KafkaService, private broker: (typeof globalConfig)['broker']) {
     const consumer = this.kafkaService.createConsumer('notest-consumer-runner-client');
     console.log('cluster consumer started');
-    this.kafkaService.startListening(consumer, this.topic, (m) => this.startRunner(m));
+    this.kafkaService
+      .startListening(consumer, this.topic, (m) => this.startRunner(m))
+      .then(() => console.log('cluster consumer logged'));
   }
 
   private startRunner(message: EachMessagePayload) {

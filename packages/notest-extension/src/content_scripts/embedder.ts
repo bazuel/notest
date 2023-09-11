@@ -26,17 +26,7 @@ function addScriptToPage(url: string, id?: string) {
   });
 }
 
-async function addDivToPage(id: string) {
-  return new Promise<HTMLElement>((r) => {
-    const div = document.createElement('div');
-    div.setAttribute('style', 'all: unset !important;');
-    div.id = id;
-    document.body.appendChild(div);
-    r(div);
-  });
-}
-
-async function addStyleToPage(url: string, element: HTMLElement = document.head) {
+async function addStyleToPage(url: string, element: ShadowRoot | HTMLElement = document.head) {
   return new Promise(async (r) => {
     const styleElement = document.createElement('style');
     styleElement.setAttribute('style', 'position:fixed,width:0;height:0;');
@@ -51,8 +41,8 @@ async function addStyleToPage(url: string, element: HTMLElement = document.head)
 const injectWidgetCallBack = async () => {
   if (!isLoaded('--nt-widget')) {
     window.addEventListener('DOMContentLoaded', async () => {
-      const div = await addDivToPage('--nt-widget');
-      await addStyleToPage('page/widget.css', div);
+      await addScriptToPage('page/custom-element.js');
+      await addStyleToPage('page/widget.css', document.querySelector('notest-widget')!.shadowRoot!);
       await addScriptToPage('page/widget.js');
     });
   }
@@ -71,7 +61,7 @@ const injectWidgetCallBack = async () => {
     async (user: NTUser) => {
       if (
         !user?.domains?.length ||
-        user.domains.includes(window.location.hostname) ||
+        user.domains?.includes(window.location.hostname) ||
         (await isRecording())
       ) {
         injectWidgetCallBack();
