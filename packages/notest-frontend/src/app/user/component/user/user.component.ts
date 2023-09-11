@@ -208,4 +208,6 @@ export class UserComponent implements OnInit {
   protected readonly NTRoleMap = NTRoleMap;
 
   protected readonly NTRoleLabelsMap = NTRoleLabelsMap;
+  protected readonly toggle = toggle;
+  protected readonly console = console;
 }

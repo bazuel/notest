@@ -44,8 +44,10 @@ export class DevtoolStorageComponent implements OnInit {
       if (!acc.includes(e.tab)) acc.push(e.tab);
       return acc;
     }, [] as number[]);
-    let call = () => this.events.filter((e) => e.name == 'storage');
-    if (this.type == 'session') call = () => this.events.filter((e) => e.name == 'local-full');
+    let call = () => this.events.filter((e) => e.name == 'local-full' || e.name == 'local-update');
+    if (this.type == 'session')
+      call = () =>
+        this.events.filter((e) => e.name == 'session-full' || e.name == 'session-update');
     else if (this.type == 'cookie')
       call = () => this.events.filter((e) => e.name == 'cookie-details');
 

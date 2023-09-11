@@ -13,17 +13,14 @@
       </td>
       <td [title]="r.value">{{r.preview}}</td>
       <td>
-        <!--        <nt-badge class="tab-{{r.tab}} mr-1">Tab #{{r.tab + 1}}</nt-badge>-->
         <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
       </td>
     </tr>
     <tr *ngIf="r.show">
       <td class="json-view" colspan="5">
-        <bl-json-viewer
-          [json]="{key: r.key, value: r.value}"></bl-json-viewer>
+        <bl-json-viewer [json]="{key: r.key, value: r.value}"></bl-json-viewer>
       </td>
     </tr>
   </ng-container>
   </tbody>
-
 </table>

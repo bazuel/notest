@@ -1,11 +1,9 @@
 <div *ngIf="session && !fullLoading" class="h-full w-full p-5 flex">
   <div class="relative w-2/3 h-2/3">
-    <div class="flex flex-row items-center">
+    <div class="flex gap-4 p-4 items-center">
       <input class="input-on-focus font-semibold text-gray-500" [(ngModel)]="session.info.title"
              (ngModelChange)="debouncedSaveSession()"/>
-      <button class="ml-10 h-1/3" title="Go to developer mode" (click)="goToDebugger()">
-        Developer Mode
-      </button>
+      <button class="h-fit" title="Go to Developer mode" (click)="goToDebugger()">Developer Mode</button>
     </div>
     <nt-video
       #video
@@ -20,7 +18,7 @@
   </div>
   <div class="w-1/3 h-4/5 px-8">
     <div class="flex justify-items items-center gap-3">
-      <label class="text-2xl my-4 mr-4">Run history</label>
+      <div class="text-2xl text-bop my-4 mr-4">Run history</div>
       <ng-container *ngIf="!loading">
         <div class="bo-button-icon h-10 px-3 gap-2" title="Rerun session" (click)="rerunSession()">
           <nt-icon name="rerun"></nt-icon>

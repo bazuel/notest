@@ -100,7 +100,6 @@ export class PlayerUtilsComponent {
   }
 
   showTooltipAt(currentX: number) {
-    console.log('show tooltip at', currentX);
     const { x, width } = this.timeBar.nativeElement.getBoundingClientRect();
     if (currentX > x + width) this.percentageTooltip = 100;
     else if (currentX < x) this.percentageTooltip = 0;
