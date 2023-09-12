@@ -1,8 +1,8 @@
 import { http } from './http.service';
-import { NTMonitorConfiguration } from '@notest/common';
+import { NTEmbeddedConfiguration } from '@notest/common';
 
 export class ConfigurationService {
-  configuration!: NTMonitorConfiguration;
+  configuration!: NTEmbeddedConfiguration;
 
   async get() {
     this.configuration = await http.gest('/embedded/configuration', {

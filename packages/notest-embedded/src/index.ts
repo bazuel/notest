@@ -1,13 +1,15 @@
 import { monitor } from './services/monitoring.service';
 import { configuration } from './services/configuration.service';
-import { NTMonitorConfiguration } from '@notest/common';
+import { NTEmbeddedConfiguration } from '@notest/common';
 
 async function initNotest() {
-  const configurations: NTMonitorConfiguration = await configuration.get();
+  const configurations: NTEmbeddedConfiguration = await configuration.get();
 
-  if (configurations?.urlStart) {
-    const isEntered = (url: string) => url.startsWith(configurations.urlStart!) && !monitor.running;
-    const isExited = (url: string) => !url.startsWith(configurations.urlStart!) && monitor.running;
+  if (configurations?.paths?.length) {
+    const isEntered = (url: string) =>
+      configurations.paths.some((path) => path.startsWith(url)) && !monitor.running;
+    const isExited = (url: string) =>
+      !configurations.paths.some((path) => path.startsWith(url)) && monitor.running;
 
     setInterval(() => {
       const url = window.location.href;

@@ -4,4 +4,14 @@
       @apply p-1 text-xs leading-tight;
     }
   }
+  &.secondary-color{
+    .bo-badge {
+      @apply bg-nt-secondary;
+    }
+  }
+  &:not(.secondary-color){
+    .bo-badge {
+      @apply bg-bop;
+    }
+  }
 }

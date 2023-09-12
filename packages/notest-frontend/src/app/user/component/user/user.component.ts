@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
   copyToClipboard,
+  NTEmbeddedConfiguration,
   NTRole,
   NTRoleLabelsMap,
   NTRoleMap,
@@ -15,6 +16,7 @@ import { ShowFullScreenLoading } from '../../../shared/services/loading.service'
 import { Location } from '@angular/common';
 import { dialog } from '../../../shared/components/dialog/dialog.component';
 import { RolesService } from '../../../notest-shared/services/roles.service';
+import { Debounce } from '../../../shared/utils/throttle.util';
 
 @Component({
   selector: 'nt-user',
@@ -51,6 +53,8 @@ export class UserComponent implements OnInit {
   success = false;
   passwordSuccess = false;
 
+  embeddedConfigurations: NTEmbeddedConfiguration[] = [];
+
   constructor(
     private location: Location,
     private userService: UserService,
@@ -67,6 +71,7 @@ export class UserComponent implements OnInit {
     if (userid) this.user = await this.userService.getUserById(userid);
     else this.user = { domains: [], roles: [] } as any;
     this.initialUser = structuredClone(this.user);
+    this.embeddedConfigurations = await this.userService.getEmbeddedConfigurations();
   }
 
   @HostListener('click')
@@ -205,9 +210,23 @@ export class UserComponent implements OnInit {
     const newPasswords = !!this.newPassword && !!this.newPasswordRepeated;
     return !this.newUser && newPasswords;
   }
-  protected readonly NTRoleMap = NTRoleMap;
 
+  async addNewConfiguration() {
+    const configuration = { paths: [''] } as any;
+    this.userService
+      .saveEmbeddedConfiguration({ paths: [''] } as any)
+      .then((c) => (configuration.id = c[0].id));
+    this.embeddedConfigurations.push(configuration);
+  }
+
+  @Debounce(3000)
+  async saveConfigurationDebounced(c: NTEmbeddedConfiguration) {
+    if (!c.domain || !c.paths) return;
+    await this.userService.saveEmbeddedConfiguration(c);
+  }
+
+  protected readonly NTRoleMap = NTRoleMap;
   protected readonly NTRoleLabelsMap = NTRoleLabelsMap;
+
   protected readonly toggle = toggle;
-  protected readonly console = console;
 }

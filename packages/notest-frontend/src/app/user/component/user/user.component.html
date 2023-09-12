@@ -1,6 +1,6 @@
 <h1 class="m-4">User Control Panel</h1>
-<div *ngIf="user" class="p-4 flex">
-  <div class="w-1/2">
+<div *ngIf="user" class="p-4 flex flex-wrap gap-y-24 gap-x-4">
+  <section class="w-[600px]">
     <div class="flex gap-2 items-center">
       <nt-icon class="h-6 w-6 text-nt-500 " name="user"></nt-icon>
       <h3>Profile</h3>
@@ -19,21 +19,22 @@
       <nt-autocomplete label=Roles [items]="NTRoleMap" [property]="'name'"
                        (itemSelected)="toggleRole($event.value)"></nt-autocomplete>
       <div class="flex">
-        <nt-badge class="sm" *ngFor="let role of user.roles">{{NTRoleLabelsMap[role]}}</nt-badge>
+        <nt-badge class="sm secondary-color" *ngFor="let role of user.roles">{{NTRoleLabelsMap[role]}}</nt-badge>
       </div>
     </div>
     <div class="flex mt-8 items-center gap-2">
-      <input class="mt-0" pattern="^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w.-]*)*\/?$" #domainInput label="Add new Domain"/>
+      <input class="mt-0" pattern="^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w.-]*)*\/?$" #domainInput
+             label="Add new Domain"/>
       <button *ngIf="domainInput.value"
               class="h-fit animation-appear"
               (click)="toggle(domainInput.value, user.domains!)">
         {{user.domains!.includes(domainInput.value) ? 'Remove' : 'Add'}}
       </button>
     </div>
+    <h4 class="block mt-4">Activated domains</h4>
     <nt-badge class="sm" *ngFor="let domain of user.domains">{{domain}}</nt-badge>
-
-  </div>
-  <div class="w-1/2">
+  </section>
+  <section class="w-[600px]">
     <div class="flex gap-2 items-center">
       <nt-icon class="h-6 w-6 text-nt-500 " name="advanced"></nt-icon>
       <h3>Advanced</h3>
@@ -65,7 +66,27 @@
         </div>
       </div>
     </ng-container>
-  </div>
+  </section>
+  <section class="w-[600px]">
+    <div class="flex gap-2 items-center">
+      <nt-icon class="h-6 w-6 text-nt-500 " name="console"></nt-icon>
+      <h3>Embedded Configurations</h3>
+    </div>
+    <button (click)="addNewConfiguration()">Add new Domain Trigger</button>
+    <div class="flex flex-col gap-3 mt-6 h-[600px] overflow-y-auto scrollbar-sm">
+      <div *ngFor="let c of embeddedConfigurations" class="animation-appear rounded-md border border-bop p-5 w-fit">
+        <input class="mt-0" label="Domain" [(ngModel)]="c.domain" (ngModelChange)="saveConfigurationDebounced(c)"/>
+        <div class="flex mt-4 items-center gap-2">
+          <input class="mt-0" #path label="Add new path"/>
+          <button *ngIf="path.value" class="h-fit animation-appear"
+                  (click)="toggle(path.value, c.paths!);saveConfigurationDebounced(c)">
+            {{c.paths.includes(path.value) ? 'Remove' : 'Add'}}
+          </button>
+        </div>
+        <nt-badge class="sm" *ngFor="let path of c.paths">{{path}}</nt-badge>
+      </div>
+    </div>
+  </section>
 </div>
 
 <div *ngIf="user" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 flex gap-4">

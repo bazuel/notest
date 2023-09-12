@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresDbService, sql } from '@notest/backend-shared';
 import { CrudService } from '../shared/services/crud.service';
-import { NTEmbedded } from '@notest/common';
+import { NTEmbeddedConfiguration } from '@notest/common';
 
 @Injectable()
-export class EmbeddedService extends CrudService<NTEmbedded> {
+export class EmbeddedService extends CrudService<NTEmbeddedConfiguration> {
   protected table = 'nt_embedded';
   protected id = 'id';
 
@@ -20,8 +20,9 @@ export class EmbeddedService extends CrudService<NTEmbedded> {
           create table if not exists ${sql(this.table)}
           (
               ${sql(this.id)} BIGSERIAL PRIMARY KEY,
+              userid bigint,
               domain text,
-              configuration jsonb,
+              paths jsonb,
               created TIMESTAMPTZ
           );
       `;

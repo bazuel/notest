@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
-import { NTUser } from '@notest/common';
+import { NTEmbeddedConfiguration, NTUser } from '@notest/common';
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +38,17 @@ export class UserService {
 
   getUsers() {
     return this.http.get<NTUser[]>('/user/list');
+  }
+
+  saveEmbeddedConfiguration(
+    configuration: NTEmbeddedConfiguration
+  ): Promise<NTEmbeddedConfiguration[]> {
+    return this.http.post<NTEmbeddedConfiguration[]>('/embedded/save-configuration', {
+      configuration
+    });
+  }
+
+  async getEmbeddedConfigurations() {
+    return await this.http.get<NTEmbeddedConfiguration[]>('/embedded/find-by-user');
   }
 }
