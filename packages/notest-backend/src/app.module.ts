@@ -13,12 +13,28 @@ import { MessagesService } from './user/messages.service';
 import { BatteryService } from './battery/battery.service';
 import { BatteryController } from './battery/battery.controller';
 import { WebhookController } from './webhook/webhook.controller';
+import { EmbeddedController } from './embedded/embedded.controller';
+import { EmbeddedService } from './embedded/embedded.service';
 
 @Module({
   imports: [SharedModule, NotestSharedModule],
-  controllers: [AppController,BatteryController,
-    WebhookController, TestGeneratorController, SessionController, UserController],
-  providers: [AppService,
-    BatteryService, TestGeneratorService, EventService, UserService, MessagesService]
+  controllers: [
+    AppController,
+    BatteryController,
+    WebhookController,
+    TestGeneratorController,
+    SessionController,
+    UserController,
+    EmbeddedController
+  ],
+  providers: [
+    AppService,
+    BatteryService,
+    TestGeneratorService,
+    EventService,
+    UserService,
+    MessagesService,
+    EmbeddedService
+  ]
 })
 export class AppModule {}

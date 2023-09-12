@@ -14,9 +14,15 @@ export function eventReference(
   event: BLSessionEvent,
   optionalTimestamp?: number
 ) {
-  return `${optionalTimestamp ?? event.timestamp}_${event.type}_${event.name}_${
-    event.sid
-  }_${event.tab}_${encodeURIComponent(event.url)}`;
+  const parts = [
+    optionalTimestamp ?? event.timestamp,
+    event.type,
+    event.name,
+    event.sid ?? 0,
+    event.tab ?? 0,
+    encodeURIComponent(event.url),
+  ];
+  return parts.join("_");
 }
 
 export function eventInfoFromReference(

@@ -193,3 +193,18 @@ export type NTScreenshot = {
   fired: Date;
   type: "image" | "assertion";
 };
+
+export type NTEmbedded = {
+  id?: string;
+  domain: string;
+  configuration: NTMonitorConfiguration;
+};
+
+export type NTMonitorConfiguration = {
+  urlStart?: string;
+  element?: {
+    start: { x: number; y: number };
+    end: { x: number; y: number };
+  };
+  maxDuration?: number;
+};
