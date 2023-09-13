@@ -44,6 +44,7 @@
         title: $sessionStore.title,
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
+        rerun:true,
         isLogin: false,
         reference: extensionService.reference
       });

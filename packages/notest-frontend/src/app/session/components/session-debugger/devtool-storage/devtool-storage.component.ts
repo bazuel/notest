@@ -6,7 +6,6 @@ import {
   byTimestamp,
   TabIndex
 } from '@notest/common';
-import { SessionUrlParamsService } from '../../../services/session-url-params.service';
 
 interface DevtoolStorageItem {
   key: string;
@@ -49,7 +48,7 @@ export class DevtoolStorageComponent implements OnInit {
       call = () =>
         this.events.filter((e) => e.name == 'session-full' || e.name == 'session-update');
     else if (this.type == 'cookie')
-      call = () => this.events.filter((e) => e.name == 'cookie-details');
+      call = () => this.events.filter((e) => e.name == 'cookie-details')[0]['details'];
 
     let tabIndex = new TabIndex();
     for (let t of tabs) {
@@ -89,18 +88,16 @@ export class DevtoolStorageComponent implements OnInit {
   private toCookiesStorageData(cs: BLCookieEvent[], tab: number) {
     console.log('cs: ', cs);
     let sd: DevtoolStorageItem[] = [];
-    for (let l of cs) {
-      const cookies = this.toCookieJson(l.cookie);
-      for (let k in cookies) {
-        sd.push({
-          key: k,
-          value: cookies[k],
-          timestamp: l.timestamp,
-          tab,
-          show: false,
-          preview: (cookies[k] ?? '').substr(0, 30)
-        });
-      }
+    for (let c of cs) {
+      // const cookies = this.toCookieJson(l.cookie);
+      sd.push({
+        key: c.name,
+        value: c['value'],
+        timestamp: c.timestamp,
+        tab,
+        show: false,
+        preview: (c['value'] ?? '').substr(0, 30)
+      });
     }
     return sd.sort(byTimestamp);
   }

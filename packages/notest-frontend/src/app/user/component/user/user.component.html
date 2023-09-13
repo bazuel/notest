@@ -83,7 +83,8 @@
             {{c.paths.includes(path.value) ? 'Remove' : 'Add'}}
           </button>
         </div>
-        <nt-badge class="sm" *ngFor="let path of c.paths">{{path}}</nt-badge>
+        <nt-badge class="sm" *ngFor="let path of c.paths" (click)="toggle(path, c.paths!)">
+          {{path}}</nt-badge>
       </div>
     </div>
   </section>

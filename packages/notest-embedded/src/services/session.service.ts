@@ -2,27 +2,27 @@ import { BLEvent, BLSessionEvent, eventReference, NTSession } from '@notest/comm
 import { uploadEvents, uploadShot } from './upload.function';
 import { monitor } from './monitoring.service';
 import { DomMonitor } from '@notest/session-monitor';
+import { configuration } from './configuration.service';
 
 export class SessionService {
   events: BLEvent[] = [];
   reference!: string;
+  path!: string;
 
   addEvent(event: BLEvent) {
     this.events.push(event);
-    if (this.events.length == 1) {
-      this.reference = eventReference(event as BLSessionEvent);
-      this.fullDomShot();
-    }
   }
 
   reset() {
     this.events = [];
+    this.path = '';
   }
 
-  async saveEvents() {
+  async save() {
     const url = (this.events[0] as BLSessionEvent).url;
-    const sessionInfo: NTSession['info'] & { reference: string } = {
+    const sessionInfo: NTSession['info'] & { reference: string; userid: string } = {
       backend_type: 'full',
+      rerun: false,
       description: '',
       e2eScript: '',
       internal_error: false,
@@ -30,7 +30,8 @@ export class SessionService {
       reference: this.reference,
       session_logged: true,
       targetList: [],
-      title: 'Embedded - ' + new URL(url).href
+      title: 'Embedded - ' + configuration.configuration.domain + '-' + this.path,
+      userid: configuration.configuration.userid
     };
     const res = await uploadEvents(this.events, url, sessionInfo);
     this.reset();
@@ -39,7 +40,18 @@ export class SessionService {
 
   fullDomShot() {
     const fullDom = (monitor.monitor.delayedMonitors[0] as DomMonitor).takeDomScreenshot();
-    uploadShot(fullDom, this.reference);
+    const domSessionEvent: BLSessionEvent = {
+      name: 'dom-full',
+      type: 'dom',
+      sid: 0,
+      tab: 0,
+      full: fullDom,
+      timestamp: Date.now(),
+      url: window.location.href
+    };
+    this.reference = eventReference(domSessionEvent);
+    const data = { fullDom, reference: this.reference };
+    uploadShot(data);
   }
 }
 

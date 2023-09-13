@@ -19,7 +19,7 @@ async function build(options) {
   if (watch) {
     await ctx.watch().then(() => console.log('watching...'));
   } else {
-    await ctx.build().then(() => console.log('build done'));
+    console.log('build done');
   }
 }
 

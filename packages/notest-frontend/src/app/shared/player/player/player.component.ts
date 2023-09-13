@@ -313,16 +313,20 @@ export class PlayerComponent {
     ) as BLCssRuleRemoveEvent[];
     cssEvents.sort((c1, c2) => c1.index - c2.index);
     for (let e of cssEvents) {
-      let style = this.target.doc.querySelector(
-        '#bl_style_' + (e as BLCssRuleRemoveEvent).target
-      ) as HTMLStyleElement;
-      if (!style) {
-        let s = this.target.doc.createElement('style');
-        s.id = '#bl_style_' + (e as BLCssRuleRemoveEvent).target;
-        this.target.doc.head.appendChild(s);
-        style = s;
+      try {
+        let style = this.target.doc.querySelector(
+          '#bl_style_' + (e as BLCssRuleRemoveEvent).target
+        ) as HTMLStyleElement;
+        if (!style) {
+          let s = this.target.doc.createElement('style');
+          s.id = '#bl_style_' + (e as BLCssRuleRemoveEvent).target;
+          this.target.doc.head.appendChild(s);
+          style = s;
+        }
+        this.cssDeserializer.deserialize(e, style);
+      } catch (e) {
+        console.log(e);
       }
-      this.cssDeserializer.deserialize(e, style);
     }
   }
 

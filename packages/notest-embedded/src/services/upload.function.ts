@@ -24,8 +24,8 @@ export async function uploadEvents(events: BLEvent[], url: string, sessionInfo: 
     });
 }
 
-export async function uploadShot(fullDom: DOMJson, reference: string) {
-  const zip = await new JsonCompressor().zip({ fullDom, reference });
+export async function uploadShot(data: { fullDom: DOMJson; reference: string }) {
+  const zip = await new JsonCompressor().zip(data);
   const formData = new FormData();
   formData.append('file', new Blob([zip], { type: 'application/zip' }), Date.now() + '.zip');
   return await fetch(`${environment.api}/api/session/shot`, {

@@ -13,13 +13,15 @@ export class MonitorHandler {
 
   start() {
     this.monitor.enable();
+    session.path = window.location.pathname;
     this.running = true;
+    session.fullDomShot();
   }
 
   async stop() {
     this.monitor.disable();
     this.running = false;
-    return await session.saveEvents();
+    session.save();
   }
 
   cancel() {
