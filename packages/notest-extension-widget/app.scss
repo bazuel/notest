@@ -96,7 +96,7 @@
 }
 
 .nt-input, .nt-textarea {
-  @apply border border-gray-200 p-2 h-10 w-64 rounded-md bg-gray-50 hover:shadow-sm
+  @apply border border-gray-200 p-2 h-10 w-64 rounded-md bg-gray-50 hover:shadow-sm text-black
   focus:outline-none
   hover:border-gray-300
   focus:border-gray-400;

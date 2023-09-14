@@ -31,7 +31,7 @@ class HttpService {
     let token = await getStorage('NOTEST_TOKEN');
     if (token) options.headers['Authorization'] = `Bearer ${token}`;
 
-    return await fetch(request.url, options).then(async (res) => await res.json());
+    return await fetch(request.url, options).then(async (res) => await res.json().catch(() => res));
   }
 }
 

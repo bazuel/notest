@@ -1,18 +1,12 @@
 <script lang='ts'>
-  import { NTSession } from '@notest/common';
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { getUrlImage } from '../functions/url.functions';
+  import {NTSession} from '@notest/common';
+  import {createEventDispatcher} from 'svelte';
+  import Image from '../shared/components/image.svelte';
 
   export let sessions: NTSession[] = [];
   export let title: String = '';
 
   export const dispatcher = createEventDispatcher();
-
-  let imageList: string[] = [];
-
-  onMount(async () => {
-    imageList = await Promise.all(sessions.map(session => getUrlImage(session.reference)));
-  });
 
   let onSessionClick = (reference) => dispatcher('session-selected', { reference });
 </script>
@@ -23,10 +17,10 @@
     {#each sessions as session, i}
       <div class='nt-panel-session-container'>
         <h4 class='nt-h4 nt-session-title-container' title={session.info.title}>{session.info.title}</h4>
-        {#if imageList[i]}
+        {#if session.reference}
           <div class='nt-preview-image nt-preview-session-image-container'
                on:mouseup={() => onSessionClick(session.reference)}>
-            <img src={imageList[i]} alt='' />
+            <Image reference="{session.reference}" />
           </div>
         {:else }
           <div class='bo-loading nt-preview-image nt-center'

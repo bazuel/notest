@@ -6,3 +6,7 @@ export async function getUrlImage(reference: string) {
   console.log('getUrlImage', baseUrl);
   return `${baseUrl}/api/media/screenshot-download?reference=${reference}&name=shot`;
 }
+
+export function getPathImage(reference: string) {
+  return `/media/screenshot-download?reference=${reference}&name=shot&base64=true`;
+}

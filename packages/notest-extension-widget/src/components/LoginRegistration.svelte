@@ -66,7 +66,7 @@
         <button class='nt-button nt-login-button-container' on:click={doLogin}>Login</button>
       </div>
     {:else }
-      <div class='text-center'>
+      <div class='text-center text-black'>
         Already have an account?
         <div class='nt-login-button-container nt-center'>
           <button class='nt-button' on:click={() => logging = true}>Login</button>

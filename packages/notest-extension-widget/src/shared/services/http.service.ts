@@ -1,7 +1,7 @@
 import { messageService } from '../../services/message.service';
 
 class HttpService {
-  get(url: string) {
+  get(url: string): Promise<any> {
     return messageService.sendMessage('fetch', { method: 'GET', url }, true);
   }
 

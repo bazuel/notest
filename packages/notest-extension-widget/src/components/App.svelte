@@ -9,7 +9,6 @@
   import { capture } from '../shared/services/screenshot.service';
   import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
   import { messageService } from '../services/message.service';
-  import { getUrlImage } from '../functions/url.functions';
 
   let openSidebar = false;
   let recording;
@@ -19,7 +18,7 @@
 
   messageService.waitForMessage<string>('screenshot-saved').then(async (reference) => {
     extensionService.saveReference(reference);
-    updateSessionImages(await getUrlImage(reference));
+    updateSessionImages({reference,name:''});
   });
 
   onMount(() => {
@@ -78,10 +77,10 @@
   };
 </script>
 
-<svelte:head>
-  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet">
-</svelte:head>
+<!--<svelte:head>-->
+<!--  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet">-->
+<!--</svelte:head>-->
 <div class='--nt-extension fixed --nt-widget flex flex-row'>
   {#if openSidebar}
     <Sidebar
