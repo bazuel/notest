@@ -26,7 +26,6 @@ function callbackFromPageToBackground(message: NTMessage) {
     sendMessage(message);
   } else if (message.type && ['session-event', 'screenshot-event'].includes(message.type)) {
     const e: BLEvent = message.data;
-    console.log('event', e);
     sendMessage({ ...e, type: message.type, data: document.title });
   } else if (message.type && message.type == 'fetch') {
     const responseCallback = (response) => {

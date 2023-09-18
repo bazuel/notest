@@ -177,7 +177,6 @@ export class SessionController {
     return { sessions };
   }
 
-  @HasToken()
   @Get('find-by-reference')
   async findByReference(@Query('reference') reference: string) {
     const sessions = await this.sessionService.findByField(

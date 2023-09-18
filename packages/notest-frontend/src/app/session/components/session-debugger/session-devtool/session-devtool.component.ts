@@ -15,8 +15,9 @@ export const devtoolsPanelsData = {
   Network: {},
   LocalStorage: {},
   SessionStorage: {},
-  Cookies: {}
+  Cookies: {},
   // Device: {}
+  Sockets: {}
 };
 
 export type DevtoolPanel = keyof typeof devtoolsPanelsData;

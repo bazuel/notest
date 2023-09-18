@@ -5,6 +5,8 @@
 @tailwind utilities;
 
 #--nt-widget {
+  @import url("https://fonts.googleapis.com/css?family=Anton");
+  @import url("https://fonts.googleapis.com/css2?family=Poppins");
   --nt-primary-color: #0097e4;
   --nt-secondary-color: #ff4d00;
   *:not(.font-logo > *) {

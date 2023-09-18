@@ -77,10 +77,10 @@
   };
 </script>
 
-<!--<svelte:head>-->
-<!--  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">-->
-<!--  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet">-->
-<!--</svelte:head>-->
+<svelte:head>
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet" crossorigin>
+</svelte:head>
 <div class='--nt-extension fixed --nt-widget flex flex-row'>
   {#if openSidebar}
     <Sidebar

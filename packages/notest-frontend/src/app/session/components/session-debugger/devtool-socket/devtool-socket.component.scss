@@ -1,0 +1,26 @@
+
+@import "../../../../notest-shared/styles/table";
+@import "../../../../notest-shared/styles/scrollbar";
+
+td.address {
+  text-align: right;
+  white-space: nowrap;
+  direction: rtl;
+  @apply font-semibold text-sm text-nt-400;
+}
+
+.network-table-container {
+  @apply overflow-y-auto scrollbar-md;
+  height: calc(100% - 45px);
+}
+
+td.json-view {
+  @apply p-0 border-t border-b border-gray-200;
+}
+
+bl-devtool, bl-session-devtool {
+  font-size: 12px;
+  font-family: Consolas, sans-serif;
+  color: var(--bl-devtool-font-dark-color);
+  line-height: 26px;
+}

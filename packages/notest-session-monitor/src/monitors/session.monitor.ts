@@ -17,6 +17,7 @@ import { MediaMonitor } from '../dom/media.monitor';
 import { ForceWebComponentsSerializationPatch } from '../dom/force-web-components-serialization.patch';
 import { BLEvent, BLEventWithTarget, BLSessionEvent } from '@notest/common';
 import { WheelMonitor } from './wheel.monitor';
+import { SocketMonitor } from './socket.monitor';
 
 function targetToSelectors(e: BLEventWithTarget) {
   const selector = (e) => {
@@ -48,7 +49,8 @@ export class SessionMonitor {
     new PageMonitor(),
     new ScrollMonitor(),
     new StorageMonitor(),
-    new WindowResizeMonitor()
+    new WindowResizeMonitor(),
+    new SocketMonitor()
   ];
   delayedMonitors = [new DomMonitor(), new CssMonitor(), new MediaMonitor()];
   httpMonitor = new HttpMonitor();
@@ -111,6 +113,8 @@ export class SessionMonitor {
     Object.keys(blevent.page).forEach((me) => blevent.page[me].on(this.sendTo));
     Object.keys(blevent.window).forEach((me) => blevent.window[me].on(this.sendTo));
     Object.keys(blevent.storage).forEach((me) => blevent.storage[me].on(this.sendTo));
+
+    Object.keys(blevent.socket).forEach((me) => blevent.socket[me].on(this.sendTo));
 
     const httpData = (e) => {
       const headers = e.request.headers;

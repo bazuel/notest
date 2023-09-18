@@ -1,8 +1,7 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
 import { BLSessionEvent, copyToClipboard, debounce, NTEvent, NTSession } from '@notest/common';
-import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
 import { Router } from '@angular/router';
 import {
   JsonAction,
