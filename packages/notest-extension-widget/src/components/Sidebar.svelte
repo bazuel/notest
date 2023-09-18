@@ -1,15 +1,16 @@
 <script lang='ts'>
-  import { createEventDispatcher, onMount } from 'svelte';
+  import {createEventDispatcher, onMount} from 'svelte';
   import Icon from '../shared/components/Icon.svelte';
+  import Image from '../shared/components/image.svelte';
   import Logo from '../shared/components/Logo.svelte';
   import Switch from '../shared/components/Switch.svelte';
   import StartTest from './StartTest.svelte';
   import LoginRegistration from './LoginRegistration.svelte';
-  import { extensionService } from '../services/extension.service.js';
-  import { copyToClipboard, NTSession } from '@notest/common';
-  import { tokenService } from '../shared/services/token.service.js';
+  import {extensionService} from '../services/extension.service.js';
+  import {copyToClipboard, NTSession} from '@notest/common';
+  import {tokenService} from '../shared/services/token.service.js';
   import SessionPanel from './SessionPanel.svelte';
-  import { http } from '../shared/services/http.service';
+  import {http} from '../shared/services/http.service';
   import {
     appStore,
     updateIsLoginSession,
@@ -17,8 +18,8 @@
     updateSessionSaved,
     updateSidebarState
   } from '../stores/settings.store.js';
-  import { router } from '../shared/services/router.service';
-  import { initSessionStore, removeSessionImage, sessionStore } from '../stores/session.store';
+  import {router} from '../shared/services/router.service';
+  import {initSessionStore, removeSessionImage, sessionStore} from '../stores/session.store';
 
   export const dispatcher = createEventDispatcher();
 
@@ -44,6 +45,7 @@
         title: $sessionStore.title,
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
+        rerun: true,
         isLogin: false,
         reference: extensionService.reference
       });
@@ -66,9 +68,9 @@
     const token = await tokenService.getToken();
     let params;
     if (token) {
-      params = { token, reference };
+      params = {token, reference};
     } else {
-      params = { reference };
+      params = {reference};
     }
     router.navigateByUrl(`${import.meta.env.VITE_APP_URL}/session/session-preview`, params);
   }
@@ -102,7 +104,7 @@
 
 <div class='sidebar-right'>
   <div class='nt-close-sidebar-container' on:mouseup={() => {dispatcher('close-sidebar')}}>
-    <Icon color='gray' name='arrowRight' />
+    <Icon color='gray' name='arrowRight'/>
   </div>
   <div class='nt-header-container'>
     <Logo></Logo>
@@ -132,7 +134,7 @@
             </Switch>
             {#if isCustomBackend}
               <div class='flex justify-between items-center'>
-                <input class='nt-input m-2' bind:value={customBackendUrl} placeholder='https://...' />
+                <input class='nt-input m-2' bind:value={customBackendUrl} placeholder='https://...'/>
                 <button class='nt-button'
                         on:mouseup={ () => {extensionService.customBackendUrl = customBackendUrl;showPopupSettings = false}}>
                   Save
@@ -158,7 +160,7 @@
   {#if $appStore.sidebarState === 'end'}
     <div class='nt-session-ended-container'>
       <label class='nt-label'>Title ⃰</label>
-      <input class='nt-input' autofocus placeholder='Session title' bind:value={$sessionStore.title} />
+      <input class='nt-input' autofocus placeholder='Session title' bind:value={$sessionStore.title}/>
       {#if !validSessionTitle}
         <p class='nt-title-not-inserted-container'>*Insert TITLE before saving</p>
       {/if}
@@ -168,11 +170,17 @@
       <div>
         <label class='nt-label'>Test assertions (Optional)</label>
         <div class='nt-test-assertion-container'>
-          {#each $sessionStore.images as url }
+          {#each $sessionStore.images as imgData }
             <div class='nt-img-assertion-container'
-                 on:mouseup={() => removeSessionImage(url)}>
+                 on:mouseup={() => removeSessionImage(imgData)}>
               <div class='nt-cancel-assertion'>✖</div>
-              <img class='nt-img-url-assertion' src={url} alt='' />
+              <div class="nt-img-url-assertion">
+                {#if imgData.reference}
+                  <Image reference="{imgData.reference}"></Image>
+                {:else}
+                  <img src="{imgData}" alt="img"/>
+                {/if}
+              </div>
             </div>
           {/each}
           <button on:click={() => dispatcher('highlighter')} class='nt-button nt-assertion-utils'>
@@ -202,7 +210,7 @@
       </div>
       {#if $appStore.sessionSaved}
         <div class='nt-copy-button-container'>
-          <input class='nt-input' value='{link(extensionService.reference)}' />
+          <input class='nt-input' value='{link(extensionService.reference)}'/>
           <button class='nt-button nt-copy-button' title='Copy session link' on:click={copyLinkReference}>
             <Icon name='copy' color='white'></Icon>
           </button>
@@ -223,7 +231,6 @@
 
 
 <style lang='scss'>
-  @import "/app.scss";
 
   .sidebar-right {
     z-index: 10001;

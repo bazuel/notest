@@ -1,32 +1,33 @@
-<div class="sidebar">
-  <nt-logo class="ml-4"></nt-logo>
-
+<div class="sidebar" (mouseenter)="sidebarHover = true" (mouseleave)="sidebarHover = false">
+  <nt-logo></nt-logo>
   <ul>
     <li>
       <a routerLink="/battery/battery-test-dashboard">
         <nt-icon name="compound"></nt-icon>
-        Battery Test
+        <div>Battery Test</div>
       </a>
     </li>
     <li>
       <a routerLink="/session/session-dashboard">
         <nt-icon name="e2e"></nt-icon>
-        Test e2e
+        <div>Test e2e</div>
+      </a>
+    </li>
+    <li *ngIf="rolesService.isAdmin">
+      <a routerLink="/user/user-list">
+        <nt-icon name="users"></nt-icon>
+        <div>User List</div>
       </a>
     </li>
   </ul>
-
-  <div class="relative mt-auto">
-    <div class="flex items-center bg-white p-4 personal-info">
-      <div title="User Settings" class="flex items-center cursor-pointer " (click)="redirectToUser()">
-        <nt-profile-image *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
-        <div class="ml-2">
-          <div class="text-sm text-gray-700">{{ fullname }}</div>
-          <div class="text-xs uppercase text-gray-500">{{ role }}</div>
-        </div>
+  <div class="relative mt-auto" *ngIf="tokenService.logged">
+    <div class="flex items-center personal-info cursor-pointer" routerLink="user/user-form">
+      <nt-profile-image class="fixed" *ngIf="ready" [userid]="userid" [fullname]="fullname"></nt-profile-image>
+      <div class="ml-12">
+        <div class="text-sm text-gray-700">{{ fullname }}</div>
+        <div class="text-xs uppercase text-gray-500">{{ roleLabelsMap[role] }}</div>
       </div>
-      <nt-icon class="ml-auto text-gray-500" name="logout" title="Logout" (click)="logout()"></nt-icon>
+      <nt-icon class="ml-2 text-gray-500" name="logout" (click)="logout()"></nt-icon>
     </div>
-    <!--<bazuel-link></bazuel-link>-->
   </div>
 </div>

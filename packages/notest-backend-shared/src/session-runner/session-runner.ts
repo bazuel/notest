@@ -168,7 +168,7 @@ export class SessionRunner extends SessionExecutor {
         url: url
       });
     }
-    await this.page.close();
+    await this.page.close({ runBeforeUnload: true });
     await this.context.close();
     await this.browser.close();
     return {

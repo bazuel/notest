@@ -4,12 +4,6 @@ import { SessionGenerator } from '@notest/backend-shared';
 
 @Injectable()
 export class TestGeneratorService {
-  private sessionGenerator: SessionGenerator;
-
-  constructor() {
-    this.sessionGenerator = new SessionGenerator();
-  }
-
   // async getRoutines(request: {
   //   projectName: string;
   //   scriptType: string;
@@ -151,6 +145,6 @@ export class TestGeneratorService {
   // }
 
   async generateSessionTest(session: BLSessionEvent[]) {
-    return this.sessionGenerator.run(session, { mode: 'remote' });
+    return new SessionGenerator().run(session, { mode: 'remote' });
   }
 }

@@ -1,0 +1,14 @@
+<div *ngIf="!full" class="url url-preview">
+  <span *ngIf="u.path">{{u.path}}</span>
+  <span *ngIf="u.query">{{u.query}}</span>
+  <span *ngIf="u.hash">{{u.hash}}</span>
+  <span *ngIf="u.hashQuery">{{u.hashQuery}}</span>
+</div>
+
+<span *ngIf="full" [attr.title]="url" class="link">
+  <span *ngIf="u.base" class="base">{{u.base}}</span>
+  <span *ngIf="u.path" class="path">{{u.path}}</span>
+  <span *ngIf="u.query" class="query">{{u.query}}</span>
+  <span *ngIf="u.hash" class="hash">{{u.hash}}</span>
+  <span *ngIf="u.hashQuery" class="hash-query">{{u.hashQuery}}</span>
+</span>

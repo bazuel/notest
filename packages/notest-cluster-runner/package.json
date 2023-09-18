@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "node esbuild.js",
+    "build": "node esbuild.js -w",
     "build:prod": "node esbuild.js --prod",
     "oldbuild": "tsc -t es5 src/index.ts"
   },

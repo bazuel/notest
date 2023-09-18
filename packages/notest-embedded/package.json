@@ -1,0 +1,21 @@
+{
+  "name": "@notest/embedded",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node esbuild",
+    "build:watch": "node esbuild -w",
+    "build:prod": "node esbuild --prod",
+    "clean": "rimraf dist/",
+    "copy-manifest": "copyfiles manifest.json dist/",
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/**/*.png dist/"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.2"
+  },
+  "dependencies": {
+    "@notest/session-monitor": "link:..\\notest-session-monitor",
+    "@notest/common": "link:..\\notest-common",
+    "fflate": "^0.7.3",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

@@ -32,19 +32,19 @@
   display: block;
 }
 
-.animation nt-icon {
+.animation .pippo {
   animation: 700ms vanish;
 }
 
 
-nt-icon {
+.pippo {
   position: absolute;
   top: calc(50% - 50px);
   left: calc(50% - 25px);
   z-index: 10;
   background-color: white;
   border-radius: 50%;
-  padding: 30px;
+  padding: 25px 25px 18px 25px;
   box-shadow: 0 0 6px 2px #50505082;
   opacity: 0;
 }

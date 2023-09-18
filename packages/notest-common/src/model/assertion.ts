@@ -34,7 +34,7 @@ export interface NTMissedEventsAssertion extends NTAssertion {
 }
 
 export interface NTRunFinishedAssertion extends NTAssertion {
-  payload: { testSuccessfullyFinished: boolean };
+  payload: { testSuccessfullyFinished: boolean; error?: string };
 }
 
 export type NTAssertionName = "status" | "contentType" | "bodyRequest";

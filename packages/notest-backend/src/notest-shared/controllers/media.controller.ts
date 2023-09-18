@@ -12,12 +12,19 @@ export class MediaController {
   async getScreenshot(
     @Res({ passthrough: true }) res,
     @Query('reference') reference: string,
-    @Query('name') name: string
+    @Query('name') name: string,
+    @Query('base64') base64?: string
   ) {
     const buffer = await this.mediaService.getScreenshot(decodeURIComponent(reference), name);
-    res.header('Content-Type', 'image/png');
-    const stream = Readable.from(buffer);
-    return new StreamableFile(stream);
+
+    if (base64 == 'true') {
+      const bs64 = buffer.toString('base64');
+      return { data: `data:image/png;base64,${bs64}` };
+    } else {
+      res.header('Content-Type', 'image/png');
+      const stream = Readable.from(buffer);
+      return new StreamableFile(stream);
+    }
   }
 
   @Post('screenshot-upload')
@@ -44,4 +51,19 @@ export class MediaController {
     res.header('Access-Control-Expose-Headers', `Content-Disposition`);
     return new StreamableFile(stream);
   }
+
+  @Get('asset-download')
+  async getAsset(@Query('url') url?: string) {
+    const res = await fetch(url);
+    const bs64 = await streamToBase64(res.body);
+    return { data: bs64 };
+  }
+}
+
+async function streamToBase64(readableStream) {
+  let chunks = [];
+  for await (let chunk of readableStream) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('base64');
 }

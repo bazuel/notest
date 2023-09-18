@@ -46,7 +46,8 @@
       "resources": [
         "page/monitor.js",
         "page/widget.js",
-        "page/widget.css"
+        "page/widget.css",
+        "page/custom-element.js"
       ],
       "matches": [
         "<all_urls>"

@@ -1,0 +1,7 @@
+<div class="devtool-header">
+  <div class="panel w-full flex items-center justify-center" (click)="active = p; panelChange.emit(p)"
+       *ngFor="let p of panels"
+       [class.active]="active == p">
+    <div class="px-2 py-1">{{p}}</div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+}
+
+.loading-spinner:after {
+  content: " ";
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin: 5px;
+  border-radius: 50%;
+  border: 6px solid #c7c7c7;
+  border-color: #c7c7c7 transparent #c7c7c7 transparent;
+  animation: loading-spinner 1.4s linear infinite;
+}
+
+@keyframes loading-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

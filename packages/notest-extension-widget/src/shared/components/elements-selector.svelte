@@ -15,8 +15,6 @@
   let highlighterRect = {left: Infinity, top: Infinity, width: 0, height: 0}
 
   onMount(() => {
-    highlighter = document.getElementById('--nt-highlighter-selector');
-    cursorSelector = document.getElementById('--nt-cursor-selection');
     setListeners();
   })
 
@@ -44,7 +42,7 @@
     e.stopImmediatePropagation()
     dispatcher('selecting-ended', {targetList, rect: highlighterRect})
     targetList = []
-    highlighterRect = {}
+    highlighterRect = {} as any
     enabled = false
     cursorSelector.setAttribute('hidden', 'true')
     return false
@@ -61,12 +59,13 @@
       !targetList.includes(e.target as HTMLElement) &&
       e.target != highlighter &&
       e.target != cursorSelector &&
-      e.target != document.body
+      e.target != document.body &&
+      e.target.tagName != 'NOTEST-WIDGET'
     ) {
       targetList.push(e.target as HTMLElement)
     }
-    setTimeout(() => cursorRect = getSelectorRect(e.x, e.y, cursorRect), 10)
-    setTimeout(() => highlighterRect = getHighlighterRect(targetList), 100)
+    cursorRect = getSelectorRect(e.x, e.y, cursorRect)
+    highlighterRect = getHighlighterRect(targetList)
     renderElement(cursorSelector, cursorRect)
     renderElement(highlighter, highlighterRect)
   }
@@ -104,21 +103,20 @@
 
 </script>
 
-<div class="nt-cursor-selection" id="--nt-cursor-selection"></div>
-<div class="nt-highlighter" id="--nt-highlighter-selector">
-    <Icon name="highlighter" color="white"></Icon>
+<div class="nt-cursor-selection" bind:this={cursorSelector}></div>
+<div class="nt-highlighter" bind:this={highlighter}>
+  <Icon name="highlighter" color="white"></Icon>
 </div>
 
 <style lang="scss">
-    @import '/app.scss';
-    .nt-highlighter {
-        z-index: 10001;
-        @apply flex justify-items-center justify-center items-center fixed pointer-events-none bg-nt-300 bg-opacity-30;
-    }
+  .nt-highlighter {
+    z-index: 10001;
+    @apply flex justify-items-center justify-center items-center fixed pointer-events-none bg-nt-300 bg-opacity-30;
+  }
 
-    .nt-cursor-selection {
-        @apply fixed bg-nt-600 border-dashed border-2 border-nt-700 bg-opacity-30 rounded-sm;
-        z-index: 10002;
-    }
+  .nt-cursor-selection {
+    @apply fixed bg-nt-600 border-dashed border-2 border-nt-700 bg-opacity-30 rounded-sm;
+    z-index: 10002;
+  }
 
 </style>

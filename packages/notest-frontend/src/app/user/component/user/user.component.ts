@@ -1,8 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { copyToClipboard, NTUser } from '@notest/common';
+import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  copyToClipboard,
+  NTEmbeddedConfiguration,
+  NTRole,
+  NTRoleLabelsMap,
+  NTRoleMap,
+  NTUser,
+  toggle
+} from '@notest/common';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { TokenService } from '../../../shared/services/token.service';
+import { UrlParamsService } from '../../../shared/services/url-params.service';
+import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
+import { Location } from '@angular/common';
+import { dialog } from '../../../shared/components/dialog/dialog.component';
+import { RolesService } from '../../../notest-shared/services/roles.service';
+import { Debounce } from '../../../shared/utils/throttle.util';
 
 @Component({
   selector: 'nt-user',
@@ -10,24 +24,62 @@ import { TokenService } from '../../../shared/services/token.service';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
+  initialUser!: NTUser;
   user!: NTUser;
   currentPassword?: string;
-  newPassword?: string;
   newPasswordRepeated?: string;
   passwordUpdated = false;
-  checkCurrentPass = true;
+  currentPasswordMatch = true;
+  changingPassword = false;
+
+  newPassword = '';
+
   userInfoUpdated = false;
+
+  showSaveButton = false;
+  showChangePassword = false;
 
   copyToClipboard = copyToClipboard;
 
+  saving = false;
+  newUser = false;
+
+  error = false;
+  errorMessage = '';
+
+  passwordError = false;
+  passwordErrorMessage = '';
+
+  success = false;
+  passwordSuccess = false;
+
+  embeddedConfigurations: NTEmbeddedConfiguration[] = [];
+
   constructor(
+    private location: Location,
     private userService: UserService,
     private authService: AuthService,
-    private tokenService: TokenService
+    public tokenService: TokenService,
+    private urlParamsService: UrlParamsService,
+    public rolesService: RolesService
   ) {}
 
+  @ShowFullScreenLoading()
   async ngOnInit() {
-    this.user = await this.userService.getUserById();
+    const userid = this.urlParamsService.get('id');
+    this.newUser = !userid;
+    if (userid) this.user = await this.userService.getUserById(userid);
+    else this.user = { domains: [], roles: [] } as any;
+    this.initialUser = structuredClone(this.user);
+    this.embeddedConfigurations = await this.userService.getEmbeddedConfigurations();
+  }
+
+  @HostListener('click')
+  @HostListener('keyup')
+  controlChanges() {
+    this.showSaveButton =
+      this.error || JSON.stringify(this.initialUser) !== JSON.stringify(this.user);
+    this.showChangePassword = this.passwordError || this.canSavePassword();
   }
 
   async generateApiToken() {
@@ -40,30 +92,141 @@ export class UserComponent implements OnInit {
   }
 
   async changePassword() {
-    let res = false;
-    const token = this.tokenService.get();
-    this.checkCurrentPass = await this.checkCurrentPassword();
-    if (token && this.checkCurrentPass)
-      res = await this.authService.resetPassword(token, this.newPasswordRepeated!);
-    if (res) {
-      this.passwordUpdated = true;
-      setTimeout(() => {
-        this.passwordUpdated = false;
-      }, 2000);
+    this.changingPassword = true;
+    this.currentPasswordMatch = await this.checkCurrentPassword();
+    if (!this.currentPasswordMatch) {
+      this.onChangePasswordError('Current password is not correct.');
+      return;
+    }
+    if (this.newPassword !== this.newPasswordRepeated) {
+      this.onChangePasswordError('New passwords do not match.');
+      return;
+    }
+    const success = await this.authService.resetPassword(
+      this.tokenService.get()!,
+      this.newPassword
+    );
+    if (success) this.onChangePasswordSuccess();
+  }
+
+  async saveUser() {
+    this.saving = true;
+    if (!this.user.email) {
+      this.onSaveUserError('Email is required.');
+      return;
+    }
+    if (!this.user.nt_userid && !this.newPassword) {
+      this.onSaveUserError('A new password is required for new users.');
+      return;
+    }
+    if (!this.user.nt_userid && this.newPassword && this.newPassword !== this.newPasswordRepeated) {
+      this.onSaveUserError('Passwords do not match.');
+      return;
+    }
+    if (this.newUser) this.user.password = this.newPassword;
+    const user = await this.userService.save(this.user);
+    if (user) {
+      this.user = user;
+      this.initialUser = structuredClone(this.user);
+      this.saving = false;
+      if (this.newUser) {
+        this.newUser = false;
+        this.newPassword = '';
+        this.newPasswordRepeated = '';
+        this.location.replaceState(`/user/user-form?id=${this.user.nt_userid}`);
+      }
+      this.onSaveUserSuccess();
     }
   }
 
-  async saveUserInformation() {
-    const user = await this.userService.saveUserInfo(this.user);
-    if (user) {
-      this.userInfoUpdated = true;
-      setTimeout(() => {
-        this.userInfoUpdated = false;
-      }, 2000);
-    }
+  onSaveUserError(message: string) {
+    this.controlChanges();
+    this.saving = false;
+    this.error = true;
+    this.errorMessage = message;
+    setTimeout(() => {
+      this.error = false;
+      this.saving = false;
+    }, 3000);
+  }
+
+  onSaveUserSuccess() {
+    this.controlChanges();
+    this.saving = false;
+    this.success = true;
+    setTimeout(() => {
+      this.success = false;
+      this.saving = false;
+    }, 3000);
+  }
+
+  onChangePasswordSuccess() {
+    this.controlChanges();
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.newPasswordRepeated = '';
+    this.passwordSuccess = true;
+    setTimeout(() => {
+      this.passwordSuccess = false;
+      this.changingPassword = false;
+      this.showSaveButton = false;
+    }, 3000);
+  }
+
+  onChangePasswordError(message: string) {
+    this.controlChanges();
+    this.passwordError = true;
+    this.passwordErrorMessage = message;
+    setTimeout(() => {
+      this.passwordError = false;
+      this.changingPassword = false;
+    }, 3000);
   }
 
   async checkCurrentPassword() {
     return await this.userService.checkPassword(this.user.email, this.currentPassword!);
   }
+
+  async toggleRole(value: NTRole) {
+    if (
+      value == 'ADMIN' &&
+      this.user.roles.includes('ADMIN') &&
+      this.user.nt_userid == this.tokenService.tokenData().id
+    ) {
+      const yes = await dialog.confirm(
+        'Are you sure you want to remove <b>Administrator</b> role to yourself? You will be logged out.'
+      );
+      if (!yes) return;
+      toggle(value, this.user.roles);
+      await this.saveUser();
+      this.tokenService.logout();
+      window.location.href = '/';
+    } else {
+      toggle(value, this.user.roles);
+    }
+  }
+
+  private canSavePassword() {
+    const newPasswords = !!this.newPassword && !!this.newPasswordRepeated;
+    return !this.newUser && newPasswords;
+  }
+
+  async addNewConfiguration() {
+    const configuration = { paths: [''] } as any;
+    this.userService
+      .saveEmbeddedConfiguration({ paths: [''] } as any)
+      .then((c) => (configuration.id = c[0].id));
+    this.embeddedConfigurations.push(configuration);
+  }
+
+  @Debounce(3000)
+  async saveConfigurationDebounced(c: NTEmbeddedConfiguration) {
+    if (!c.domain || !c.paths) return;
+    await this.userService.saveEmbeddedConfiguration(c);
+  }
+
+  protected readonly NTRoleMap = NTRoleMap;
+  protected readonly NTRoleLabelsMap = NTRoleLabelsMap;
+
+  protected readonly toggle = toggle;
 }

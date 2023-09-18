@@ -1,0 +1,4 @@
+<nt-icon *ngIf="!link" [class]="classList" [name]="icon" [title]="tooltip" class="button"></nt-icon>
+<a *ngIf="link" [href]="link" class="flex" target="_blank" [attr.title]="tooltip">
+  <nt-icon [class]="classList" [name]="icon" [title]="tooltip" class="button"></nt-icon>
+</a>

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { NTRole } from '@notest/common';
 import 'dayjs/locale/it';
 import dayjs from 'dayjs'; // load on demand
 
@@ -42,7 +43,7 @@ export class TokenService {
     sessionStorage.removeItem(TokenService.TOKEN);
   }
 
-  hasRole(roleName: string) {
+  hasRole(roleName: NTRole) {
     const roles = this.roles();
     return roles.indexOf(roleName) >= 0;
   }
@@ -75,8 +76,8 @@ export class TokenService {
     email: string;
     name: string;
     surname: string;
-    iat: 1683186640;
-    exp: 1683273040;
+    iat: number;
+    exp: number;
   } {
     const t = token ?? this.get();
     const tdata = t ? JSON.parse(atob(t!.split('.')[1])) : null;

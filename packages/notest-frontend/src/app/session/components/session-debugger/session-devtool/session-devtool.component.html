@@ -1,0 +1,15 @@
+<div class="devtool">
+  <ng-container *ngIf="!collapsed">
+    <nt-devtool-header class="h-fit" (panelChange)="active = $event" [panels]="panels"></nt-devtool-header>
+    <div class="devtool-content">
+      <nt-devtool-network class="h-full overflow-y-auto w-full" [events]="events"
+                          (timestampChange)="timestampChange.emit($event)"
+                          *ngIf="active == 'Network'"></nt-devtool-network>
+      <bl-devtool-storage *ngIf="active == 'LocalStorage'" [events]="events" type="local"></bl-devtool-storage>
+      <bl-devtool-storage *ngIf="active == 'SessionStorage'" [events]="events" type="session"></bl-devtool-storage>
+      <bl-devtool-storage *ngIf="active == 'Cookies'" [events]="events" type="cookie"></bl-devtool-storage>
+      <nt-devtool-socket *ngIf="active == 'Sockets'" [events]="events" ></nt-devtool-socket>
+    </div>
+  </ng-container>
+  <div *ngIf="collapsed" class="bg-white w-full h-full flex items-center justify-center font-bold text-nt-400 text-lg">Devtool</div>
+</div>

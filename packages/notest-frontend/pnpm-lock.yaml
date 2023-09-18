@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@angular/animations':
     specifier: ^15.2.4
@@ -35,6 +31,9 @@ dependencies:
   '@codemirror/lang-javascript':
     specifier: ^6.1.2
     version: 6.1.2
+  '@codemirror/language':
+    specifier: ^6.2.0
+    version: 6.3.2
   '@codemirror/state':
     specifier: ^6.2.0
     version: 6.2.0
@@ -7100,3 +7099,7 @@ packages:
     resolution: {integrity: sha512-XtC+I5dXU14HrzidAKBNMqneIVUykLEAA1x+v4KVrd6AUPWlwYORF8KgsVqvgdHiKZ4BkxxjvYi/ksEixTPR0Q==}
     dependencies:
       tslib: 2.4.1
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

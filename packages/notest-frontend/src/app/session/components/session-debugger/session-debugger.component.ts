@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import {BLSessionEvent, NTEvent, NTSession} from '@notest/common';
-import { ShowFullScreenLoading } from '../../../shared/services/loading.service';
-import {Router} from "@angular/router";
+import { BLSessionEvent, copyToClipboard, debounce, NTEvent, NTSession } from '@notest/common';
+import { Router } from '@angular/router';
+import {
+  JsonAction,
+  JsonActionData,
+  JsonViewerService
+} from '../../../shared/components/json-viewer/json-viewer.service';
+import { showCopiedTooltip } from '../../../shared/directives/copy.directive';
 
 @Component({
   selector: 'nt-session-debugger',
@@ -19,26 +24,89 @@ export class SessionDebuggerComponent implements OnInit {
   ready = false;
   generatingScript = false;
 
-  constructor(private sessionService: SessionService, private urlParamsService: UrlParamsService, private router: Router) {}
+  jsonTemplate?: JsonActionData;
+  toolSelected?: 'devtool' | 'e2e' = 'devtool';
 
-  @ShowFullScreenLoading()
+  showScript = false;
+
+  constructor(
+    private sessionService: SessionService,
+    private urlParamsService: UrlParamsService,
+    private router: Router,
+    private jsonViewerService: JsonViewerService
+  ) {
+    this.configureJsonViewer();
+  }
+
+  private configureJsonViewer() {
+    let actions: JsonAction[] = [
+      {
+        icon: 'magic',
+        tooltip: 'Open templates',
+        handler: (data) => {
+          console.log('data: ', data);
+          this.jsonTemplate = data;
+        }
+      },
+      {
+        icon: 'console',
+        tooltip: 'Log to console',
+        handler: (data) => {
+          console.log(data.key ?? 'root', data.json);
+        }
+      },
+      {
+        icon: 'copy',
+        tooltip: 'Copy to clipboard',
+        handler: (data) => {
+          console.log('data: ', data);
+          copyToClipboard(JSON.stringify(data.json, null, '  '));
+          if (data.event.currentTarget) showCopiedTooltip(data.event.currentTarget);
+        }
+      },
+      {
+        icon: 'sort',
+        tooltip: 'Sort alphabetically',
+        handler: (data) => {
+          data.rows.sort((r1, r2) => (r1.key || '').localeCompare(r2.key));
+        }
+      }
+    ];
+    this.jsonViewerService.updateActions(actions);
+  }
+
   async ngOnInit() {
     this.reference = this.urlParamsService.get('reference')!;
-    this.eventList = await this.sessionService.getEventsByReference(this.reference);
+    console.log('ref: ', this.reference);
+    this.sessionService
+      .getEventsByReference(this.reference)
+      .then((events) => (this.eventList = events));
+    console.log('events: ', this.eventList);
     this.session = await this.sessionService.getSessionByReference(this.reference);
+    console.log('session: ', this.session);
+    this.script = this.session.info.e2eScript;
     this.ready = true;
     this.generatingScript = false;
     console.log('ref: ', this.reference);
-    console.log('session: ', this.eventList);
+    console.log('session: ', this.session);
+    console.log('events: ', this.eventList);
   }
 
   async getSessionTest() {
     this.generatingScript = true;
-    this.script = await this.sessionService.getSessionTest(this.reference);
+    this.session.info.e2eScript = await this.sessionService.getSessionTest(this.reference);
+    this.generatingScript = false;
+    this.showScript = true;
+    this.updateSession();
   }
 
   goTo() {
-    const previewLink = this.router.url.replace('debugger','preview');
+    const previewLink = this.router.url.replace('debugger', 'preview');
     this.router.navigateByUrl(previewLink);
   }
+
+  async updateSession() {
+    await this.sessionService.updateSessionInfo(this.session);
+  }
+  debouncedSaveSession = debounce(async () => this.updateSession(), 1000);
 }

@@ -15,6 +15,7 @@ function getBuildOptions(more = {}) {
     entryPoints: [
       'src/popup.ts',
       'src/page/monitor.ts',
+      'src/page/custom-element.ts',
       'src/chrome/background.ts',
       'src/content_scripts/embedder.ts',
       'src/content_scripts/background-page-channel.ts',

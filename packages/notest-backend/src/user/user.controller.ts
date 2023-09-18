@@ -11,8 +11,8 @@ import {
 import { UserService } from './user.service';
 import { EmailService } from '../shared/services/email.service';
 import { ApiTokenData, NTApiPermission, TokenService } from '../shared/services/token.service';
-import { UserId } from '../shared/decorators/token.decorator';
-import { NTUser } from '@notest/common';
+import { Roles, UserId } from '../shared/decorators/token.decorator';
+import { NTRole, NTUser } from '@notest/common';
 import { MessagesService } from './messages.service';
 import { HasToken, IsAdmin } from '../shared/guards/token.guards';
 import { ConfigService } from '@notest/backend-shared';
@@ -86,7 +86,7 @@ export class UserController {
       user.password = user.password.trim();
       const foundUser = await this.userService.findById(data.nt_userid);
       if (!foundUser) throw new HttpException(`Cannot find this user: ${token}`, 404);
-      await this.userService.updateUserRoles(data.nt_userid, ['EMAIL_CONFIRMED', 'USER']);
+      await this.userService.updateUserRoles(data.nt_userid, ['USER']);
       console.log('user saved into db');
       /*const loginToken = this.tokenService.generate({
               id: this.cryptService.encode(+data.nt_userid),
@@ -138,7 +138,7 @@ export class UserController {
     @Query('size') size: number,
     @Query('includeDeleted') includeDeleted: string
   ) {
-    let users = [];
+    let users: NTUser[];
     if (includeDeleted == 'true') {
       users = await this.userService.all(page, size);
     } else users = await this.userService.allNonDeletedUsers(page, size);
@@ -146,17 +146,12 @@ export class UserController {
   }
 
   @Get('find')
-  @IsAdmin()
-  async find(@Query('id') nt_userid: string) {
-    const user = await this.userService.findById(nt_userid);
-    delete user?.password;
+  async find(@Query('id') userid: string, @Roles() roles: NTRole[], @UserId() personalId?: string) {
+    if (userid != personalId && !roles.includes('ADMIN'))
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    const user = await this.userService.findById(userid || personalId);
+    delete user.password;
     return user;
-  }
-
-  @Get('get-user')
-  @HasToken()
-  async getUser(@UserId() id) {
-    return await this.find(id);
   }
 
   @Get('find-by-query')
@@ -166,21 +161,22 @@ export class UserController {
     return users;
   }
 
-  @Post('save')
-  @IsAdmin()
-  async save(@Body() user: NTUser) {
-    if (!user.nt_userid) {
-      if (!user.state) user.state = 'ACTIVE';
-      const result = await this.userService.createUser(user);
-      return result;
-    } else return await this.userService.updateUser(user);
-  }
-
   @Post('update')
   @HasToken()
-  async updateUser(@Body('user') user: NTUser, @UserId() userId: string) {
-    if (user.nt_userid == userId) {
-      return this.userService.updateUser(user);
+  async updateUser(
+    @Body('user') user: NTUser,
+    @Roles() roles: NTRole[],
+    @UserId() userid?: string
+  ) {
+    if (userid != user.nt_userid && !roles.includes('ADMIN'))
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    if (!user.nt_userid) {
+      if (!user.state) user.state = 'ACTIVE';
+      const [result] = await this.userService.createUser(user);
+      return result;
+    } else {
+      const [result] = await this.userService.updateUser(user);
+      return result;
     }
   }
 

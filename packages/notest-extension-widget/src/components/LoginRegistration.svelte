@@ -1,9 +1,9 @@
 <script lang='ts'>
-  import { tokenService } from '../shared/services/token.service.ts';
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { http } from '../shared/services/http.service.ts';
-  import { NTUser } from '@notest/common';
-  import { appStore, updateLogged } from '../stores/settings.store';
+  import {tokenService} from '../shared/services/token.service';
+  import {createEventDispatcher, onMount} from 'svelte';
+  import {http} from '../shared/services/http.service';
+  import type {NTUser} from '@notest/common';
+  import {appStore, updateLogged} from '../stores/settings.store';
 
   export const dispatcher = createEventDispatcher();
 
@@ -17,7 +17,7 @@
   });
 
   const doLogin = async () => {
-    const res = await http.post('/user/login', user).catch(() => user.password = '');
+    const res = await http.post<{ token: string }>('/user/login', user).catch(() => ({token: ''}));
     if (res.token) {
       updateLogged(true);
       tokenService.login(res.token);
@@ -41,17 +41,17 @@
 </script>
 
 <div class='nt-login-container nt-center'>
-  {#if !logged}
+  {#if !$appStore.logged}
     {#if logging}
       <div class='nt-slide nt-logging-container'>
         <h3 class='nt-h3'>Login</h3>
         {#if failLogin}
           <p class='nt-invalid-login-container'>Cannot to login. Check your credentials or server used</p>
         {/if}
-        <input class='nt-input' placeholder='Email' type='email' bind:value={user.email} />
+        <input class='nt-input' placeholder='Email' type='email' bind:value={user.email}/>
         <input class='nt-input nt-login-password-input-container' placeholder='Password' type='password'
                bind:value={user.password}
-               on:keydown={(e) => e.key === "Enter" ? doLogin():''} />
+               on:keydown={(e) => e.key === "Enter" ? doLogin():''}/>
         <div class='nt-credential-recovery-container'>
           <a class='nt-a' href={import.meta.env.VITE_APP_URL + '/auth/login?forgot-password=1'}
              target='_blank'
@@ -66,7 +66,7 @@
         <button class='nt-button nt-login-button-container' on:click={doLogin}>Login</button>
       </div>
     {:else }
-      <div class='text-center'>
+      <div class='text-center text-black'>
         Already have an account?
         <div class='nt-login-button-container nt-center'>
           <button class='nt-button' on:click={() => logging = true}>Login</button>
@@ -87,7 +87,6 @@
 </div>
 
 <style lang='scss'>
-  @import "/app.scss";
 
   @keyframes up {
     0% {

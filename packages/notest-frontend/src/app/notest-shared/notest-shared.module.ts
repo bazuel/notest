@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { LogoComponent } from './components/logo/logo.component';
 import { ScreenshotComponent } from './components/screenshot/screenshot.component';
 import { SharedModule } from '../shared/shared.module';
@@ -9,6 +9,8 @@ import { ScreenshotListPlaceholderComponent } from './components/placeholders/se
 import { AssertionSummaryItemComponent } from './components/assertion-summary-item/assertion-summary-item.component';
 import { AssertionPreviewComponent } from './components/assertion-preview/assertion-preview.component';
 import { SessionListWrappedComponent } from './components/session-list-wrapped/session-list-wrapped.component';
+import { UrlComponent } from './components/url/url.component';
+import { EventTimeComponent } from './components/event-time/event-time.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { SessionListWrappedComponent } from './components/session-list-wrapped/s
     ScreenshotListPlaceholderComponent,
     AssertionSummaryItemComponent,
     AssertionPreviewComponent,
-    SessionListWrappedComponent
+    SessionListWrappedComponent,
+    UrlComponent,
+    EventTimeComponent
   ],
   exports: [
     LogoComponent,
@@ -29,8 +33,10 @@ import { SessionListWrappedComponent } from './components/session-list-wrapped/s
     ScreenshotListPlaceholderComponent,
     AssertionSummaryItemComponent,
     AssertionPreviewComponent,
-    SessionListWrappedComponent
+    SessionListWrappedComponent,
+    UrlComponent,
+    EventTimeComponent
   ],
-  imports: [CommonModule, SharedModule]
+  imports: [CommonModule, SharedModule, NgOptimizedImage]
 })
 export class NotestSharedModule {}

@@ -1,11 +1,11 @@
 import { messageService } from '../../services/message.service';
 
 class HttpService {
-  get(url: string) {
+  get(url: string): Promise<any> {
     return messageService.sendMessage('fetch', { method: 'GET', url }, true);
   }
 
-  post(url: string, body: any) {
+  post<T>(url: string, body: any): Promise<T> {
     return messageService.sendMessage('fetch', { method: 'POST', url, body }, true);
   }
 }

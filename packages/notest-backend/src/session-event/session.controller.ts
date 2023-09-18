@@ -54,6 +54,7 @@ export class SessionController {
     const body: { reference: string; fullDom: BLSessionEvent } = await unzipJson(zippedBody);
     const { reference, fullDom } = body;
     console.log('takeScreenshot', fullDom);
+    console.log(reference);
     this.fullDoms[reference] = fullDom;
     const frontendBase = globalConfig.app_url || 'http://localhost:4200';
     const frontendUrl = `${frontendBase}/session/session-camera?id=${reference}&backend=${globalConfig.backend_url}`;
@@ -91,22 +92,26 @@ export class SessionController {
     const data: MultipartFile = await req.file();
     const zipBuffer = await streamToBuffer(data.file);
     const events: BLSessionEvent[] = await unzipJson(zipBuffer);
-    const { reference, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
+    const { reference, rerun, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
+    console.log('upload', reference, rerun, sessionInfo);
     const url = events[0].url;
     //TODO event.service.save not working
     //await this.eventService.save(events, reference);
     const session: NTSession = {
       url,
       reference,
-      userid,
+      userid: userid || sessionInfo.userid,
       info: sessionInfo
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
-    console.log('Send message to kafka');
-    await this.producerService.produceMessage({
-      reference: decodeURIComponent(reference),
-      backendType: 'full'
-    });
+
+    if (rerun) {
+      console.log('Sent message to kafka');
+      await this.producerService.produceMessage({
+        reference: decodeURIComponent(reference),
+        backendType: 'full'
+      });
+    }
     res.send({ ok: true, reference });
   }
 
@@ -172,7 +177,6 @@ export class SessionController {
     return { sessions };
   }
 
-  @HasToken()
   @Get('find-by-reference')
   async findByReference(@Query('reference') reference: string) {
     const sessions = await this.sessionService.findByField(

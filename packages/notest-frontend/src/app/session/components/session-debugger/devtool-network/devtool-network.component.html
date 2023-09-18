@@ -1,0 +1,50 @@
+<div class="filters">
+  <input [(ngModel)]="filters.path" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by path"
+         title="Optionally you can use a regexp too"/>
+  <input [(ngModel)]="filters.status" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by status code"/>
+  <input [(ngModel)]="filters.method" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by method"/>
+</div>
+<div class="network-table-container relative">
+  <div class="absolute bo-loading top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2"
+       *ngIf="!events?.length">
+  </div>
+  <table class="bl-table">
+    <tr class="sticky top-0 shadow-md text-nt-500 bg-white">
+      <th resize style="width: 260px">Path</th>
+      <th resize style="width: 60px">Method/Status</th>
+      <!--      <th resize>Request</th>-->
+      <th resize style="width: 70px">Time</th>
+    </tr>
+    <tbody>
+    <ng-container *ngFor="let r of filteredRequests; let i = index">
+      <ng-container *ngIf="r.request">
+        <tr (click)="onRequestClick(r)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
+            class="cursor-pointer">
+          <td [title]="r.request.url" class="address">{{r.request.path}}</td>
+          <td class="font-semibold text-sm text-center"
+              [ngClass]="{
+              'text-green-500': r.status >= 200 && r.status < 300,
+              'text-red-500': r.status < 200 || r.status >= 300
+              }">
+            {{r.request.method}} / {{r.status}}
+          </td>
+          <!--          <td [title]="r.preview">{{r.preview}}</td>-->
+          <td class="text-center" [title]="r.request.timestamp | formatDate: 'HH:mm:ss'">
+            <!--            <bl-tab-badge [tab]="r.request.tab" class="mr-1"></bl-tab-badge>-->
+            <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
+          </td>
+        </tr>
+        <tr *ngIf="selectedRequest == r">
+          <td class="json-view" colspan="4">
+            <bl-json-viewer
+              [json]="{url: r.parsedQuery, request: r.request, response: r.response  || {}}"></bl-json-viewer>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+    <tr>
+      <div class="h-10"></div>
+    </tr>
+    </tbody>
+  </table>
+</div>

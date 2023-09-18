@@ -32,6 +32,7 @@ import {
   BLPerformanceMemoryEvent,
   BLPerformanceTimingEvent,
   BLScrollEvent,
+  BLSocketEvent,
   BLStorageEvent,
   BLWheelEvent,
   BLWindowResizeEvent
@@ -152,6 +153,13 @@ const events = {
     scroll: d<BLScrollEvent>('mouse', 'scroll'),
     elementscroll: d<BLScrollEvent>('mouse', 'elementscroll'),
     wheel: d<BLWheelEvent>('mouse', 'wheel')
+  },
+  socket: {
+    open: d<BLSocketEvent>('socket', 'open'),
+    close: d<BLSocketEvent>('socket', 'close'),
+    message: d<BLSocketEvent>('socket', 'message'),
+    error: d<BLSocketEvent>('socket', 'error'),
+    send: d<BLSocketEvent>('socket', 'send')
   },
   session: {
     start: d<BLEvent & { name: 'session-start'; type: 'session' }>('session', 'session-start'),

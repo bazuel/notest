@@ -1,8 +1,8 @@
-import {Injectable, OnModuleInit} from '@nestjs/common';
-import {like, paginated, PostgresDbService, sql} from '@notest/backend-shared';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { like, paginated, PostgresDbService, sql } from '@notest/backend-shared';
 import { CryptService } from '../shared/services/crypt.service';
-import {CrudService} from '../shared/services/crud.service';
-import {NTUser} from '@notest/common';
+import { CrudService } from '../shared/services/crud.service';
+import { NTRole, NTUser } from '@notest/common';
 
 @Injectable()
 export class UserService extends CrudService<NTUser> implements OnModuleInit {
@@ -52,8 +52,8 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
       } as NTUser);
   }
 
-  async createUser(user: NTUser) {
-    let {nt_userid, ...u} = user;
+  async createUser(user: NTUser): Promise<NTUser[]> {
+    let { nt_userid, ...u } = user;
     if (!u.password) u.password = 'smith@' + Math.round(Math.random() * 1000);
     else u.password = this.crypt.hash(u.password);
     return this.create(u);
@@ -63,17 +63,17 @@ export class UserService extends CrudService<NTUser> implements OnModuleInit {
     return await this.db.query<NTUser>`select *
                                        from ${sql(this.table)}
                                        where state != 'DELETED'
-                                       order by email ${paginated(page, size)}`;
+                                       order by ${sql(this.id)} ${paginated(page, size)}`;
   }
 
-  async updateUserRoles(nt_userid: NTUser['nt_userid'], roles: string[]) {
+  async updateUserRoles(nt_userid: NTUser['nt_userid'], roles: NTRole[]) {
     return await this.db.query`update ${sql(this.table)}
                                set roles = ${roles}
                                where nt_userid = ${nt_userid}`;
   }
 
-  async updateUser(user: Partial<NTUser>) {
-    const {password, ...u} = user;
+  async updateUser(user: Partial<NTUser>): Promise<NTUser[]> {
+    const { password, ...u } = user;
     return await this.update(u);
   }
 

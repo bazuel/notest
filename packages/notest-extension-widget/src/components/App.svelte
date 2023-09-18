@@ -9,7 +9,6 @@
   import { capture } from '../shared/services/screenshot.service';
   import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
   import { messageService } from '../services/message.service';
-  import { getUrlImage } from '../functions/url.functions';
 
   let openSidebar = false;
   let recording;
@@ -19,7 +18,7 @@
 
   messageService.waitForMessage<string>('screenshot-saved').then(async (reference) => {
     extensionService.saveReference(reference);
-    updateSessionImages(await getUrlImage(reference));
+    updateSessionImages({reference,name:''});
   });
 
   onMount(() => {
@@ -78,7 +77,10 @@
   };
 </script>
 
-
+<svelte:head>
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap%27" rel="stylesheet" crossorigin>
+</svelte:head>
 <div class='--nt-extension fixed --nt-widget flex flex-row'>
   {#if openSidebar}
     <Sidebar
@@ -118,21 +120,20 @@
 {/if}
 
 <style lang='scss'>
-  @import '../../app';
 
   .start-button {
-    @apply cursor-pointer absolute bottom-[-7px] right-11 w-5 h-5;
+    @apply cursor-pointer absolute bottom-[-7px] right-11 w-10 h-10;
     &.out {
       animation: vanish 100s;
     }
   }
 
   .stop-button {
-    @apply cursor-pointer absolute right-2 bottom-1 w-6 h-6;
+    @apply cursor-pointer absolute right-2 bottom-1 w-10 h-10;
   }
 
   .cancel-button {
-    @apply cursor-pointer absolute right-2 w-6 h-6;
+    @apply cursor-pointer absolute right-2 w-10 h-10;
   }
 
   .sidebar-button {

@@ -23,6 +23,7 @@
     "@butopen/design-system": "^1.1.5",
     "@codemirror/lang-javascript": "^6.1.2",
     "@codemirror/state": "^6.2.0",
+    "@codemirror/language": "^6.2.0",
     "@notest/common": "link:..\\notest-common",
     "@types/codemirror": "^5.60.6",
     "codemirror": "^6.0.1",

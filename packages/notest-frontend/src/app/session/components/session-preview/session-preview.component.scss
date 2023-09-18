@@ -1,4 +1,3 @@
-
 @keyframes open {
   0% {
     opacity: 0;
@@ -10,6 +9,7 @@
 
 .smooth-open {
   animation: open 250ms ease-in-out;
+
   &.fast {
     animation: 50ms;
   }
@@ -18,8 +18,14 @@
 .login-ref-delete {
   @apply cursor-pointer text-nt-500 -top-2.5 -right-2.5 absolute;
 }
+
 .nt-session-info-popup {
   @apply absolute top-12 z-20;
   @apply shadow-md shadow-gray-400 bg-white rounded-xl w-fit;
   @apply smooth-open fast;
+}
+
+.input-on-focus {
+  @apply w-[600px] border-0 bg-transparent text-2xl focus:border focus:border-gray-400 focus:bg-gray-50 transition-all;
+
 }

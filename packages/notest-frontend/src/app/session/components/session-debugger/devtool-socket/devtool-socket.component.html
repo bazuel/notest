@@ -1,0 +1,44 @@
+<!--<div class="filters">-->
+<!--  <input [(ngModel)]="filters.path" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by path"-->
+<!--         title="Optionally you can use a regexp too"/>-->
+<!--  <input [(ngModel)]="filters.status" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by status code"/>-->
+<!--  <input [(ngModel)]="filters.method" (ngModelChange)="updateFilteredRequests()" placeholder="Filter by method"/>-->
+<!--</div>-->
+<div class="network-table-container relative">
+  <div class="absolute bo-loading top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2"
+       *ngIf="!events?.length">
+  </div>
+  <table class="bl-table">
+    <tr class="sticky top-0 shadow-md text-nt-500 bg-white">
+      <th resize style="width: 90px">Type</th>
+      <th resize style="width: 150px">Topic</th>
+      <th resize>Data</th>
+      <th resize style="width: 70px">Time</th>
+    </tr>
+    <tbody>
+    <ng-container *ngFor="let r of requests; let i = index">
+      <ng-container *ngIf="r">
+        <tr (click)="onRequestClick(r)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
+            class="cursor-pointer">
+          <td [title]="r.url" class="address">{{r.name}}</td>
+          <td class="font-semibold text-sm text-center">{{r.value['topic']}}</td>
+          <td class="text-sm text-center">{{(r.value['message'] | json) ?? ''}}
+          </td>
+          <td class="text-center" [title]="r.timestamp | formatDate: 'HH:mm:ss'">
+            <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
+          </td>
+        </tr>
+        <tr *ngIf="selectedRequest == r">
+          <td class="json-view" colspan="4">
+            <bl-json-viewer
+              [json]="{url: r.url, value:r.value  || {}}"></bl-json-viewer>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+    <tr>
+      <div class="h-10"></div>
+    </tr>
+    </tbody>
+  </table>
+</div>
