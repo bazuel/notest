@@ -11,7 +11,6 @@
  */
 
 import { isRecording } from './functions/recording.state';
-import { isLoaded } from './functions/embedded-script.state';
 import { sendMessage } from './message.api';
 import { NTUser } from '@notest/common';
 
@@ -39,13 +38,9 @@ async function addStyleToPage(url: string, element: ShadowRoot | HTMLElement = d
 }
 
 const injectWidgetCallBack = async () => {
-  if (!isLoaded('--nt-widget')) {
-    window.addEventListener('DOMContentLoaded', async () => {
-      await addScriptToPage('page/custom-element.js');
-      await addStyleToPage('page/widget.css', document.querySelector('notest-widget')!.shadowRoot!);
-      await addScriptToPage('page/widget.js');
-    });
-  }
+  await addScriptToPage('page/custom-element.js');
+  await addStyleToPage('page/widget.css', document.querySelector('notest-widget')!.shadowRoot!);
+  await addScriptToPage('page/widget.js');
   const recording = await isRecording();
   if (recording) {
     await addScriptToPage('page/monitor.js');
@@ -53,19 +48,28 @@ const injectWidgetCallBack = async () => {
   }
 };
 
+function loadWidgetIfPermitted(user: NTUser) {
+  isPermittedToLoad(user).then((isPermitted) => {
+    if (isPermitted) injectWidgetCallBack();
+  });
+}
+
+async function isPermittedToLoad(user: NTUser): Promise<boolean> {
+  return (
+    !user?.domains?.length ||
+    user.domains?.includes(window.location.hostname) ||
+    (await isRecording())
+  );
+}
+
 (async () => {
   sendMessage(
     { type: 'fetch', data: { url: '/user/get-user', method: 'GET' } },
     undefined,
     false,
     async (user: NTUser) => {
-      if (
-        !user?.domains?.length ||
-        user.domains?.includes(window.location.hostname) ||
-        (await isRecording())
-      ) {
-        injectWidgetCallBack();
-      }
+      if (window.document?.body) loadWidgetIfPermitted(user);
+      else window.addEventListener('DOMContentLoaded', async () => loadWidgetIfPermitted(user));
     }
   );
 })();

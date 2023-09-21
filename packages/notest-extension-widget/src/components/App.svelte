@@ -144,7 +144,7 @@
   }
 
   .--nt-widget {
-    z-index: 10001;
+    z-index: 2147483647;
     @apply top-1/2 right-0;
   }
 

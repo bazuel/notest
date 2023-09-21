@@ -1,0 +1,49 @@
+FROM node:18.12.1-alpine3.16 as build-step
+
+RUN apk update && apk upgrade
+
+RUN npm i -g pnpm
+RUN npm i -g typescript
+
+
+RUN mkdir -p /app/packages/notest-common
+WORKDIR /app/packages/notest-common
+COPY ./notest-common/package.json .
+COPY ./notest-common/pnpm-lock.yaml .
+RUN pnpm i
+
+COPY ./notest-common/. .
+
+RUN pnpm build
+
+RUN mkdir -p /app/packages/notest-frontend
+WORKDIR /app/packages/notest-frontend
+COPY ./notest-frontend/package.json .
+COPY ./notest-frontend/pnpm-lock.yaml .
+
+RUN pnpm install
+
+COPY ./notest-frontend/. .
+# COPY /dist /usr/share/nginx/html
+
+RUN pnpm run build:prod
+
+
+
+RUN find dist -type f -regex '.*[css|csv|html|js|svg|txt|xml|json]' -exec zopfli '{}' \;
+
+RUN find dist -type f -regex '.*[css|csv|html|js|svg|txt|xml|json]' -exec brotli '{}' \;
+
+
+#Stage 2
+# https://github.com/fholzer/docker-nginx-brotli
+FROM fholzer/nginx-brotli:v1.21.6
+
+COPY --from=build-step /app/packages/notest-frontend/dist/notest-frontend /usr/share/nginx/html
+
+COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+# RUN mv -v dist/* /usr/share/nginx/html
+
+
+
+EXPOSE 80

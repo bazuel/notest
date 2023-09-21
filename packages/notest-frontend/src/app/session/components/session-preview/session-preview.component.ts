@@ -42,6 +42,7 @@ export class SessionPreviewComponent {
   };
 
   videoLoaded = false;
+  useOriginalScreenshot = false;
 
   constructor(
     private sessionService: SessionService,
@@ -51,12 +52,17 @@ export class SessionPreviewComponent {
 
   async ngOnInit() {
     const rerunStorage = await this.initSessionInfo();
-    if (this.sessionRunHistory?.length == 0) {
+    console.log(this.session);
+    console.log(this.sessionRunHistory);
+    if (this.sessionRunHistory?.length == 0 && this.session.info.rerun) {
       this.fullLoading = true;
       this.sessionRunHistory = await this.sessionService.loadNewSession(this.reference, 0);
       this.fullLoading = false;
     }
-    this.videoReference = this.sessionRunHistory[0].session.reference;
+    if (this.sessionRunHistory?.length == 0 && !this.session.info.rerun) {
+      this.useOriginalScreenshot = true;
+    }
+    this.videoReference = this.sessionRunHistory[0]?.session?.reference;
     if (rerunStorage.loading && rerunStorage.reference === this.reference) {
       await this.waitForSessionLoaded(rerunStorage.currentSessions);
     }
@@ -182,8 +188,8 @@ export class SessionPreviewComponent {
     await this.sessionService.updateSessionInfo(this.session);
   }
 
-  goToDebugger() {
-    const debuggerLink = this.router.url.replace('preview', 'debugger');
+  goToDebugger(reference: string) {
+    const debuggerLink = `/session/session-debugger?reference=${reference}&originalReference=${this.reference}`;
     this.router.navigateByUrl(debuggerLink);
   }
 

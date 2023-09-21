@@ -1,9 +1,20 @@
 import { disableRecordingIcon, enableRecordingIcon } from './ui/recording-icon';
-import { BLEvent, BLHTTPResponseEvent, JsonCompressor, NTSession } from '@notest/common';
+import {
+  BLEvent,
+  BLHTTPResponseEvent,
+  BLSessionEvent,
+  isSocketOpen,
+  JsonCompressor,
+  NTSession
+} from '@notest/common';
 import { getCurrentTab } from './functions/current-tab.util';
 import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
 import { uploadEvents } from './functions/upload.api';
-import { enableHeadersListeners, mergeEventReq } from './functions/headers.util';
+import {
+  enableHeadersListeners,
+  mergeEventReq,
+  populateSocketSendHeaders
+} from './functions/headers.util';
 import { cleanDomainCookies, getCookiesFromDomain } from './functions/cookies.util';
 import {
   addMessageListener,
@@ -61,6 +72,7 @@ async function cancelSession() {
 
 async function stopSession() {
   mergeEventReq(events as BLHTTPResponseEvent[]);
+  populateSocketSendHeaders((events as BLSessionEvent[]).filter(isSocketOpen));
   disableRecordingIcon();
   await setRecording(false);
   console.log('Recording Session Terminated');

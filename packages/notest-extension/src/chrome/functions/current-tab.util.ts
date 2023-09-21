@@ -1,6 +1,9 @@
 export async function getCurrentTab() {
-    let queryOptions = { active: true, currentWindow: true }; //lastFocusedWindow: true };
-    // `tab` will either be a `tabs.Tab` instance or `undefined`.
-    let [tab] = await chrome.tabs.query(queryOptions);
-    return tab;
+  let active = { active: true, currentWindow: true };
+  let lastFocused = { active: true, lastFocusedWindow: true };
+
+  let [tab] = await chrome.tabs.query(active);
+  if (!tab) [tab] = await chrome.tabs.query(lastFocused);
+
+  return tab;
 }

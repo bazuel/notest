@@ -231,8 +231,38 @@ export interface BLSocketEvent extends BLSessionEvent {
   name: "open" | "close" | "message" | "error" | "send";
   value:
     | { code: number; reason: string }
-    | { url: string; protocol: string }
-    | { topic: string; message: Json };
+    | { url: string }
+    | { topic: string; message: Json }
+    | { data: string };
+}
+
+export interface BLSocketOpenEvent extends BLSocketEvent {
+  name: "open";
+  value: {
+    responseHeaders: Json;
+    requestHeaders: Json;
+    url: string;
+  };
+}
+
+export interface BLSocketCloseEvent extends BLSocketEvent {
+  name: "close";
+  value: { code: number; reason: string; url: string };
+}
+
+export interface BLSocketMessageEvent extends BLSocketEvent {
+  name: "message";
+  value: { topic: string; message: Json; url: string; data: string };
+}
+
+export interface BLSocketErrorEvent extends BLSocketEvent {
+  name: "error";
+  value: { url: string };
+}
+
+export interface BLSocketSendEvent extends BLSocketEvent {
+  name: "send";
+  value: { topic: string; message: Json; url: string; data: string };
 }
 
 export interface BLWheelEvent extends BLEventWithTarget {

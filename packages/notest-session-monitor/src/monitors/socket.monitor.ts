@@ -15,22 +15,24 @@ export class SocketMonitor implements BLMonitor {
       constructor(url: string, protocols?: string | string[]) {
         super(url, protocols);
 
-        this.addEventListener('message', (event) => {
-          const [topic, message] = parseSocketData(event.data);
-          blevent.socket.message({ value: { topic, message } });
+        this.addEventListener('message', function (event) {
+          console.log('message', event, this.url);
+          // const [topic, message] = parseSocketData(event.data);
+          blevent.socket.message({ value: { url: this.url, data: event.data } });
         });
 
-        this.addEventListener('open', () => {
-          blevent.socket.open({ value: { url: this.url, protocol: this.protocol } });
+        this.addEventListener('open', function () {
+          console.log('open', this.url);
+          blevent.socket.open({ value: { url: this.url } });
         });
 
-        this.addEventListener('close', (event) => {
+        this.addEventListener('close', function (event) {
+          console.log('close', event);
           blevent.socket.close({
             value: {
               code: event.code,
               reason: event.reason,
-              url: this.url,
-              protocol: this.protocol
+              url: this.url
             }
           });
         });
@@ -40,15 +42,14 @@ export class SocketMonitor implements BLMonitor {
         const originalSend = this.send;
 
         this.send = function (this, data: string) {
-          const [topic, message] = parseSocketData(data);
+          console.log('send', data);
+          // const [topic, message] = parseSocketData(data);
 
-          blevent.socket.send({ value: { topic, message } });
+          blevent.socket.send({ value: { url: this.url, data } });
           originalSend.call(this, data);
         };
       }
     }
-
-    console.log('WebSocketProxy initialized', window.WebSocket);
 
     window.WebSocket = CustomWebSocket as any;
   }
@@ -60,7 +61,6 @@ function parseSocketData(data: string) {
       const cleanedMessage = data.replace(/^\d+\[/, '[');
       return JSON.parse(cleanedMessage);
     }
-    console.log('data: ', data);
     return ['', data];
   } catch (e) {
     console.log('error: ', data);

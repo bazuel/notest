@@ -51,7 +51,7 @@ export class SessionRunner extends SessionExecutor {
   }
 
   private async setup(session: BLSessionEvent[]) {
-    this.browser = await chromium.launch({ headless: true });
+    this.browser = await chromium.launch({ headless: false });
     this.context = await this.createBrowserContext(this.browser);
     if (this.configuration.recordVideo) await this.addMouseHtmlElement();
     if (this.configuration.backendType == 'mock') {
@@ -168,6 +168,7 @@ export class SessionRunner extends SessionExecutor {
         url: url
       });
     }
+    await this.page.waitForTimeout(1000000);
     await this.page.close({ runBeforeUnload: true });
     await this.context.close();
     await this.browser.close();

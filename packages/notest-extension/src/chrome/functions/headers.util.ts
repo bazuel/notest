@@ -1,6 +1,14 @@
-import { BLHTTPResponseEvent, jsonFromNameValueArray, uppercaseKeys } from '@notest/common';
+import {
+  BLHTTPResponseEvent,
+  BLSocketEvent,
+  BLSocketOpenEvent,
+  jsonFromNameValueArray,
+  uppercaseKeys
+} from '@notest/common';
 
 let requestBucket: any[] = [];
+let socketRequestHeadersBucket: chrome.webRequest.WebRequestHeadersDetails[] = [];
+let socketResponseOpenHeadersBucket: chrome.webRequest.WebResponseHeadersDetails[] = [];
 
 export function mergeEventReq(events: BLHTTPResponseEvent[]) {
   requestBucket.forEach((req) => {
@@ -28,6 +36,37 @@ export function mergeEventReq(events: BLHTTPResponseEvent[]) {
   requestBucket = [];
 }
 
+function mergeResReq(res) {
+  let req = requestBucket.find((req) => req.requestId === res.requestId);
+  if (req) {
+    req.requestHeaders = jsonFromNameValueArray(req.requestHeaders);
+    req.responseHeaders = jsonFromNameValueArray(res.responseHeaders);
+  }
+}
+
+export function populateSocketSendHeaders(events: BLSocketOpenEvent[]) {
+  events.forEach((e) => {
+    if (e.name === 'open') {
+      const socketOpenHeaders = socketRequestHeadersBucket.find((req) => req.url === e.value.url);
+      socketRequestHeadersBucket = socketRequestHeadersBucket.filter(
+        (req) => req !== socketOpenHeaders
+      );
+      const socketResponseOpenHeaders = socketResponseOpenHeadersBucket.find(
+        (req) => req.url === e.value.url
+      );
+      socketResponseOpenHeadersBucket = socketResponseOpenHeadersBucket.filter(
+        (req) => req !== socketResponseOpenHeaders
+      );
+      e.value.requestHeaders = jsonFromNameValueArray(socketOpenHeaders!.requestHeaders as any[]);
+      e.value.responseHeaders = jsonFromNameValueArray(
+        socketResponseOpenHeaders!.responseHeaders as any[]
+      );
+    }
+  });
+}
+
+export function populateSocketMessageHeaders(events: BLSocketEvent[]) {}
+
 export function enableHeadersListeners() {
   chrome.webRequest.onSendHeaders.addListener(
     (req) => {
@@ -37,6 +76,7 @@ export function enableHeadersListeners() {
       ) {
         requestBucket.push(req);
       }
+      if (req.type === 'websocket') socketRequestHeadersBucket.push(req);
     },
     { urls: ['<all_urls>'] },
     ['requestHeaders', 'extraHeaders']
@@ -44,19 +84,11 @@ export function enableHeadersListeners() {
 
   chrome.webRequest.onHeadersReceived.addListener(
     (res) => {
-      if (res.type === 'xmlhttprequest') {
-        mergeResReq(res);
-      }
+      if (res.type === 'xmlhttprequest') mergeResReq(res);
+
+      if (res.type === 'websocket') socketResponseOpenHeadersBucket.push(res);
     },
     { urls: ['<all_urls>'] },
     ['responseHeaders', 'extraHeaders']
   );
-}
-
-function mergeResReq(res) {
-  let req = requestBucket.find((req) => req.requestId === res.requestId);
-  if (req) {
-    req.requestHeaders = jsonFromNameValueArray(req.requestHeaders);
-    req.responseHeaders = jsonFromNameValueArray(res.responseHeaders);
-  }
 }

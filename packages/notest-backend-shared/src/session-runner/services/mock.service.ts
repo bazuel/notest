@@ -1,5 +1,12 @@
 import { BrowserContext } from 'playwright';
-import { BLCookieDetailsEvent, BLEvent, BLSessionEvent } from '@notest/common';
+import {
+  afterResponseFilter,
+  BLCookieDetailsEvent,
+  BLEvent,
+  BLSessionEvent,
+  BLSocketOpenEvent,
+  isSocketOpen
+} from '@notest/common';
 
 declare global {
   interface Window {
@@ -33,6 +40,7 @@ export class MockService {
     this.actualTimestamp = this.session[0].timestamp;
     await this.exposeFunctions();
     await this.mockDate();
+    // await this.mockSockets();
     await this.mockRoutes(this.session);
   }
 
@@ -59,14 +67,27 @@ export class MockService {
   }
 
   async mockRoutes(eventList: BLEvent[]) {
-    let key;
-    let responses = eventList.filter((event) => event.name == 'after-response') as any;
-    let requestMap: { [k: string]: any[] } = {};
-    for (const { request, response } of responses) {
-      key = `${request.method}.${request.url}`;
-      if (!requestMap[key]) requestMap[key] = [];
-      requestMap[key].push(response);
-    }
+    let responses = eventList.filter(afterResponseFilter);
+
+    let requestMap = responses.reduce((obj: { [key: string]: any[] }, { request, response }) => {
+      let key = `${request.method}.${request.url}`;
+      if (!obj[key]) obj[key] = [];
+      obj[key].push(response);
+      return obj;
+    }, {});
+
+    // let websocketResponses = eventList.filter(isSocketOpen);
+    // let websocketMap = websocketResponses.reduce(
+    //   (obj: { [key: string]: BLSocketOpenEvent['value'][] }, { value }) => {
+    //     let key = value.url;
+    //     if (!obj[key]) obj[key] = [];
+    //     obj[key].push(value);
+    //     return obj;
+    //   },
+    //   {}
+    // );
+    // this.mockWebSocketRoutes(websocketMap);
+
     await this.context.route('*/**', async (route, request) => {
       if (
         (request.resourceType() == 'xhr' || request.resourceType() == 'fetch') &&
@@ -75,11 +96,9 @@ export class MockService {
       ) {
         let response = {} as any;
         let responseMap = requestMap[`${request.method()}.${request.url()}`];
-        if (responseMap.length > 1) {
-          response = responseMap.shift();
-        } else {
-          response = responseMap[0];
-        }
+        if (responseMap.length > 1) response = responseMap.shift();
+        else response = responseMap[0];
+
         let headers = {};
         Object.keys(response.headers).forEach((h) => (headers[h] = response.headers[h]));
         await route.fulfill({
@@ -87,6 +106,18 @@ export class MockService {
           body: response.body as string,
           status: response.status
         });
+      } else if (request.resourceType() == 'websocket') {
+        // let response = {} as any;
+        // let responseMap = websocketMap[request.url()];
+        // if (responseMap.length > 1) response = responseMap.shift();
+        // else response = responseMap[0];
+        // await route.fulfill({
+        //   headers: response.headers,
+        //   body: response.body,
+        //   status: response.status
+        // });
+        // ciao1.push(request);
+        await route.continue();
       } else {
         await route.continue();
       }
@@ -115,5 +146,48 @@ export class MockService {
       });
       await this.context.addCookies(cookieAction.details);
     }
+  }
+
+  private async mockSockets() {
+    await this.context.addInitScript(`{(()=>{
+    var originalWebSocket = window.WebSocket;
+
+    class CustomWebSocket extends originalWebSocket {
+      originalSend
+  
+      constructor(url, protocols) {
+        super(url, protocols);
+  
+        this.originalSend = this.send;
+  
+        // Overwrite the \`send\` function to prevent actual sending
+        this.send = function (data) {
+          console.log('Block sending message', data);
+        };
+  
+        this.addEventListener('message', function (event) {
+          console.log('Mocked message from', this.url);
+          this.dispatchEvent(new MessageEvent('message', { data: '' }));
+        });
+  
+        this.addEventListener('open', function () {
+          console.log('Mocked open from', this.url);
+          // this.dispatchEvent(new Event('open'));
+        });
+  
+        this.addEventListener('close', function (event) {
+          console.log('Mocked close from', event);
+          this.dispatchEvent(new CloseEvent('close'));
+        });
+  
+        this.addEventListener('error', function (event) {
+          console.log('error', event);
+        });
+      }
+    }
+  
+    window.WebSocket = CustomWebSocket;
+    }
+    )()}`);
   }
 }

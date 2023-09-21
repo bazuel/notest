@@ -79,7 +79,7 @@ export interface NTSession {
     session_logged: boolean;
     internal_error: boolean;
     backend_type: NTRunnerConfig["backendType"];
-    rerun: boolean;
+    rerun?: boolean;
   };
   created?: Date | null;
 }

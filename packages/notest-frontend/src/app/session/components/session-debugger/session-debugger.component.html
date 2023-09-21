@@ -3,7 +3,7 @@
     <div class="flex gap-4 p-4 items-center">
       <input class="input-on-focus font-semibold text-gray-500" [(ngModel)]="session.info.title"
              (ngModelChange)="debouncedSaveSession()"/>
-      <button class="h-fit" *ngIf="ready" title="Go to session Preview Mode" (click)="goTo()">Session Preview
+      <button class="h-fit" *ngIf="ready" title="Go to session Preview Mode" (click)="goToPreview()">Session Preview
       </button>
     </div>
     <nt-player class="w-full p-5" *ngIf="ready" [session]="eventList"></nt-player>

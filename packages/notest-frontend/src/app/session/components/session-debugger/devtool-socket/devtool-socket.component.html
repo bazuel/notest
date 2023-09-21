@@ -11,7 +11,6 @@
   <table class="bl-table">
     <tr class="sticky top-0 shadow-md text-nt-500 bg-white">
       <th resize style="width: 90px">Type</th>
-      <th resize style="width: 150px">Topic</th>
       <th resize>Data</th>
       <th resize style="width: 70px">Time</th>
     </tr>
@@ -21,9 +20,7 @@
         <tr (click)="onRequestClick(r)" [class.even]="i % 2 == 0" [class.odd]="i % 2 != 0"
             class="cursor-pointer">
           <td [title]="r.url" class="address">{{r.name}}</td>
-          <td class="font-semibold text-sm text-center">{{r.value['topic']}}</td>
-          <td class="text-sm text-center">{{(r.value['message'] | json) ?? ''}}
-          </td>
+          <td class="text-sm text-center">{{(r.value | json) ?? ''}}</td>
           <td class="text-center" [title]="r.timestamp | formatDate: 'HH:mm:ss'">
             <bl-event-time [timestamp]="r.timestamp"></bl-event-time>
           </td>

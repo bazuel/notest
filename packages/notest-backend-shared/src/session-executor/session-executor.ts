@@ -10,7 +10,9 @@ export abstract class SessionExecutor {
   async run<C, R>(session: BLSessionEvent[], config: C): Promise<R> {
     this.config = config;
     this.session = session;
-    await this.init(this.config, this.session);
+    await this.init(this.config, this.session).catch((e) =>
+      console.log(`Execution error on init: ${e}`)
+    );
     await this.executeSession().catch((e) => console.log(`Execution error on event: ${e}`));
     return await this.end();
   }

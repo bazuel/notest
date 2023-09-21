@@ -172,9 +172,11 @@ export class UserController {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     if (!user.nt_userid) {
       if (!user.state) user.state = 'ACTIVE';
+      if (!roles.includes('ADMIN')) user.roles = user.roles.filter((r) => r !== 'ADMIN');
       const [result] = await this.userService.createUser(user);
       return result;
     } else {
+      if (!roles.includes('ADMIN')) user.roles = user.roles.filter((r) => r !== 'ADMIN');
       const [result] = await this.userService.updateUser(user);
       return result;
     }

@@ -1,8 +1,15 @@
-export async function getCookiesFromDomain(url) {
-  const domain = new URL(url).hostname;
+export async function getCookiesFromDomain(url: string) {
+  const domain = getMainDomain(url);
   const cookieEvent = { name: 'cookie-details', type: 'cookie', details: {} };
-  cookieEvent.details = await chrome.cookies.getAll({ domain: domain });
+  cookieEvent.details = await chrome.cookies.getAll({ domain });
   return cookieEvent;
+}
+
+function getMainDomain(url: string) {
+  const { hostname } = new URL(url);
+  const parts = hostname.split('.');
+  const slice = parts.length > 2 ? -2 : -parts.length;
+  return parts.slice(slice).join('.');
 }
 
 export async function cleanDomainCookies(tabId: number) {

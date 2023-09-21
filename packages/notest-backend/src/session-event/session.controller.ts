@@ -92,8 +92,12 @@ export class SessionController {
     const data: MultipartFile = await req.file();
     const zipBuffer = await streamToBuffer(data.file);
     const events: BLSessionEvent[] = await unzipJson(zipBuffer);
-    const { reference, rerun, ...sessionInfo } = JSON.parse(data.fields['session_info'].value);
-    console.log('upload', reference, rerun, sessionInfo);
+
+    const { reference, ...sessionInfo } = JSON.parse(
+      data.fields['session_info'].value
+    ) as NTSession['info'] & { reference: string; userid: string };
+
+    console.log('upload', reference, sessionInfo);
     const url = events[0].url;
     //TODO event.service.save not working
     //await this.eventService.save(events, reference);
@@ -105,7 +109,7 @@ export class SessionController {
     } as NTSession;
     await this.sessionService.save(zipBuffer, session);
 
-    if (rerun) {
+    if (sessionInfo.rerun) {
       console.log('Sent message to kafka');
       await this.producerService.produceMessage({
         reference: decodeURIComponent(reference),

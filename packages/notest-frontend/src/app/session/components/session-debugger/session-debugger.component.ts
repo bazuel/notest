@@ -28,6 +28,7 @@ export class SessionDebuggerComponent implements OnInit {
   toolSelected?: 'devtool' | 'e2e' = 'devtool';
 
   showScript = false;
+  originalReference!: string;
 
   constructor(
     private sessionService: SessionService,
@@ -77,6 +78,7 @@ export class SessionDebuggerComponent implements OnInit {
 
   async ngOnInit() {
     this.reference = this.urlParamsService.get('reference')!;
+    this.originalReference = this.urlParamsService.get('originalReference') || this.reference;
     console.log('ref: ', this.reference);
     this.sessionService
       .getEventsByReference(this.reference)
@@ -100,8 +102,8 @@ export class SessionDebuggerComponent implements OnInit {
     this.updateSession();
   }
 
-  goTo() {
-    const previewLink = this.router.url.replace('debugger', 'preview');
+  goToPreview() {
+    const previewLink = `/session/session-preview?reference=${this.originalReference}`;
     this.router.navigateByUrl(previewLink);
   }
 

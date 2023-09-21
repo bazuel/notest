@@ -198,6 +198,6 @@ export class ClusterRunnerService {
   }
 
   private removeVideo(videoPath: string) {
-    fs.rmSync(videoPath, { recursive: true, force: true });
+    if (fs.existsSync(videoPath)) fs.rmSync(videoPath, { recursive: true, force: true });
   }
 }

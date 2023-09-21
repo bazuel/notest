@@ -51,6 +51,13 @@ export function updateSessionSaved(sessionSaved: boolean) {
   setSettings(settingsData);
 }
 
+export function updateRerunSession(rerun: boolean) {
+  const settingsData = getSettings();
+  settingsData.rerun = rerun;
+  appStore.update({ rerun });
+  setSettings(settingsData);
+}
+
 function setSettings(settings: NTSettings) {
   if (settings) {
     localStorage.setItem('nt-settings', JSON.stringify(settings));
@@ -62,6 +69,7 @@ function getSettings(): NTSettings {
 }
 
 type NTSettings = {
+  rerun: boolean;
   recButtonOnScreen: boolean;
   isLoginSession: boolean;
   sidebarState: 'start' | 'end';

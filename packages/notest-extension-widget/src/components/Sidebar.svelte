@@ -15,6 +15,7 @@
     appStore,
     updateIsLoginSession,
     updateRecButtonOnScreen,
+    updateRerunSession,
     updateSessionSaved,
     updateSidebarState
   } from '../stores/settings.store.js';
@@ -45,7 +46,7 @@
         title: $sessionStore.title,
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
-        rerun: true,
+        rerun: $appStore.rerun,
         isLogin: false,
         reference: extensionService.reference
       });
@@ -127,6 +128,10 @@
           <Switch switched='{$appStore.isLoginSession}'
                   on:switched-change={(ev) => updateIsLoginSession(ev.detail)}>
             Register a Clean Session
+          </Switch>
+          <Switch switched='{$appStore.rerun}'
+                  on:switched-change={(ev) => updateRerunSession(ev.detail)}>
+            Automatic rerun Session
           </Switch>
           {#if !$appStore.logged}
             <Switch switched={isCustomBackend}

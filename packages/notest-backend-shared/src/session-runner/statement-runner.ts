@@ -66,15 +66,18 @@ export async function executeResize(page: Page, event: BLWindowResizeEvent) {
 }
 
 export async function executeInput(page: Page, event) {
-  if (['input', 'textarea'].includes(event.target.tag.toLowerCase())) return;
+  if (!['input', 'textarea'].includes(event.target.tag.toLowerCase())) return;
 
   const { x, y, width, height } = event.target.rect;
   const point = { x: x + width / 2, y: y + height / 2 };
   let locator = page.locator(`xy=${point.x},${point.y}`).locator('input, textarea');
 
   if ((await locator.count()) > 1) locator = locator.first();
-
-  await locator.fill(event.value);
+  const text: string = event.value;
+  let textWithoutLastChar = text.slice(0, -1);
+  let char = text.slice(-1);
+  await locator.fill(textWithoutLastChar);
+  await locator.press(char);
 }
 
 export async function executeMouseMove(page: Page, a: BLMouseEvent) {
