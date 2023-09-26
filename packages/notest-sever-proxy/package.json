@@ -1,0 +1,42 @@
+{
+  "name": "kafka",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "dependencies": {
+    "@notest/common": "link:..\\notest-common",
+    "notest-backend-shared": "link:..\\notest-backend-shared",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "esbuild": "^0.14.54"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "node esbuild.js -w",
+    "build:prod": "node esbuild.js --prod",
+    "oldbuild": "tsc -t es5 src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "preset": "ts-jest",
+    "rootDir": "./test",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
