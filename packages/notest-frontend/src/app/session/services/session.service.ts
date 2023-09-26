@@ -44,7 +44,7 @@ export class SessionService {
       .gest<any[]>(`/session/get-run-history`, { reference })
       .then((res) =>
         res.sort(
-          (a, b) => new Date(b.session.created).getTime() - new Date(a.session.created).getTime()
+          (a, b) => new Date(b.session?.created).getTime() - new Date(a.session?.created).getTime()
         )
       );
   }
