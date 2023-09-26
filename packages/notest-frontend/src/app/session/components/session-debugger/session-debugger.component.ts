@@ -111,4 +111,5 @@ export class SessionDebuggerComponent implements OnInit {
     await this.sessionService.updateSessionInfo(this.session);
   }
   debouncedSaveSession = debounce(async () => this.updateSession(), 1000);
+  protected readonly copyToClipboard = copyToClipboard;
 }

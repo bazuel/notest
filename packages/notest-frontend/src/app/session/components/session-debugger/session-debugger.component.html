@@ -6,6 +6,12 @@
       <button class="h-fit" *ngIf="ready" title="Go to session Preview Mode" (click)="goToPreview()">Session Preview
       </button>
     </div>
+    <div
+      class="group px-6 py-1.5 rounded-full bg-white mx-6 text-gray-500 border border-gray-300 flex items-center">
+      {{session.url}}
+      <nt-icon class="opacity-0 group-hover:opacity-100 ml-auto cursor-pointer" name="copy"
+               (click)="copyToClipboard(session.url)"></nt-icon>
+    </div>
     <nt-player class="w-full p-5" *ngIf="ready" [session]="eventList"></nt-player>
     <div class="flex flex-row">
       <div class="flex items-center">
@@ -22,16 +28,17 @@
     </div>
   </div>
   <div class="relative w-1/3 h-full p-3">
-    <nt-session-devtool class="block rounded-md overflow-hidden shadow-md transition-all cursor-pointer duration-400 h-full"
-                        [events]="eventList">
-<!--                        [collapsed]="toolSelected != 'devtool'"-->
-<!--                        [ngClass]="{collapsed:toolSelected != 'devtool','h-full':toolSelected == 'devtool'}"-->
-<!--                        (click)="toolSelected = 'devtool'">-->
+    <nt-session-devtool
+      class="block rounded-md overflow-hidden shadow-md transition-all cursor-pointer duration-400 h-full"
+      [events]="eventList">
+      <!-- [collapsed]="toolSelected != 'devtool'"-->
+      <!-- [ngClass]="{collapsed:toolSelected != 'devtool','h-full':toolSelected == 'devtool'}"-->
+      <!-- (click)="toolSelected = 'devtool'">-->
     </nt-session-devtool>
-<!--    <div *ngIf="toolSelected" class="absolute bottom-3 left-1/2 transform -translate-x-1/2 cursor-pointer"-->
-<!--         (click)="toolSelected = undefined">-->
-<!--      <nt-icon class="w-8 h-8 text-gray-500" name="arrow_up"></nt-icon>-->
-<!--    </div>-->
+    <!--    <div *ngIf="toolSelected" class="absolute bottom-3 left-1/2 transform -translate-x-1/2 cursor-pointer"-->
+    <!--         (click)="toolSelected = undefined">-->
+    <!--      <nt-icon class="w-8 h-8 text-gray-500" name="arrow_up"></nt-icon>-->
+    <!--    </div>-->
   </div>
 
 </div>

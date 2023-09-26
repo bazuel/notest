@@ -1,7 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { SessionService } from '../../services/session.service';
 import { UrlParamsService } from '../../../shared/services/url-params.service';
-import { debounce, NTAssertion, NTMedia, NTRunnerConfig, NTSession } from '@notest/common';
+import {
+  copyToClipboard,
+  debounce,
+  NTAssertion,
+  NTMedia,
+  NTRunnerConfig,
+  NTSession
+} from '@notest/common';
 import { VideoComponent } from '../../../notest-shared/components/video/video.component';
 import { Router } from '@angular/router';
 
@@ -100,11 +107,12 @@ export class SessionPreviewComponent {
 
   async getLoginSessionItem() {
     const loginSessions = await this.sessionService.getLoginSessions(
-      new URL(this.session.url).hostname
+      this.getMainDomain(this.session.url)
     );
-    this.loginSessions = loginSessions.map((session) => {
-      return { title: session.info.title, reference: session.reference };
-    });
+    this.loginSessions = loginSessions.map((session) => ({
+      title: session.info.title,
+      reference: session.reference
+    }));
     this.loginSessionSelected = this.loginSessions.find(
       (s) => s.reference == this.session.info.loginReference
     );
@@ -199,4 +207,13 @@ export class SessionPreviewComponent {
   }
 
   debouncedSaveSession = debounce(async () => this.updateSession(), 1000);
+
+  getMainDomain(url: string) {
+    const { hostname } = new URL(url);
+    const parts = hostname.split('.');
+    const slice = parts.length > 2 ? -2 : -parts.length;
+    return parts.slice(slice).join('.');
+  }
+
+  protected readonly copyToClipboard = copyToClipboard;
 }
