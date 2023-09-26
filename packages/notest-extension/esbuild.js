@@ -55,8 +55,16 @@ if (prod) {
   fs.copyFileSync('src/environments/environment.prod.ts', 'src/environments/environment.ts');
 }
 
+const pm = process.argv.includes('--pm');
+if (pm) {
+  console.log('Building for pm');
+  options.minify = true;
+  fs.renameSync('src/environments/environment.ts', 'src/environments/environment.temp.ts');
+  fs.copyFileSync('src/environments/environment.pm.ts', 'src/environments/environment.ts');
+}
+
 build(options).then(() => {
-  if (prod) {
+  if (prod || pm) {
     fs.unlinkSync('src/environments/environment.ts');
     fs.renameSync('src/environments/environment.temp.ts', 'src/environments/environment.ts');
   }
