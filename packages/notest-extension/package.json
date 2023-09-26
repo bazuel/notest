@@ -5,6 +5,7 @@
     "build": "node esbuild",
     "build:watch": "node esbuild -w",
     "build:prod": "node esbuild --prod",
+    "build:pm": "node esbuild --pm",
     "clean": "rimraf dist/",
     "copy-manifest": "copyfiles manifest.json dist/",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/**/*.png dist/"

@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build --watch",
     "build prod": "vite build --watch --mode prod",
+    "build pm": "vite build --watch --mode pm",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "assets": "http-server src\\assets"
