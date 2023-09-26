@@ -15,9 +15,11 @@ function getMainDomain(url: string) {
 export async function cleanDomainCookies(tabId: number) {
   const tab = await chrome.tabs.get(tabId);
   const url = new URL(tab.url!);
-  chrome.cookies.getAll({ domain: url.hostname }, function (cookies) {
+  chrome.cookies.getAll({ domain: getMainDomain(tab.url!) }, function (cookies) {
     for (let i = 0; i < cookies.length; i++) {
       chrome.cookies.remove({ url: url.origin + cookies[i].path, name: cookies[i].name });
     }
   });
 }
+
+//TODO in clean session add all cookies after finish the session
