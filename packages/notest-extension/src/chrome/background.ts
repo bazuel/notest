@@ -127,30 +127,31 @@ async function pushEvent(request) {
   }
 }
 
-async function takeScreenshot2(
-  message: { data: { fullDom: string; reference: string } },
-  sendResponse?: (res) => any
-) {
-  const zip = await new JsonCompressor().zip(message.data);
-  const token = (await chrome.storage.local.get('NOTEST_TOKEN'))['NOTEST_TOKEN'];
+export function fromBase64ToBlob(base64: string): Blob {
+  if (base64.includes('base64,')) base64 = base64.split('base64,')[1];
+
+  const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+
+  return new Blob([bytes], { type: 'image/jpeg' });
+}
+
+export function saveScreenshot(image: string, reference: string) {
+  const blob = fromBase64ToBlob(image);
+  console.log('uploadScreenshot', image, reference);
   const formData = new FormData();
-  formData.append('file', new Blob([zip], { type: 'application/zip' }), Date.now() + '.zip');
-  fetch(`${environment.api}/api/session/shot`, {
-    method: 'POST',
-    body: formData,
-    headers: {
-      Authorization: 'Bearer ' + token
-    }
-  }).then(async () => {
-    sendResponse!(message.data.reference);
-  });
+  formData.append('reference', reference);
+  formData.append('name', 'final');
+  formData.append('timestamp', '' + new Date().getTime());
+  formData.append('file', blob);
+  http.post('/media/screenshot-upload', formData);
 }
 
 async function takeScreenshot(
-  message: { data: { fullDom: string; reference: string } },
+  message: { data: { reference: string } },
   sendResponse?: (res) => any
 ) {
   chrome.tabs.captureVisibleTab({ format: 'jpeg', quality: 50 }, (dataUrl) => {
+    saveScreenshot(dataUrl, message.data.reference);
     sendResponse!({ reference: message.data.reference, img: dataUrl });
   });
 }

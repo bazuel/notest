@@ -6,13 +6,8 @@
   import {beforeUpdate, onMount} from 'svelte';
   import {appStore, updateSessionSaved, updateSidebarState} from '../stores/settings.store';
   import ElementsSelector from '../shared/components/elements-selector.svelte';
-  import {capture} from '../shared/services/screenshot.service';
-  import {
-    initSessionStore,
-    updateSessionImages,
-    updateSessionScreenshot,
-    updateSessionTargetList
-  } from '../stores/session.store';
+  import {capture, fromBase64ToBlob, uploadScreenshot} from '../shared/services/screenshot.service';
+  import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
   import {messageService} from '../services/message.service';
 
   let openSidebar = false;
@@ -24,7 +19,7 @@
   const getPageScreenshot = (callback) => {
     messageService.waitForMessage<{ reference: string, img: string }>('screenshot-saved').then(async (data) => {
       extensionService.saveReference(data.reference);
-      updateSessionScreenshot(data.img);
+      uploadScreenshot({data: fromBase64ToBlob(data.img), name: 'final'}, data.reference);
       updateSessionImages(data.img);
       callback();
     });

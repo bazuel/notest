@@ -31,7 +31,8 @@
       <nt-screenshot
         class="absolute smooth-open top-0 w-full h-full"
         *ngIf="useOriginalScreenshot"
-        [imageUrl]="session.info.screenshot"
+        [reference]="session.reference"
+        name="final"
       ></nt-screenshot>
     </div>
   </div>

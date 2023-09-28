@@ -4,8 +4,7 @@ export let sessionStore = loggedWritable<SessionInfo>({
   title: '',
   description: '',
   targetList: [],
-  images: [],
-  screenshot: ''
+  images: []
 });
 
 export function updateSessionTitle(title: string) {
@@ -14,10 +13,6 @@ export function updateSessionTitle(title: string) {
 
 export function updateSessionDescription(description: string) {
   sessionStore.update({ description });
-}
-
-export function updateSessionScreenshot(screenshot: string) {
-  sessionStore.update({ screenshot });
 }
 
 export function updateSessionTargetList(target: DOMRect | DOMRect[]) {
@@ -49,8 +44,7 @@ export function initSessionStore() {
     title: '',
     description: '',
     targetList: [],
-    images: [],
-    screenshot: ''
+    images: []
   });
 }
 
@@ -59,5 +53,4 @@ export type SessionInfo = {
   description: string;
   targetList: DOMRect[];
   images: (string | { name: string; reference: string })[];
-  screenshot: string;
 };

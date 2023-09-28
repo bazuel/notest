@@ -12,7 +12,7 @@
 
   onMount(async () => {
     if (reference) {
-      const url = getPathImage(reference)
+      const url = getPathImage(reference, name)
       const response = await http.get(url)
       base64Data = response.data
     }
@@ -20,7 +20,9 @@
   })
 </script>
 
-{#if loaded}
+{#if !loaded}
+  <div class="animate-pulse bg-gray-200 h-full w-full"></div>
+{:else}
   {#if base64Data}
     <img class="w-full h-full" src="{base64Data}" alt="{name}"/>
   {:else}

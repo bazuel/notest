@@ -47,7 +47,6 @@
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
         rerun: $appStore.rerun,
-        screenshot: $sessionStore.screenshot,
         isLogin: false,
         reference: extensionService.reference
       });
