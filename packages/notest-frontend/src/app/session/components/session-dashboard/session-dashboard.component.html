@@ -5,7 +5,7 @@
     <div class='h-fit w-fit p-2' *ngFor='let session of sessionList'
          (click)='redirectToPreview(session.reference)'>
       <label class="w-64 truncate" [title]="session.info.title">{{session.info.title}}</label>
-      <nt-screenshot class='card' [reference]=session.reference></nt-screenshot>
+      <nt-screenshot class='card' [imageUrl]=session.info.screenshot></nt-screenshot>
     </div>
   </div>
   <h4 class='mt-5'>User Login Sessions</h4>
@@ -13,7 +13,7 @@
     <div class='h-fit w-fit p-2' *ngFor='let session of loginSessionList'
          (click)='redirectToPreview(session.reference)'>
       <label class="w-64 truncate" [title]="session.info.title">{{session.info.title}}</label>
-      <nt-screenshot class='card' [reference]=session.reference></nt-screenshot>
+      <nt-screenshot class='card' [imageUrl]=session.info.screenshot></nt-screenshot>
     </div>
   </div>
 </div>

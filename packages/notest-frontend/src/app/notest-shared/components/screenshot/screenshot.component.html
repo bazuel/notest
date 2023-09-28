@@ -1,4 +1,4 @@
-<div #screenshot class="flex items-center justify-center overflow-hidden transition-all">
+<div #screenshot class="flex items-center justify-center overflow-hidden transition-all w-full h-full">
   <img *ngIf="imgSrc" class="animation-appear" [src]="imgSrc | safeUrl" alt="" />
-  <div *ngIf="!imgSrc" class="bo-loading h-full w-full bg-white"></div>
+  <div *ngIf="!imgSrc" class="bo-loading h-full w-full bg-white flex items-center justify-center"></div>
 </div>

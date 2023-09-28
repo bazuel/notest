@@ -62,14 +62,17 @@ async function isPermittedToLoad(user: NTUser): Promise<boolean> {
   );
 }
 
-(async () => {
-  sendMessage(
-    { type: 'fetch', data: { url: '/user/get-user', method: 'GET' } },
-    undefined,
-    false,
-    async (user: NTUser) => {
-      if (window.document?.body) loadWidgetIfPermitted(user);
-      else window.addEventListener('DOMContentLoaded', async () => loadWidgetIfPermitted(user));
-    }
-  );
-})();
+// (async () => {
+//   sendMessage(
+//     { type: 'fetch', data: { url: '/user/get-user', method: 'GET' } },
+//     undefined,
+//     false,
+//     async (user: NTUser) => {
+//       if (window.document?.body) loadWidgetIfPermitted(user);
+//       else window.addEventListener('DOMContentLoaded', async () => loadWidgetIfPermitted(user));
+//     }
+//   );
+// })();
+
+if (window.document?.body) injectWidgetCallBack();
+else window.addEventListener('DOMContentLoaded', async () => injectWidgetCallBack());

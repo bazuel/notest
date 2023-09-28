@@ -103,6 +103,7 @@ export class SessionPreviewComponent {
         loading: false
       })
     );
+    this.useOriginalScreenshot = false;
   }
 
   async getLoginSessionItem() {

@@ -102,7 +102,7 @@ export class SessionRunner extends SessionExecutor {
       let timeout = this.lastEvent ? event.timestamp - this.lastEvent.timestamp : 0;
       if (timeout < 5 && event.name == 'input') timeout = 200;
       await this.page.waitForTimeout(timeout);
-      console.log('TIMEOUT', timeout);
+      console.log(`Execute Phase: ${event.name}`);
       this.lastEvent = event;
       if (this.configuration.backendType == 'mock')
         this.mockService.actualTimestamp = event.timestamp;
@@ -168,7 +168,7 @@ export class SessionRunner extends SessionExecutor {
         url: url
       });
     }
-    await this.page.waitForTimeout(1000000);
+    // await this.page.waitForTimeout(1000000);
     await this.page.close({ runBeforeUnload: true });
     await this.context.close();
     await this.browser.close();
@@ -228,7 +228,12 @@ export class SessionRunner extends SessionExecutor {
   }
 
   private async createBrowserContext(browser: Browser) {
-    const options: BrowserContextOptions = { viewport: this.viewport, userAgent: this.useragent };
+    const permissions: Permission[] = ['geolocation'];
+    const options: BrowserContextOptions = {
+      viewport: this.viewport,
+      userAgent: this.useragent
+      // permissions
+    };
     if (this.configuration.recordVideo)
       options.recordVideo = {
         size: {
@@ -240,3 +245,20 @@ export class SessionRunner extends SessionExecutor {
     return await browser.newContext(options);
   }
 }
+
+type Permission =
+  | 'geolocation'
+  | 'midi'
+  | 'midi-sysex' // (system-exclusive midi)
+  | 'notifications'
+  | 'camera'
+  | 'microphone'
+  | 'background-sync'
+  | 'ambient-light-sensor'
+  | 'accelerometer'
+  | 'gyroscope'
+  | 'magnetometer'
+  | 'accessibility-events'
+  | 'clipboard-read'
+  | 'clipboard-write'
+  | 'payment-handler';

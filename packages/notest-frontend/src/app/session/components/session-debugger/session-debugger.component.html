@@ -8,7 +8,7 @@
     </div>
     <div
       class="group px-6 py-1.5 rounded-full bg-white mx-6 text-gray-500 border border-gray-300 flex items-center">
-      {{session.url}}
+      <div class="w-2/3 truncate">{{session.url}}</div>
       <nt-icon class="opacity-0 group-hover:opacity-100 ml-auto cursor-pointer" name="copy"
                (click)="copyToClipboard(session.url)"></nt-icon>
     </div>

@@ -17,10 +17,10 @@
     {#each sessions as session, i}
       <div class='nt-panel-session-container'>
         <h4 class='nt-h4 nt-session-title-container' title={session.info.title}>{session.info.title}</h4>
-        {#if session.reference}
+        {#if session.info}
           <div class='nt-preview-image nt-preview-session-image-container'
                on:mouseup={() => onSessionClick(session.reference)}>
-            <Image reference="{session.reference}" />
+            <Image url="{session.info.screenshot}" />
           </div>
         {:else }
           <div class='bo-loading nt-preview-image nt-center'

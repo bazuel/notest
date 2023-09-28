@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { BLSessionEvent } from '@notest/common';
 import { PlayerComponent } from './player.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'nt-shared-player',
@@ -94,7 +95,7 @@ export class NotestPlayerComponent implements AfterViewInit, OnChanges {
   private updatePlayerSession() {
     if (!this.player) {
       let player = new PlayerComponent(this.camera.nativeElement, {
-        deserializerProxyBasePath: 'http://localhost:2550', //this.config.proxyBasePath,
+        deserializerProxyBasePath: environment.proxy, //this.config.proxyBasePath,
         onTimestampChange: (ts, last?: boolean) => {
           this.playerUpdate.emit({ timestamp: Math.round(ts), last });
         },

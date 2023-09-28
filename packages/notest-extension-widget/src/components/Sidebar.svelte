@@ -47,6 +47,7 @@
         description: $sessionStore.description,
         targetList: $sessionStore.targetList,
         rerun: $appStore.rerun,
+        screenshot: $sessionStore.screenshot,
         isLogin: false,
         reference: extensionService.reference
       });
@@ -176,14 +177,13 @@
         <label class='nt-label'>Test assertions (Optional)</label>
         <div class='nt-test-assertion-container'>
           {#each $sessionStore.images as imgData }
-            <div class='nt-img-assertion-container'
-                 on:mouseup={() => removeSessionImage(imgData)}>
+            <div class='nt-img-assertion-container' on:mouseup={() => removeSessionImage(imgData)}>
               <div class='nt-cancel-assertion'>✖</div>
               <div class="nt-img-url-assertion">
                 {#if imgData.reference}
                   <Image reference="{imgData.reference}"></Image>
                 {:else}
-                  <img src="{imgData}" alt="img"/>
+                  <img src="{imgData}" style="object-fit: contain;width: 100%;height: 100%" alt="img"/>
                 {/if}
               </div>
             </div>
@@ -191,8 +191,7 @@
           <button on:click={() => dispatcher('highlighter')} class='nt-button nt-assertion-utils'>
             <Icon name='picker'></Icon>
           </button>
-          <button on:click={() => dispatcher('selector')}
-                  class='nt-button nt-assertion-utils nt-assertion-selector-container'>
+          <button on:click={() => dispatcher('selector')} class='nt-button nt-assertion-utils'>
             <Icon name='selector'></Icon>
           </button>
         </div>
@@ -208,9 +207,7 @@
             <Icon name='discard' color='white'></Icon>
           </button>
         {:else}
-          <div class='nt-session-saved-dialog'>
-            Session Saved
-          </div>
+          <div class='nt-session-saved-dialog'>Session Saved</div>
         {/if}
       </div>
       {#if $appStore.sessionSaved}
@@ -302,11 +299,7 @@
   }
 
   .nt-img-url-assertion {
-    @apply w-24 h-16 rounded-lg shadow-md;
-  }
-
-  .nt-assertion-selector-container {
-    @apply ml-2;
+    @apply w-24 h-16 rounded-lg shadow-md flex items-center justify-center overflow-hidden;
   }
 
   .nt-session-save-delete-container {

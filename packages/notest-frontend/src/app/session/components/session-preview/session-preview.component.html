@@ -1,5 +1,5 @@
 <div *ngIf="session && !fullLoading" class="h-full w-full flex bg-nt-50">
-  <div class="relative flex-1 h-full">
+  <div class="relative flex-1 h-full overflow-auto">
     <div class="flex gap-4 p-4 items-center">
       <input class="input-on-focus font-semibold text-gray-500" [(ngModel)]="session.info.title"
              (ngModelChange)="debouncedSaveSession()"/>
@@ -8,8 +8,8 @@
     </div>
     <div
       class="group px-6 py-1.5 rounded-full bg-white mx-6 text-gray-500 border border-gray-300 flex items-center">
-      {{session.url}}
-      <nt-icon class="opacity-0 group-hover:opacity-100 ml-auto  cursor-pointer" name="copy"
+      <div class="w-2/3 truncate">{{session.url}}</div>
+      <nt-icon class="opacity-0 group-hover:opacity-100 ml-auto cursor-pointer" name="copy"
                (click)="copyToClipboard(session.url)"></nt-icon>
     </div>
     <div class="relative m-5 rounded-md shadow-md overflow-hidden min-h-[600px] bg-white">
@@ -23,15 +23,15 @@
           [reference]="videoReference"
           (loadedChange)="videoLoaded = $event"></nt-video>
         <nt-screenshot
-          class="absolute smooth-open top-0"
+          class="absolute smooth-open top-0 w-full h-full"
           *ngIf="screenshotOnHover"
           [reference]="screenshotOnHover.reference"
           [name]="screenshotOnHover.name"></nt-screenshot>
       </ng-container>
       <nt-screenshot
-        class="absolute smooth-open top-0"
+        class="absolute smooth-open top-0 w-full h-full"
         *ngIf="useOriginalScreenshot"
-        [reference]="session.reference"
+        [imageUrl]="session.info.screenshot"
       ></nt-screenshot>
     </div>
   </div>

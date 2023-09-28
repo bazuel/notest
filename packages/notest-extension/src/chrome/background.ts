@@ -110,9 +110,7 @@ async function doFetch(
       sendResponse!(res);
     });
   else if (message.data.method == 'POST') {
-    http.post(message.data.url, message.data.body).then(async (res) => {
-      sendResponse!(res);
-    });
+    http.post(message.data.url, message.data.body).then(async (res) => sendResponse!(res));
   }
 }
 
@@ -129,7 +127,7 @@ async function pushEvent(request) {
   }
 }
 
-async function takeScreenshot(
+async function takeScreenshot2(
   message: { data: { fullDom: string; reference: string } },
   sendResponse?: (res) => any
 ) {
@@ -146,7 +144,13 @@ async function takeScreenshot(
   }).then(async () => {
     sendResponse!(message.data.reference);
   });
-  // http.post('/session/shot', zipped).then(async () => {
-  //   sendResponse!(message.data.reference);
-  // });
+}
+
+async function takeScreenshot(
+  message: { data: { fullDom: string; reference: string } },
+  sendResponse?: (res) => any
+) {
+  chrome.tabs.captureVisibleTab({ format: 'jpeg', quality: 50 }, (dataUrl) => {
+    sendResponse!({ reference: message.data.reference, img: dataUrl });
+  });
 }

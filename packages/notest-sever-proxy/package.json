@@ -1,12 +1,11 @@
 {
-  "name": "kafka",
+  "name": "proxy",
   "version": "1.0.0",
   "description": "",
   "type": "commonjs",
   "dependencies": {
-    "@notest/common": "link:..\\notest-common",
-    "notest-backend-shared": "link:..\\notest-backend-shared",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "http-proxy": "^1.18.1"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",

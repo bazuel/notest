@@ -12,6 +12,9 @@ export class ScreenshotComponent implements OnInit {
   @Input()
   name?: string;
 
+  @Input()
+  imageUrl?: string;
+
   @Input() lazyload = false;
 
   @ViewChild('screenshot', { static: true }) elementRef?: ElementRef;
@@ -21,6 +24,10 @@ export class ScreenshotComponent implements OnInit {
   constructor(private mediaService: MediaService) {}
 
   async ngOnInit() {
+    if (this.imageUrl) {
+      this.imgSrc = this.imageUrl;
+      return;
+    }
     if (!this.reference) return;
     if (this.lazyload) {
       this.mediaService.lazyloadImage(

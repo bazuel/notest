@@ -2,13 +2,18 @@
   import Icon from '../shared/components/icon.svelte';
   import Sidebar from './Sidebar.svelte';
   import Highlighter from '../shared/components/highlighter.svelte';
-  import { extensionService } from '../services/extension.service';
-  import { beforeUpdate, onMount } from 'svelte';
-  import { appStore, updateSessionSaved, updateSidebarState } from '../stores/settings.store';
+  import {extensionService} from '../services/extension.service';
+  import {beforeUpdate, onMount} from 'svelte';
+  import {appStore, updateSessionSaved, updateSidebarState} from '../stores/settings.store';
   import ElementsSelector from '../shared/components/elements-selector.svelte';
-  import { capture } from '../shared/services/screenshot.service';
-  import {initSessionStore, updateSessionImages, updateSessionTargetList} from '../stores/session.store';
-  import { messageService } from '../services/message.service';
+  import {capture} from '../shared/services/screenshot.service';
+  import {
+    initSessionStore,
+    updateSessionImages,
+    updateSessionScreenshot,
+    updateSessionTargetList
+  } from '../stores/session.store';
+  import {messageService} from '../services/message.service';
 
   let openSidebar = false;
   let recording;
@@ -16,10 +21,14 @@
   let enableHighlighter = false;
   let sidebarButtonHovered = false;
 
-  messageService.waitForMessage<string>('screenshot-saved').then(async (reference) => {
-    extensionService.saveReference(reference);
-    updateSessionImages({reference,name:''});
-  });
+  const getPageScreenshot = (callback) => {
+    messageService.waitForMessage<{ reference: string, img: string }>('screenshot-saved').then(async (data) => {
+      extensionService.saveReference(data.reference);
+      updateSessionScreenshot(data.img);
+      updateSessionImages(data.img);
+      callback();
+    });
+  }
 
   onMount(() => {
     recording = extensionService.recording;
@@ -49,7 +58,7 @@
     recording = false;
     await extensionService.stop();
     updateSidebarState('end');
-    openSidebar = true;
+    getPageScreenshot(() => openSidebar = true)
   };
   let startHighlighter = () => {
     enableHighlighter = true;
@@ -84,31 +93,31 @@
 <div class='--nt-extension fixed --nt-widget flex flex-row'>
   {#if openSidebar}
     <Sidebar
-      state={$appStore.sidebarState}
-      on:start-recording={startRecording}
-      on:close-sidebar={() => openSidebar = false}
-      on:highlighter={startHighlighter}
-      on:selector={startElementsSelector} />
+            state={$appStore.sidebarState}
+            on:start-recording={startRecording}
+            on:close-sidebar={() => openSidebar = false}
+            on:highlighter={startHighlighter}
+            on:selector={startElementsSelector}/>
   {/if}
   {#if recording}
     <div on:mouseup={cancelRecording} class='bo-icon cancel-button'>
-      <Icon color='gray' class='w-4 h-4' name='cancel' />
+      <Icon color='gray' class='w-4 h-4' name='cancel'/>
     </div>
     <div on:mouseup={stopRecording} class='bo-icon stop-button'>
-      <Icon color='gray' class='w-4 h-4' name='stop' />
+      <Icon color='gray' class='w-4 h-4' name='stop'/>
     </div>
   {:else}
     {#if $appStore.recButtonOnScreen}
       <div on:mouseup={startRecording} class:out={sidebarButtonHovered} title='Start recording (Ctrl+Shift+Q)'
            class='bo-icon start-button'>
-        <Icon color='gray' class='w-4 h-4' name='start' />
+        <Icon color='gray' class='w-4 h-4' name='start'/>
       </div>
     {/if}
     <div on:mouseup={() => openSidebar = !openSidebar}
          on:mouseenter={() => sidebarButtonHovered = true}
          on:mouseleave={() => sidebarButtonHovered = false}
          class='sidebar-button'>
-      <Icon color='gray' name='arrowLeft' />
+      <Icon color='gray' name='arrowLeft'/>
     </div>
   {/if}
 </div>

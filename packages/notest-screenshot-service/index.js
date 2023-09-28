@@ -18,6 +18,9 @@ const sharp = require("sharp");
         "--disable-infobars",
         "--disable-dev-shm-usage",
         "--disable-setuid-sandbox",
+        "--disable-web-security",
+        "--disable-features=IsolateOrigins,site-per-process",
+        "--allow-running-insecure-content",
         "--start-maximized",
         "--disable-gpu",
       ],
@@ -31,7 +34,30 @@ const sharp = require("sharp");
       height,
       deviceScaleFactor: 1,
     });
-    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+
+    await page.setBypassCSP(true);
+
+    const describe = (jsHandle) => {
+      return jsHandle.executionContext().evaluate((obj) => {
+        // serialize |obj| however you want
+        return `OBJ: ${typeof obj}, ${obj}`;
+      }, jsHandle);
+    };
+
+    // listen to browser console there
+    page.on("console", async (message) => {
+      const args = await Promise.all(
+        message.args().map((arg) => describe(arg))
+      );
+      // make ability to paint different console[types]
+      const type = message.type().substr(0, 3).toUpperCase();
+      let text = "";
+      for (let i = 0; i < args.length; ++i) {
+        text += `[${i}] ${args[i]} `;
+      }
+      console.log(`CONSOLE.${type}: ${message.text()}\n${text} `);
+    });
+
     page.on("error", (err) => {
       console.log("error happened on page: ", err);
     });
@@ -43,11 +69,11 @@ const sharp = require("sharp");
     let resolver = () => {};
     let alreadyCalled = false;
 
-    await page.exposeFunction("bl_shotReady", async (data) => {
-      console.log("DATA from Browser: ", data);
-      resolver();
-      alreadyCalled = true;
-    });
+    // await page.exposeFunction("bl_shotReady", async (data) => {
+    //   console.log("DATA from Browser: ", data);
+    //   resolver();
+    //   alreadyCalled = true;
+    // });
 
     console.log("URL:" + url);
     await page.goto(url, {

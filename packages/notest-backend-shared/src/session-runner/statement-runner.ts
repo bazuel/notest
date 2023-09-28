@@ -65,19 +65,35 @@ export async function executeResize(page: Page, event: BLWindowResizeEvent) {
   await page.setViewportSize({ width: event.width, height: event.height });
 }
 
+let lastInputValue = '';
 export async function executeInput(page: Page, event) {
   if (!['input', 'textarea'].includes(event.target.tag.toLowerCase())) return;
 
   const { x, y, width, height } = event.target.rect;
   const point = { x: x + width / 2, y: y + height / 2 };
-  let locator = page.locator(`xy=${point.x},${point.y}`).locator('input, textarea');
+  let locator = page.locator(`xy=${point.x},${point.y}`).locator('input:visible, textarea:visible');
 
   if ((await locator.count()) > 1) locator = locator.first();
-  const text: string = event.value;
-  let textWithoutLastChar = text.slice(0, -1);
-  let char = text.slice(-1);
-  await locator.fill(textWithoutLastChar);
-  await locator.press(char);
+
+  if (event.value == lastInputValue) return;
+  if (event.value.includes(lastInputValue)) {
+    await locator.type(event.value.at(-1));
+    lastInputValue = event.value;
+  } else {
+    await locator.fill(event.value, { force: true });
+    lastInputValue = event.value;
+  }
+
+  // const text: string = event.value;
+  // let textWithoutLastChar = text;
+  // let char = '';
+  //
+  // if (text.length > 0) {
+  //   char = text[text.length - 1];
+  //   textWithoutLastChar = text.slice(0, -1);
+  // }
+  // await locator.fill(textWithoutLastChar, { force: true });
+  // // await locator.press(char);
 }
 
 export async function executeMouseMove(page: Page, a: BLMouseEvent) {

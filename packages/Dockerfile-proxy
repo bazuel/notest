@@ -1,0 +1,21 @@
+# Stage 1
+FROM node:19-alpine as build-step
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh nano zopfli
+
+RUN npm i -g pnpm
+RUN npm i -g typescript
+
+RUN mkdir -p /app/packages/notest-server-proxy
+WORKDIR /app/packages/notest-server-proxy
+COPY ./notest-server-proxy/package.json .
+COPY ./notest-server-proxy/pnpm-lock.yaml .
+
+RUN pnpm i
+
+RUN pnpm build
+
+EXPOSE 8054
+
+CMD ["node", "dist/index.js"]

@@ -70,6 +70,7 @@ export interface NTSession {
   userid: number;
   reference: string;
   info: {
+    screenshot: string;
     e2eScript: string;
     title: string;
     description: string;

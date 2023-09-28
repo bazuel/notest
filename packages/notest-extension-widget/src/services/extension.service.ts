@@ -26,6 +26,7 @@ class ExtensionService {
     isLogin: boolean;
     rerun: boolean;
     reference: string;
+    screenshot: string;
   }) {
     postMessage({ type: 'save-session', data: sessionInfo }, '*');
   }

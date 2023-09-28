@@ -1,5 +1,3 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,8 +7,9 @@
   @import url("https://fonts.googleapis.com/css2?family=Poppins");
   --nt-primary-color: #0097e4;
   --nt-secondary-color: #ff4d00;
+
   *:not(.font-logo > *) {
-    font-family: 'poppins','sans-serif';
+    font-family: 'poppins', 'sans-serif';
   }
 }
 
@@ -32,8 +31,8 @@
 
 .nt-animate-bg-on-hover {
   background-image: radial-gradient(
-      rgba(255, 255, 255, 0.3),
-      rgba(255, 255, 255, 0)
+                  rgba(255, 255, 255, 0.3),
+                  rgba(255, 255, 255, 0)
   );
   background-size: 50% 50%;
   background-repeat: no-repeat;
@@ -42,8 +41,8 @@
 
   &:hover {
     background-image: radial-gradient(
-        rgba(255, 255, 255, 0.4),
-        rgba(255, 255, 255, 0)
+                    rgba(255, 255, 255, 0.4),
+                    rgba(255, 255, 255, 0)
     );
     transition: 0.9s;
     background-size: 200% 200%;
@@ -71,7 +70,7 @@
     @apply bg-white text-bop border border-bop;
   }
 
-  &.squared-10{
+  &.squared-10 {
     @apply w-10 h-10;
   }
 
@@ -98,14 +97,17 @@
 }
 
 .nt-input, .nt-textarea {
-  @apply border border-gray-200 p-2 h-10 w-64 rounded-md bg-gray-50 hover:shadow-sm text-black
-  focus:outline-none
+  @apply border border-gray-200 p-2 h-10 w-64 rounded-md bg-gray-50 hover:shadow-sm text-black focus:outline-none
   hover:border-gray-300
   focus:border-gray-400;
 }
 
+.nt-textarea {
+  @apply h-32;
+}
+
 .nt-label {
-  @apply block text-xs uppercase text-gray-400;
+  @apply block text-xs uppercase text-gray-400 mt-4;
   &.mandatory {
     @apply font-bold text-gray-600;
     &:after {

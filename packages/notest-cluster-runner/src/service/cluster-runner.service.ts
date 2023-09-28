@@ -61,7 +61,8 @@ export class ClusterRunnerService {
           backend_type: backendType,
           internal_error: false,
           session_logged: !!loginEventList,
-          e2eScript: ''
+          e2eScript: '',
+          screenshot: ''
         }
       };
       await mediaService
@@ -132,17 +133,17 @@ export class ClusterRunnerService {
       }) as any;
 
       //Visual assertion
-      const visualAssertion: NTVisualAssertion = { payload: {} } as any;
-      visualAssertion.original_reference = encodeURIComponent(reference);
-      visualAssertion.new_reference = newReference;
-      visualAssertion.type = 'visual';
-      const { imagesSimilarity } = await assertionService.compareImages(
-        targetList,
-        reference,
-        newReference
-      );
-
-      visualAssertion.payload.mismatchedPixel = imagesSimilarity;
+      // const visualAssertion: NTVisualAssertion = { payload: {} } as any;
+      // visualAssertion.original_reference = encodeURIComponent(reference);
+      // visualAssertion.new_reference = newReference;
+      // visualAssertion.type = 'visual';
+      // const { imagesSimilarity } = await assertionService.compareImages(
+      //   targetList,
+      //   reference,
+      //   newReference
+      // );
+      //
+      // visualAssertion.payload.mismatchedPixel = imagesSimilarity;
 
       //Missed events assertion
       const missedEventAssertion: NTMissedEventsAssertion = { payload: {} } as any;
@@ -166,8 +167,8 @@ export class ClusterRunnerService {
         httpBodyAssertion.run_timestamp = runTimestamp;
         httpContentTypeAssertion.battery_id = batteryId;
         httpContentTypeAssertion.run_timestamp = runTimestamp;
-        visualAssertion.battery_id = batteryId;
-        visualAssertion.run_timestamp = runTimestamp;
+        // visualAssertion.battery_id = batteryId;
+        // visualAssertion.run_timestamp = runTimestamp;
         missedEventAssertion.battery_id = batteryId;
         missedEventAssertion.run_timestamp = runTimestamp;
         runFinishedAssertion.battery_id = batteryId;
@@ -176,7 +177,7 @@ export class ClusterRunnerService {
       await assertionService.save(httpStatusAssertion);
       await assertionService.save(httpBodyAssertion);
       await assertionService.save(httpContentTypeAssertion);
-      await assertionService.save(visualAssertion);
+      // await assertionService.save(visualAssertion);
       await assertionService.save(missedEventAssertion);
       await assertionService.save(runFinishedAssertion);
 

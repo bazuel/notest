@@ -53,8 +53,6 @@ export class SessionController {
     const zippedBody = await streamToBuffer(data.file);
     const body: { reference: string; fullDom: BLSessionEvent } = await unzipJson(zippedBody);
     const { reference, fullDom } = body;
-    console.log('takeScreenshot', fullDom);
-    console.log(reference);
     this.fullDoms[reference] = fullDom;
     const frontendBase = globalConfig.app_url || 'http://localhost:4200';
     const frontendUrl = `${frontendBase}/session/session-camera?id=${reference}&backend=${globalConfig.backend_url}`;
@@ -82,7 +80,7 @@ export class SessionController {
   @Get('shot')
   async takeScreenshotData(@Query('id') id: string) {
     const fullDom = this.fullDoms[encodeURIComponent(id)];
-    delete this.fullDoms[encodeURIComponent(id)];
+    //delete this.fullDoms[encodeURIComponent(id)];
     return fullDom;
   }
 
@@ -100,7 +98,7 @@ export class SessionController {
     console.log('upload', reference, sessionInfo);
     const url = events[0].url;
     //TODO event.service.save not working
-    //await this.eventService.save(events, reference);
+    // await this.eventService.save(events, reference);
     const session: NTSession = {
       url,
       reference,

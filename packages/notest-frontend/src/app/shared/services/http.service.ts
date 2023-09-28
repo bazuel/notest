@@ -59,6 +59,7 @@ export class HttpService {
     usePrefix = true,
     additionalHeaders: { [h: string]: string } = {}
   ): Promise<T> {
+    console.log('GET:', rawpath ? path : await this.url(path, usePrefix));
     return this.makeRequest(async () => {
       return this.http
         .get<T>(
