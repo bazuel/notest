@@ -5,17 +5,14 @@ class ExtensionService {
   private _reference: string;
 
   start(cleanSession?: boolean) {
-    localStorage.setItem('nt-recording', '1');
     messageService.sendMessage('start-recording', { 'clean-session': cleanSession });
   }
 
   async stop() {
-    localStorage.setItem('nt-recording', '0');
     await messageService.sendMessage('stop-recording', {}, true);
   }
 
   cancel() {
-    localStorage.setItem('nt-recording', '0');
     messageService.sendMessage('cancel-recording', {});
   }
 
@@ -30,8 +27,9 @@ class ExtensionService {
     postMessage({ type: 'save-session', data: sessionInfo }, '*');
   }
 
-  get recording() {
-    return localStorage.getItem('nt-recording') === '1';
+  async recording() {
+    const recording = await messageService.sendMessage('recording', {}, true);
+    return recording['recording'];
   }
 
   saveReference(reference: string) {

@@ -19,24 +19,19 @@
   const getPageScreenshot = (callback) => {
     messageService.waitForMessage<{ reference: string, img: string }>('screenshot-saved').then(async (data) => {
       extensionService.saveReference(data.reference);
-      uploadScreenshot({data: fromBase64ToBlob(data.img), name: 'final'}, data.reference);
       updateSessionImages(data.img);
       callback();
     });
   }
 
-  onMount(() => {
-    recording = extensionService.recording;
+  onMount(async () => {
+    recording = await extensionService.recording();
     updateSidebarState('start');
     addEventListener('message', (m) => {
       if (m.data.type === 'start-recording-from-extension') {
         startRecording();
       }
     });
-  });
-
-  beforeUpdate(() => {
-    recording = extensionService.recording;
   });
 
   let startRecording = () => {

@@ -1,5 +1,6 @@
 import { BLEvent } from '@notest/common';
 import { addMessageListener, NTMessage, sendMessage } from './message.api';
+import { isRecording } from '../shared/recording.state';
 
 function openCommunicationChannel() {
   //channel to communicate with page context (popup/background => page)
@@ -38,6 +39,14 @@ function callbackFromPageToBackground(message: NTMessage) {
       sendMessage({ type: 'screenshot-saved', data: response }, undefined, true);
     };
     sendMessage(message, undefined, undefined, responseCallback);
+  } else if (message.type && message.type == 'recording') {
+    console.log('recording channel');
+    const responseCallback = (recording: boolean) => {
+      const response = { recording };
+      response['id'] = message.data.id;
+      sendMessage({ type: 'recording-response', data: response }, undefined, true);
+    };
+    isRecording().then(responseCallback);
   }
 }
 

@@ -10,9 +10,9 @@
  *  and you may think that then it is the same context. But it's NOT ;-)
  */
 
-import { isRecording } from './functions/recording.state';
-import { sendMessage } from './message.api';
 import { NTUser } from '@notest/common';
+import { getRecording } from './functions/get-recording';
+import { isRecording } from '../shared/recording.state';
 
 function addScriptToPage(url: string, id?: string) {
   return new Promise((r) => {
@@ -76,3 +76,10 @@ async function isPermittedToLoad(user: NTUser): Promise<boolean> {
 
 if (window.document?.body) injectWidgetCallBack();
 else window.addEventListener('DOMContentLoaded', async () => injectWidgetCallBack());
+
+// window.addEventListener('message', (event) => {
+//   if (event.data.type === 'recording-state') {
+//     postMessage({ type: 'recording-state',message:yes }, '*');
+//   }
+//
+// }

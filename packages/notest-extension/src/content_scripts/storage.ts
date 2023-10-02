@@ -5,7 +5,7 @@ addMessageListener((message: NTStorageMessage) => {
   if (message.type === 'get-storage') sendStorage(message.data!.key, message.data!.id);
 }, true);
 
-function setStorage(key: string, value: string) {
+export function setStorage(key: string, value: string) {
   chrome.storage.local.set({ [key]: value });
 }
 

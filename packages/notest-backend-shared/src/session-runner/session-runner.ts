@@ -8,7 +8,8 @@ import {
   BLSessionEvent,
   BLStorageEvent,
   BLWindowResizeEvent,
-  NTRunnerConfig
+  NTRunnerConfig,
+  NTScreenshot
 } from '@notest/common';
 import { Browser, BrowserContext, BrowserContextOptions, chromium, Page, Video } from 'playwright';
 import { MockService } from './services/mock.service';
@@ -27,15 +28,15 @@ export class SessionRunner extends SessionExecutor {
   mockService: MockService;
   private page: Page;
   private testFailed = false;
-  private screenshotList: { name: string; data: Buffer; fired: Date }[] = [];
   configuration: NTRunnerConfig;
   private lastEvent?: BLSessionEvent;
   private monitorScript: string;
   private video: Video | null;
   private eventsCollected: BLSessionEvent[];
   private startVideoTimeStamp: Date = null;
+  private reference: () => string;
 
-  constructor() {
+  constructor(private mediaSaver?: (media: NTScreenshot, reference: string) => void) {
     super();
     this.monitorScript = fs.readFileSync(process.cwd() + '/scripts/index.monitor.js', 'utf8');
   }
@@ -59,7 +60,7 @@ export class SessionRunner extends SessionExecutor {
       await this.mockService.setupMock();
     }
     if (this.configuration.monitoring) {
-      await setupMonitor(this.context, this.eventsCollected, this.monitorScript);
+      this.reference = await setupMonitor(this.context, this.eventsCollected, this.monitorScript);
     }
     if (!this.configuration.isLoginSession && this.configuration.loginEvents.length) {
       console.log('LOGIN EVENTS FOUNDED: \n');
@@ -92,11 +93,15 @@ export class SessionRunner extends SessionExecutor {
     ) {
       console.log(`Execute Phase: taking screenshot, page: ${await this.page.title()}`);
       const image = await this.page.screenshot();
-      this.screenshotList.push({
-        name: `${event.name}_${event.timestamp}`,
-        data: image,
-        fired: new Date()
-      });
+      this.mediaSaver(
+        {
+          name: `${event.name}_${event.timestamp}`,
+          data: image,
+          fired: new Date(),
+          type: 'image'
+        },
+        this.reference()
+      );
     }
     if (actionWhitelist[this.configuration.backendType].includes(event.name)) {
       let timeout = this.lastEvent ? event.timestamp - this.lastEvent.timestamp : 0;
@@ -122,7 +127,15 @@ export class SessionRunner extends SessionExecutor {
   async end() {
     if (this.configuration.takeScreenshot) {
       const image = await this.page.screenshot();
-      this.screenshotList.push({ name: 'final', data: image, fired: new Date() });
+      this.mediaSaver(
+        {
+          name: 'final',
+          data: image,
+          fired: new Date(),
+          type: 'image'
+        },
+        this.reference()
+      );
     }
     if (this.configuration.monitoring) {
       await this.page.evaluate(() => window.nt_monitorInstance.disable());
@@ -146,40 +159,25 @@ export class SessionRunner extends SessionExecutor {
         name: 'local-full',
         timestamp: new Date().getTime()
       };
-      this.eventsCollected.push({
-        ...sessionStorageEvent,
-        timestamp: Date.now(),
-        sid: 0,
-        tab: 0,
-        url: url
-      });
-      this.eventsCollected.push({
-        ...localStorageEvent,
-        timestamp: Date.now(),
-        sid: 0,
-        tab: 0,
-        url: url
-      });
-      this.eventsCollected.push({
-        ...cookieEvent,
-        timestamp: Date.now(),
-        sid: 0,
-        tab: 0,
-        url: url
-      });
+      this.collectEvents(sessionStorageEvent, url);
+      this.collectEvents(localStorageEvent, url);
+      this.collectEvents(cookieEvent, url);
     }
     // await this.page.waitForTimeout(1000000);
     await this.page.close({ runBeforeUnload: true });
     await this.context.close();
     await this.browser.close();
-    return {
-      screenshotList: this.screenshotList,
+    const dataReturn = {
       events: this.eventsCollected,
       testFailed: this.testFailed,
       lastEvent: this.lastEvent,
       startVideoTimeStamp: this.startVideoTimeStamp,
-      videoPath: await this.video?.path()
+      videoPath: await this.video?.path(),
+      reference: ''
     };
+    if (this.configuration.monitoring) dataReturn.reference = this.reference();
+
+    return dataReturn;
   }
 
   private async setInitStorage(session: BLSessionEvent[]) {
@@ -217,7 +215,7 @@ export class SessionRunner extends SessionExecutor {
     });
   }
 
-  private async renderMouse(event: BLMoveEvent) {
+  private renderMouse(event: BLMoveEvent) {
     this.page.evaluate((e) => {
       const element = document.getElementById('--nt-mouse');
       if (element) {
@@ -243,6 +241,16 @@ export class SessionRunner extends SessionExecutor {
         dir: process.cwd() + '/video'
       };
     return await browser.newContext(options);
+  }
+
+  private collectEvents(events: BLStorageEvent | BLCookieDetailsEvent, url: string) {
+    this.eventsCollected.push({
+      ...events,
+      timestamp: Date.now(),
+      sid: 0,
+      tab: 0,
+      url: url
+    });
   }
 }
 

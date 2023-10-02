@@ -34,7 +34,7 @@ export class MediaController {
     const reference: string = data.fields['reference'].value;
     const timestamp: number = +data.fields['timestamp'].value;
     const buffer = await streamToBuffer(data.file);
-    await this.mediaService.saveScreenshot(
+    await this.mediaService.saveScreenshotList(
       [{ name, data: buffer, fired: new Date(timestamp), type: 'image' }],
       reference
     );

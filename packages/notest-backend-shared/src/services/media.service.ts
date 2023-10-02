@@ -37,20 +37,25 @@ export class MediaService extends CrudService<NTMedia> {
     }
   }
 
-  async saveScreenshot(screenshotList: NTScreenshot[], reference) {
+  async saveScreenshotList(screenshotList: NTScreenshot[], reference: string) {
     console.log('Uploading screenshots ...');
     for (const screenshot of screenshotList) {
-      const path = pathScreenshotFromReference(reference, screenshot.name);
-      const imageMetaData: NTMedia = {
-        name: screenshot.name,
-        reference: reference,
-        type: screenshot.type ? screenshot.type : 'image',
-        start: screenshot.fired
-      } as NTMedia;
-      await this.create(imageMetaData);
-      await this.storageService.upload(screenshot.data, path);
+      this.saveScreenshot(screenshot, reference);
     }
     console.log('Uploaded Screenshots');
+  }
+
+  saveScreenshot(screenshot: NTScreenshot, reference: string) {
+    const path = pathScreenshotFromReference(reference, screenshot.name);
+    console.log('screenshot path: ', path);
+    const imageMetaData: NTMedia = {
+      name: screenshot.name,
+      reference: reference,
+      type: screenshot.type ? screenshot.type : 'image',
+      start: screenshot.fired
+    } as NTMedia;
+    this.create(imageMetaData);
+    this.storageService.upload(screenshot.data, path);
   }
 
   async getScreenshot(reference: string, name: string) {

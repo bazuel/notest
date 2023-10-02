@@ -77,7 +77,7 @@ export class SessionService {
           clearInterval(interval);
           resolve();
         }
-      }, 1000);
+      }, 5000);
     });
     return await this.getSessionRunHistory(reference);
   }

@@ -8,7 +8,7 @@ import {
   NTSession
 } from '@notest/common';
 import { getCurrentTab } from './functions/current-tab.util';
-import { isRecording, setRecording } from '../content_scripts/functions/recording.state';
+import { isRecording, setRecording } from '../shared/recording.state';
 import { uploadEvents } from './functions/upload.api';
 import {
   enableHeadersListeners,
@@ -28,6 +28,8 @@ import { environment } from '../environments/environment';
 let cookieDetailsEvent: any = {};
 let events: BLEvent[] = [];
 
+setRecording(false);
+
 (async () => {
   let sid = await chrome.storage.local.get('sid');
   if (!sid['sid']) {
@@ -44,7 +46,8 @@ const executeByMessageType: {
   'cancel-recording': cancelSession,
   'session-event': pushEvent,
   fetch: doFetch,
-  'take-screenshot': takeScreenshot
+  'take-screenshot': takeScreenshot,
+  'recording-state': getRecording
 };
 
 chrome.commands.onCommand.addListener(async function (command) {
@@ -60,8 +63,6 @@ addMessageListener(async (message: NTMessage, sendResponse) => {
   const functionToCall = executeByMessageType[message.type];
   if (functionToCall) await functionToCall(message, sendResponse);
 });
-
-setRecording(false);
 
 async function cancelSession() {
   disableRecordingIcon();
@@ -112,6 +113,10 @@ async function doFetch(
   else if (message.data.method == 'POST') {
     http.post(message.data.url, message.data.body).then(async (res) => sendResponse!(res));
   }
+}
+
+async function getRecording(_, sendResponse?: (res) => any) {
+  isRecording().then((recording) => sendResponse!({ recording }));
 }
 
 async function pushEvent(request) {

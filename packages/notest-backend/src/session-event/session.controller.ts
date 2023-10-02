@@ -73,7 +73,7 @@ export class SessionController {
         type: 'image'
       }
     ];
-    await this.mediaService.saveScreenshot(screenshot, reference);
+    await this.mediaService.saveScreenshotList(screenshot, reference);
     return { ok: true };
   }
 
@@ -111,7 +111,7 @@ export class SessionController {
       console.log('Sent message to kafka');
       await this.producerService.produceMessage({
         reference: decodeURIComponent(reference),
-        backendType: 'full'
+        backendType: 'mock'
       });
     }
     res.send({ ok: true, reference });

@@ -85,6 +85,7 @@ export class SessionPreviewComponent {
     const rerunStorage = JSON.parse(localStorage.getItem('rerun') || '{}');
     this.backendType = rerunStorage.backendType || 'full';
     this.sessionRunHistory = await this.sessionService.getSessionRunHistory(this.reference);
+    console.log(this.sessionRunHistory);
     return rerunStorage;
   }
 
@@ -103,6 +104,7 @@ export class SessionPreviewComponent {
         loading: false
       })
     );
+    this.videoReference = this.sessionRunHistory[0]?.session?.reference;
     this.useOriginalScreenshot = false;
   }
 

@@ -1,12 +1,6 @@
 import { BrowserContext } from 'playwright';
-import {
-  afterResponseFilter,
-  BLCookieDetailsEvent,
-  BLEvent,
-  BLSessionEvent,
-  BLSocketOpenEvent,
-  isSocketOpen
-} from '@notest/common';
+import { afterResponseFilter, BLCookieDetailsEvent, BLEvent, BLSessionEvent } from '@notest/common';
+import fs from 'fs';
 
 declare global {
   interface Window {
@@ -46,24 +40,9 @@ export class MockService {
 
   async mockDate() {
     // Update the Date accordingly in your test pages
-    await this.context.addInitScript(`
-      {
-        (async() => {
-          if(window.controlMock?.date) return;
-          fakeNow = await window.getActualMockedTimestamp()
-          // Override the default Date constructor with a custom constructor
-          OriginalDate = Date;
-          Date = function() {
-            if (arguments.length === 0) {
-              return new OriginalDate(fakeNow);
-            } else {
-              return new OriginalDate(...arguments);
-            }
-          }
-          Date.now = () => new Date().getTime()
-          await window.setMockDateTrue()
-        })()
-      }`);
+    await this.context.addInitScript(
+      fs.readFileSync(process.cwd() + '/scripts/date.mock.js', 'utf8')
+    );
   }
 
   async mockRoutes(eventList: BLEvent[]) {

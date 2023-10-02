@@ -1,5 +1,5 @@
 import { BLSessionEvent, NTRunnerConfig, NTScreenshot } from '@notest/common';
-import { SessionRunner } from 'notest-backend-shared';
+import { mediaService, SessionRunner } from 'notest-backend-shared';
 
 export async function runLoginSession(eventList: BLSessionEvent[], sessionDomain: string) {
   console.log('Login phase started');
@@ -19,12 +19,12 @@ export async function runSession(
   backendType: 'mock' | 'full',
   loginEvents: BLSessionEvent[]
 ) {
-  const monitoringSession = await runMonitoringSession(eventList, domain, backendType, loginEvents);
-  const screenshotSession = await runScreenshotSession(eventList, domain, backendType, loginEvents);
+  const monitoringSession = await runVideoSession(eventList, domain, backendType, loginEvents);
+  const screenshotSession = await runMonitoringSession(eventList, domain, backendType, loginEvents);
   return { monitoringSession, screenshotSession };
 }
 
-async function runMonitoringSession(
+async function runVideoSession(
   eventList: BLSessionEvent[],
   sessionDomain: string,
   backendType: 'mock' | 'full',
@@ -33,10 +33,9 @@ async function runMonitoringSession(
   console.log('Monitoring phase started');
   const sessionRunner = new SessionRunner();
 
-  const result = await sessionRunner.run<NTRunnerConfig, MonitoringReturnType>(eventList, {
+  const result = await sessionRunner.run<NTRunnerConfig, VideoReturnType>(eventList, {
     backendType,
     sessionDomain,
-    monitoring: true,
     recordVideo: true,
     loginEvents: loggedStoragesAndCookie
   });
@@ -44,17 +43,18 @@ async function runMonitoringSession(
   return result;
 }
 
-async function runScreenshotSession(
+async function runMonitoringSession(
   eventList: BLSessionEvent[],
   sessionDomain: string,
   backendType: 'mock' | 'full',
   loggedStoragesAndCookie: BLSessionEvent[]
 ) {
   console.log('Screenshot phase started');
-  const sessionRunner = new SessionRunner();
+  const sessionRunner = new SessionRunner((a, b) => mediaService.saveScreenshot(a, b));
   const result = await sessionRunner.run<NTRunnerConfig, ScreenshotReturnType>(eventList, {
     backendType,
     sessionDomain,
+    monitoring: true,
     takeScreenshot: true,
     loginEvents: loggedStoragesAndCookie
   });
@@ -62,14 +62,14 @@ async function runScreenshotSession(
   return result;
 }
 
-type MonitoringReturnType = {
-  events: BLSessionEvent[];
+export type VideoReturnType = {
   testFailed: boolean;
   lastEvent: BLSessionEvent;
   videoPath: string;
 };
 
-type ScreenshotReturnType = {
-  screenshotList: NTScreenshot[];
+export type ScreenshotReturnType = {
+  events: BLSessionEvent[];
   startVideoTimeStamp: Date;
+  reference: string;
 };

@@ -7,3 +7,13 @@ export async function getCurrentTab() {
 
   return tab;
 }
+
+export async function currentUrl() {
+  const tab = await getCurrentTab();
+  return tab.url;
+}
+
+export async function currentTabId() {
+  const tab = await getCurrentTab();
+  return tab.id!;
+}

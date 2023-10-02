@@ -3,6 +3,7 @@ import { BLSessionEvent, eventReference } from '@notest/common';
 import { addMessageListener, sendMessage } from '../content_scripts/message.api';
 
 async function sendToExtension(event) {
+  console.log('sendToExtension', event);
   sendMessage({ type: 'session-event', data: { ...event, data: document.title } });
 }
 

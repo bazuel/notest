@@ -27,7 +27,7 @@ export const actionWhitelist: { [k: string]: BLEventName[] } = {
     'mousemove',
     'wheel',
     'contextmenu',
-    'resize',
+    // 'resize',
     'input'
   ]
 };
@@ -71,13 +71,15 @@ export async function executeInput(page: Page, event) {
 
   const { x, y, width, height } = event.target.rect;
   const point = { x: x + width / 2, y: y + height / 2 };
-  let locator = page.locator(`xy=${point.x},${point.y}`).locator('input:visible, textarea:visible');
+  let locator = page
+    .locator(`xy=${point.x},${point.y}`)
+    .and(page.locator('input:visible, textarea:visible'));
 
   if ((await locator.count()) > 1) locator = locator.first();
 
   if (event.value == lastInputValue) return;
   if (event.value.includes(lastInputValue)) {
-    await locator.type(event.value.at(-1));
+    await locator.pressSequentially(event.value.at(-1));
     lastInputValue = event.value;
   } else {
     await locator.fill(event.value, { force: true });

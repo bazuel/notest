@@ -79,7 +79,10 @@ export type NTMessageType =
   | 'get-storage-response'
   | 'get-storage'
   | 'set-storage'
-  | 'start-monitoring';
+  | 'start-monitoring'
+  | 'recording'
+  | 'recording-state'
+  | 'recording-response';
 
 export interface NTMessage {
   type: NTMessageType;

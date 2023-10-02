@@ -49,7 +49,7 @@ export class SessionService extends CrudService<NTSession> {
     return await unzipJson(sessionZipped);
   }
 
-  async getLoginReference(reference: string) {
+  async getLoginSessionIfExists(reference: string) {
     const session = await this.findByField('reference', encodeURIComponent(reference));
     if (!session[0].info?.loginReference) return undefined;
     return this.read(decodeURIComponent(session[0].info.loginReference));

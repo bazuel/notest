@@ -92,6 +92,7 @@ export interface NTRunnerConfig {
   takeScreenshot?: boolean;
   loginEvents?: BLSessionEvent[];
   sessionDomain?: string;
+  reference?: string;
 }
 
 export type NTClusterMessage = {

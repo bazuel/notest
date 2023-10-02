@@ -48,7 +48,7 @@ export class AssertionService extends CrudService<NTAssertion> {
       newReference,
       targetList
     );
-    await mediaService.saveScreenshot(assertionScreenshot, newReference);
+    await mediaService.saveScreenshotList(assertionScreenshot, newReference);
     return { imagesSimilarity };
   }
 
