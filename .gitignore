@@ -27,3 +27,5 @@ UserInterfaceState.xcuserstate
 /packages/notest-backend/data-dbs/
 
 notest.json
+/deploy/
+/packages/notest-extension-widget/.env.pm
